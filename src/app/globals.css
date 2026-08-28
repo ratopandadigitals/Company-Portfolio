@@ -1,0 +1,605 @@
+@import "tailwindcss";
+
+/* ==================================================================
+   GLOBALS.CSS — generated from tokens.json + Brand Guidelines PDF
+
+   STRUCTURE
+   1. Custom dark variant          → tells Tailwind what "dark:" means
+   2. Primitive color scale        → raw hex, from Brand + Alias
+   3. Semantic colors — Light mode → from "Mapped/Light Mode"
+   4. Semantic colors — Dark mode  → from "Mapped/Dark Mode"
+   5. Typography scale             → Brand Guidelines PDF "Hierarchy" page
+      (overrides tokens.json's Responsive/* numbers where they conflict —
+      the PDF is the newer, more deliberate source, confirmed earlier)
+   6. Spacing scale                → from tokens.json Spacing section
+   7. Tailwind v4 @theme bridge    → maps everything to utility classes
+   8. Base element defaults
+   ================================================================== */
+
+
+/* ------------------------------------------------------------------
+   1. CUSTOM DARK VARIANT
+   Your ThemeToggle sets data-theme="dark" as an ATTRIBUTE on <html>,
+   not a CSS class. Tailwind's default dark: checks the browser's
+   system setting instead — this line overrides that so dark: (and
+   the [data-theme="dark"] block below) actually responds to your
+   toggle button, not the visitor's OS setting.
+   ------------------------------------------------------------------ */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+
+/* ------------------------------------------------------------------
+   2. PRIMITIVE COLOR SCALE
+   Real hex values from Brand + Alias — nothing invented.
+
+   NOTE: Alias.Primary and Alias.Error resolve to the identical red
+   scale in your tokens — kept as-authored, confirm intentional.
+   ------------------------------------------------------------------ */
+:root {
+  /* Primary (Alias.Primary → Crimson Panda) */
+  --primary-150: #f3d0d2;
+  --primary-500: #c1121f;
+  --primary-600: #9a0e19;
+  --primary-800: #4d070c;
+  --primary-900: #270406;
+  /* Flagged in Navbar Figma export — distinct from primary-600, do not merge */
+  --primary-deep: #9b111e;
+
+  /* Neutral (Alias.Neutral → SoftWhite) */
+  --neutral-150: #fefefe;
+  --neutral-200: #fcfdfe;
+  --neutral-300: #fbfcfd;
+  --neutral-400: #f9fbfd;
+  --neutral-500: #f8fafc;
+  --neutral-600: #c6c8ca;
+  --neutral-700: #959697;
+
+  /* Dark Foundation (Alias.Dark Foundation → Dark) */
+  --dark-foundation-300: #6a7079;
+  --dark-foundation-400: #39414c;
+  --dark-foundation-500: #07111f;
+  --dark-foundation-600: #060e19;
+  --dark-foundation-700: #040a13;
+  --dark-foundation-800: #03070c;
+  --dark-foundation-900: #010306;
+
+  /* Error (Alias.Error → Crimson Panda, same scale as Primary) */
+  --error-150: #f3d0d2;
+  --error-200: #e6a0a5;
+  --error-500: #c1121f;
+  --error-600: #9a0e19;
+  --error-800: #4d070c;
+  --error-900: #270406;
+
+  /* Success (Alias.Success → Emerald Green) */
+  --success-150: #dbf5ec;
+  --success-200: #9fe3cd;
+  --success-500: #10b981;
+  --success-600: #0d9467;
+  --success-800: #064a34;
+  --success-900: #03251a;
+
+  /* Warning (Alias.Warning → Orange) */
+  --warning-150: #fdecce;
+  --warning-200: #fbd89d;
+  --warning-500: #f59e0b;
+  --warning-600: #c47e09;
+  --warning-800: #623f04;
+  --warning-900: #312002;
+
+  /* Information (Alias.Information → Skyblue) */
+  --information-150: #cce6f4;
+  --information-200: #9acee9;
+  --information-500: #0284c7;
+  --information-600: #026a9f;
+  --information-800: #013550;
+  --information-900: #001a28;
+
+  /* Frame widths (Responsive/*.Frame Width) */
+  --frame-width-mobile: 440px;
+  --frame-width-tablet: 1024px;
+  --frame-width-desktop: 1440px;
+}
+
+
+/* ------------------------------------------------------------------
+   3. SEMANTIC COLORS — LIGHT MODE (Mapped/Light Mode)
+   ------------------------------------------------------------------ */
+:root {
+  /* -- Text -- */
+  --text-heading: var(--dark-foundation-600);
+  --text-body: var(--dark-foundation-500);
+  --text-caption: var(--dark-foundation-400);
+  --text-placeholder: var(--dark-foundation-300);
+
+  --text-on-color-heading: var(--neutral-150);
+  --text-on-color-body: var(--neutral-200);
+  --text-on-color-caption: var(--neutral-300);
+  --text-on-color-placeholder: var(--neutral-400);
+
+  --text-primary: var(--primary-500);
+  --text-primary-hover: var(--primary-600);
+  --text-primary-on-color: var(--neutral-200);
+  --text-primary-on-color-hover: var(--neutral-300);
+
+  --text-error: var(--error-500);
+  --text-error-hover: var(--error-600);
+  --text-error-on-color: var(--neutral-150);
+  --text-error-on-color-hover: var(--neutral-200);
+
+  --text-success: var(--success-500);
+  --text-success-hover: var(--success-600);
+  --text-success-on-color: var(--neutral-150);
+  --text-success-on-color-hover: var(--neutral-200);
+
+  --text-warning: var(--warning-500);
+  --text-warning-hover: var(--warning-600);
+  --text-warning-on-color: var(--neutral-150);
+  --text-warning-on-color-hover: var(--neutral-200);
+
+  --text-information: var(--information-500);
+  --text-information-hover: var(--information-600);
+  --text-information-on-color: var(--neutral-150);
+  --text-information-on-color-hover: var(--neutral-200);
+
+  --text-disabled: var(--neutral-400);
+  --text-disabled-hover: var(--neutral-400);
+  --text-disabled-on-color: var(--neutral-400);
+  --text-disabled-on-color-hover: var(--neutral-400);
+
+  /* -- Icon -- */
+  --icon-primary: var(--primary-500);
+  --icon-primary-hover: var(--primary-600);
+  --icon-primary-on-color: var(--neutral-200);
+  --icon-primary-on-color-hover: var(--neutral-300);
+
+  --icon-error: var(--error-500);
+  --icon-error-hover: var(--error-600);
+  --icon-error-on-color: var(--neutral-150);
+  --icon-error-on-color-hover: var(--neutral-200);
+
+  --icon-success: var(--success-500);
+  --icon-success-hover: var(--success-600);
+  --icon-success-on-color: var(--neutral-150);
+  --icon-success-on-color-hover: var(--neutral-200);
+
+  --icon-warning: var(--warning-500);
+  --icon-warning-hover: var(--warning-600);
+  --icon-warning-on-color: var(--neutral-150);
+  --icon-warning-on-color-hover: var(--neutral-200);
+
+  --icon-information: var(--information-500);
+  --icon-information-hover: var(--information-600);
+  --icon-information-on-color: var(--neutral-150);
+  --icon-information-on-color-hover: var(--neutral-200);
+
+  --icon-disabled: var(--neutral-600);
+  --icon-disabled-hover: var(--neutral-600);
+  --icon-disabled-on-color: var(--neutral-600);
+  --icon-disabled-on-color-hover: var(--neutral-600);
+
+  /* -- Surface -- */
+  --surface-primary: var(--primary-500);
+  --surface-primary-hover: var(--primary-600);
+  --surface-primary-subtle: var(--primary-150);
+  --surface-primary-subtle-hover: var(--error-200);
+
+  --surface-error: var(--error-500);
+  --surface-error-hover: var(--error-600);
+  --surface-error-subtle: var(--error-150);
+  --surface-error-subtle-hover: var(--error-200);
+
+  --surface-success: var(--success-500);
+  --surface-success-hover: var(--success-600);
+  --surface-success-subtle: var(--success-150);
+  --surface-success-subtle-hover: var(--success-200);
+
+  --surface-warning: var(--warning-500);
+  --surface-warning-hover: var(--warning-600);
+  --surface-warning-subtle: var(--warning-150);
+  --surface-warning-subtle-hover: var(--warning-200);
+
+  --surface-information: var(--information-500);
+  --surface-information-hover: var(--information-600);
+  --surface-information-subtle: var(--information-150);
+  --surface-information-subtle-hover: var(--information-200);
+
+  --surface-disabled: var(--neutral-600);
+  --surface-disabled-on-color: var(--neutral-600);
+
+  --surface-page: var(--neutral-500);
+  --surface-section: var(--neutral-600);
+  --surface-card: var(--neutral-500);
+  --surface-divider: var(--neutral-700);
+
+  /* -- Border -- */
+  --border-primary: var(--primary-500);
+  --border-primary-hover: var(--primary-600);
+  --border-primary-subtle: var(--neutral-600);
+  --border-primary-subtle-hover: var(--neutral-700);
+
+  --border-error: var(--error-500);
+  --border-error-hover: var(--error-600);
+  --border-error-subtle: var(--error-150);
+  --border-error-subtle-hover: var(--error-200);
+
+  --border-success: var(--success-500);
+  --border-success-hover: var(--success-600);
+  --border-success-subtle: var(--success-150);
+  --border-success-subtle-hover: var(--success-200);
+
+  --border-warning: var(--warning-500);
+  --border-warning-hover: var(--warning-600);
+  --border-warning-subtle: var(--warning-150);
+  --border-warning-subtle-hover: var(--warning-200);
+
+  --border-information: var(--information-500);
+  --border-information-hover: var(--information-600);
+  --border-information-subtle: var(--information-150);
+  --border-information-subtle-hover: var(--information-200);
+
+  --border-disabled: var(--neutral-600);
+  --border-disabled-on-color: var(--neutral-600);
+}
+
+
+/* ------------------------------------------------------------------
+   4. SEMANTIC COLORS — DARK MODE (Mapped/Dark Mode)
+   Fixed selector: [data-theme="dark"], matching your ThemeToggle's
+   actual behavior (was incorrectly .dark before).
+   ------------------------------------------------------------------ */
+[data-theme="dark"] {
+  --text-heading: var(--neutral-500);
+  --text-body: var(--neutral-400);
+  --text-caption: var(--neutral-300);
+  --text-placeholder: var(--neutral-200);
+
+  --text-on-color-heading: var(--dark-foundation-900);
+  --text-on-color-body: var(--dark-foundation-800);
+  --text-on-color-caption: var(--dark-foundation-700);
+  --text-on-color-placeholder: var(--dark-foundation-600);
+
+  --text-primary: var(--primary-600);
+  --text-primary-hover: var(--primary-500);
+  --text-primary-on-color: var(--dark-foundation-900);
+  --text-primary-on-color-hover: var(--dark-foundation-800);
+
+  --text-error: var(--error-600);
+  --text-error-hover: var(--error-500);
+  --text-error-on-color: var(--dark-foundation-900);
+  --text-error-on-color-hover: var(--dark-foundation-800);
+
+  --text-success: var(--success-600);
+  --text-success-hover: var(--success-500);
+  --text-success-on-color: var(--dark-foundation-900);
+  --text-success-on-color-hover: var(--dark-foundation-800);
+
+  --text-warning: var(--warning-600);
+  --text-warning-hover: var(--warning-500);
+  --text-warning-on-color: var(--dark-foundation-900);
+  --text-warning-on-color-hover: var(--dark-foundation-800);
+
+  --text-information: var(--information-600);
+  --text-information-hover: var(--information-500);
+  --text-information-on-color: var(--dark-foundation-900);
+  --text-information-on-color-hover: var(--dark-foundation-800);
+
+  --text-disabled: var(--neutral-600);
+  --text-disabled-hover: var(--neutral-600);
+  --text-disabled-on-color: var(--neutral-400);
+  --text-disabled-on-color-hover: var(--neutral-400);
+
+  --icon-primary: var(--primary-600);
+  --icon-primary-hover: var(--primary-500);
+  --icon-primary-on-color: var(--dark-foundation-800);
+  --icon-primary-on-color-hover: var(--dark-foundation-700);
+
+  --icon-error: var(--error-600);
+  --icon-error-hover: var(--error-500);
+  --icon-error-on-color: var(--dark-foundation-900);
+  --icon-error-on-color-hover: var(--dark-foundation-800);
+
+  --icon-success: var(--success-600);
+  --icon-success-hover: var(--success-500);
+  --icon-success-on-color: var(--dark-foundation-900);
+  --icon-success-on-color-hover: var(--dark-foundation-800);
+
+  --icon-warning: var(--warning-600);
+  --icon-warning-hover: var(--warning-500);
+  --icon-warning-on-color: var(--dark-foundation-900);
+  --icon-warning-on-color-hover: var(--dark-foundation-800);
+
+  --icon-information: var(--information-600);
+  --icon-information-hover: var(--information-500);
+  --icon-information-on-color: var(--dark-foundation-900);
+  --icon-information-on-color-hover: var(--dark-foundation-800);
+
+  --icon-disabled: var(--neutral-600);
+  --icon-disabled-hover: var(--neutral-600);
+  --icon-disabled-on-color: var(--neutral-600);
+  --icon-disabled-on-color-hover: var(--neutral-600);
+
+  --surface-primary: var(--primary-600);
+  --surface-primary-hover: var(--primary-500);
+  --surface-primary-subtle: var(--primary-900);
+  --surface-primary-subtle-hover: var(--primary-800);
+
+  --surface-error: var(--error-600);
+  --surface-error-hover: var(--error-500);
+  --surface-error-subtle: var(--error-900);
+  --surface-error-subtle-hover: var(--error-800);
+
+  --surface-success: var(--success-600);
+  --surface-success-hover: var(--success-500);
+  --surface-success-subtle: var(--success-900);
+  --surface-success-subtle-hover: var(--success-800);
+
+  --surface-warning: var(--warning-600);
+  --surface-warning-hover: var(--warning-500);
+  --surface-warning-subtle: var(--warning-900);
+  --surface-warning-subtle-hover: var(--warning-800);
+
+  --surface-information: var(--information-600);
+  --surface-information-hover: var(--information-500);
+  --surface-information-subtle: var(--information-900);
+  --surface-information-subtle-hover: var(--information-800);
+
+  --surface-disabled: var(--neutral-500);
+  --surface-disabled-on-color: var(--neutral-500);
+
+  --surface-page: var(--dark-foundation-500);
+  --surface-section: var(--dark-foundation-600);
+  --surface-card: var(--dark-foundation-500);
+  --surface-divider: var(--dark-foundation-700);
+
+  --border-primary: var(--primary-600);
+  --border-primary-hover: var(--primary-500);
+  --border-primary-subtle: var(--primary-900);
+  --border-primary-subtle-hover: var(--primary-800);
+
+  --border-error: var(--error-600);
+  --border-error-hover: var(--error-500);
+  --border-error-subtle: var(--error-900);
+  --border-error-subtle-hover: var(--error-800);
+
+  --border-success: var(--success-600);
+  --border-success-hover: var(--success-500);
+  --border-success-subtle: var(--success-900);
+  --border-success-subtle-hover: var(--success-800);
+
+  --border-warning: var(--warning-600);
+  --border-warning-hover: var(--warning-500);
+  --border-warning-subtle: var(--warning-900);
+  --border-warning-subtle-hover: var(--warning-800);
+
+  --border-information: var(--information-600);
+  --border-information-hover: var(--information-500);
+  --border-information-subtle: var(--information-900);
+  --border-information-subtle-hover: var(--information-800);
+
+  --border-disabled: var(--neutral-600);
+  --border-disabled-on-color: var(--neutral-600);
+}
+
+
+/* ------------------------------------------------------------------
+   5. TYPOGRAPHY SCALE — Brand Guidelines PDF "Hierarchy" page
+   Fixed values (not responsive-scaled) since no component currently
+   needs per-breakpoint type sizes. Fixes 3 bugs from before:
+   text-cta was missing, text-small pointed at the wrong number
+   (12px caption instead of 14px), text-h1 was missing entirely.
+   ------------------------------------------------------------------ */
+:root {
+  --raw-display: 72px;
+  --raw-display-line-height: 80px;
+  --raw-h1: 56px;
+  --raw-h1-line-height: 64px;
+  --raw-h2: 40px;
+  --raw-h2-line-height: 48px;
+  --raw-h3: 32px;
+  --raw-h3-line-height: 40px;
+  --text-body-size: 16px;
+  --text-body-size--line-height: 28px;
+  --raw-small: 14px;
+  --raw-small-line-height: 22px;
+  --text-caption-size: 12px;
+  --text-caption-size--line-height: 18px;
+  --raw-cta: 20px;
+  --raw-cta-line-height: 24px;
+}
+
+
+/* ------------------------------------------------------------------
+   6. SPACING SCALE — tokens.json Spacing section, desktop values
+   (matches your existing Container/HeroSection spacing usage)
+   ------------------------------------------------------------------ */
+:root {
+  --space-section: 128px;
+  --space-container: 96px;
+  --space-content: 24px;
+  --space-tight: 8px;
+
+  --space-card: 64px;
+  --space-btn: 16px;
+  --space-mini: 4px;
+  --space-compact: 8px;
+
+  --space-inline-sm: 32px;
+  --space-icon-padding: 8px;
+  --space-tag-spacing: 8px;
+
+  --space-page-margin: 100px;
+  --space-grid-gutter: 24px;
+  --space-card-gap: 100px;
+}
+
+
+/* ------------------------------------------------------------------
+   6b. BORDER RADIUS SCALE
+   Did not exist before — adding now since components need it.
+   Matches values actually used across Navbar/Button/CollageSection/
+   SelectedWork so far. Add more steps here if a new value shows up,
+   rather than using a raw rounded-[Npx] in a component.
+   ------------------------------------------------------------------ */
+:root {
+  --raw-radius-sm: 8px;
+  --raw-radius-md: 12px;
+  --raw-radius-lg: 16px;
+  --raw-radius-xl: 24px;
+  --raw-radius-2xl: 32px;
+  --raw-radius-full: 9999px;
+}
+
+
+/* ------------------------------------------------------------------
+   6c. CONTAINER WIDTHS
+   ------------------------------------------------------------------ */
+:root {
+  --raw-container-work-card: 1350px;
+}
+
+
+/* ------------------------------------------------------------------
+   7. TAILWIND v4 THEME BRIDGE
+   Maps everything above to real utility classes your components use.
+   ------------------------------------------------------------------ */
+@theme inline {
+  /* Fonts — reference next/font's actual injected variables from
+     layout.tsx (--font-primary, --font-secondary, --font-mono),
+     instead of hardcoding generic family names that would bypass
+     your downloaded Inter/Roboto files entirely. */
+  --font-primary: var(--font-primary);
+  --font-secondary: var(--font-secondary);
+  --font-mono: var(--font-mono);
+
+  /* Colors — Text */
+  --color-heading: var(--text-heading);
+  --color-body: var(--text-body);
+  --color-caption: var(--text-caption);
+  --color-placeholder: var(--text-placeholder);
+  --color-primary: var(--text-primary);
+  --color-primary-hover: var(--text-primary-hover);
+  --color-error: var(--text-error);
+  --color-success: var(--text-success);
+  --color-warning: var(--text-warning);
+  --color-information: var(--text-information);
+  --color-disabled: var(--text-disabled);
+
+  /* Colors — Surface */
+  --color-surface-page: var(--surface-page);
+  --color-surface-section: var(--surface-section);
+  --color-surface-card: var(--surface-card);
+  --color-surface-divider: var(--surface-divider);
+  --color-surface-default: var(--surface-card);
+  --color-surface-primary: var(--surface-primary);
+  --color-surface-primary-hover: var(--surface-primary-hover);
+  --color-surface-primary-subtle: var(--surface-primary-subtle);
+  --color-surface-error: var(--surface-error);
+  --color-surface-success: var(--surface-success);
+  --color-surface-warning: var(--surface-warning);
+  --color-surface-information: var(--surface-information);
+
+  /* Colors — Border */
+  --color-border-subtle: var(--border-primary-subtle);
+  --color-border-primary: var(--border-primary);
+  --color-border-error: var(--border-error);
+  --color-border-success: var(--border-success);
+  --color-border-warning: var(--border-warning);
+  --color-border-information: var(--border-information);
+  --color-border-divider: var(--surface-divider);
+
+  /* Raw brand scale, for one-off uses like Navbar/CollageSection */
+  --color-dark-500: var(--dark-foundation-500);
+  --color-dark-600: var(--dark-foundation-600);
+  --color-dark-700: var(--dark-foundation-700);
+  --color-crimson-500: var(--primary-500);
+  --color-crimson-600: var(--primary-600);
+  --color-crimson-deep: var(--primary-deep);
+
+  /* Font sizes — bridges Section 5 above to text-* utilities.
+     NOTE: source names changed (e.g. --raw-display instead of
+     --text-display) to avoid a variable referencing itself, which
+     CSS treats as invalid. */
+  --text-display: var(--raw-display);
+  --text-display--line-height: var(--raw-display-line-height);
+  --text-h1: var(--raw-h1);
+  --text-h1--line-height: var(--raw-h1-line-height);
+  --text-h2: var(--raw-h2);
+  --text-h2--line-height: var(--raw-h2-line-height);
+  --text-h3: var(--raw-h3);
+  --text-h3--line-height: var(--raw-h3-line-height);
+  --text-body: var(--text-body-size);
+  --text-body--line-height: var(--text-body-size--line-height);
+  --text-small: var(--raw-small);
+  --text-small--line-height: var(--raw-small-line-height);
+  --text-caption: var(--text-caption-size);
+  --text-caption--line-height: var(--text-caption-size--line-height);
+  --text-cta: var(--raw-cta);
+  --text-cta--line-height: var(--raw-cta-line-height);
+
+  /* Spacing — bridges to py-stack-section etc. */
+  --spacing-stack-section: var(--space-section);
+  --spacing-stack-container: var(--space-container);
+  --spacing-stack-content: var(--space-content);
+  --spacing-stack-tight: var(--space-tight);
+  --spacing-inset-card: var(--space-card);
+  --spacing-inset-btn: var(--space-btn);
+  --spacing-inset-mini: var(--space-mini);
+  --spacing-inset-compact: var(--space-compact);
+  --spacing-inline-sm: var(--space-inline-sm);
+  --spacing-inline-icon: var(--space-icon-padding);
+  --spacing-tag-spacing: var(--space-tag-spacing);
+  --spacing-page-margin: var(--space-page-margin);
+  --spacing-grid-gutter: var(--space-grid-gutter);
+  --spacing-card-gap: var(--space-card-gap);
+
+  /* Border radius */
+  --radius-sm: var(--raw-radius-sm);
+  --radius-md: var(--raw-radius-md);
+  --radius-lg: var(--raw-radius-lg);
+  --radius-xl: var(--raw-radius-xl);
+  --radius-2xl: var(--raw-radius-2xl);
+
+  /* Container widths */
+  --container-work-card: var(--raw-container-work-card);
+
+  /* Container widths */
+  --breakpoint-tablet: var(--frame-width-tablet);
+  --breakpoint-desktop: var(--frame-width-desktop);
+}
+
+
+/* ------------------------------------------------------------------
+   8. BASE ELEMENT DEFAULTS
+   ------------------------------------------------------------------ */
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--surface-page);
+  color: var(--text-body);
+  font-family: var(--font-secondary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+::selection {
+  background-color: var(--primary-150);
+  color: var(--text-heading);
+}
