@@ -6,9 +6,9 @@ import Link from 'next/link'
 import Container from '@/components/atoms/Container'
 import Section from '@/components/atoms/Section'
 import { Sparkles, ArrowUpRight } from 'lucide-react'
-import { SERVICES_DATA, ServiceItem as ServiceItemType } from './Service'
+import { SERVICES_DATA, ServiceItem as ServiceItemType } from '@/components/sections/services/Service'
 
-type ServiceItemProps = {
+type ServicesTeaserProps = {
   eyebrow?: string
   heading?: string
   services?: ServiceItemType[]
@@ -16,14 +16,14 @@ type ServiceItemProps = {
   fullServicesHref?: string
 }
 
-export default function ServiceItem({
-  eyebrow = '(What We Build)',
-  heading = 'WHAT WE BUILD.',
-  services = SERVICES_DATA,
-  defaultActiveId,
-  fullServicesHref = '/services',
-}: ServiceItemProps) {
-  const activeInitialId = defaultActiveId || services[0]?.id || 'brand-identity'
+const ServicesTeaser = (props: ServicesTeaserProps) => {
+
+  const eyebrow = props.eyebrow || '(What We Build)'
+  const heading = props.heading || 'WHAT WE BUILD.'
+  const services = props.services || SERVICES_DATA
+  const fullServicesHref = props.fullServicesHref || '/services'
+
+  const activeInitialId = props.defaultActiveId || services[0]?.id || 'brand-identity'
   const [activeTab, setActiveTab] = useState(activeInitialId)
 
   const activeService = services.find((s) => s.id === activeTab) || services[0]
@@ -36,27 +36,27 @@ export default function ServiceItem({
       {/* Header + CTA Button */}
       <Container className='w-full z-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6'>
         <div>
-          <span className='text-xs md:text-sm tracking-wider text-caption block mb-2 font-mono'>
+          <span className='text-xs md:text-small tracking-wider text-caption block mb-2 font-mono'>
             {eyebrow}
           </span>
-          <h2 className='text-4xl md:text-6xl font-extrabold tracking-tight text-heading font-primary'>
+          <h2 className='text-h2 md:text-h1 font-extrabold tracking-tight text-heading font-primary'>
             {heading}
           </h2>
         </div>
 
-        <Link 
+        <Link
           href={fullServicesHref}
-          className="group relative inline-flex items-center gap-3 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5"
+          className='group relative inline-flex items-center gap-3 px-6 py-3 rounded-full bg-primary text-white font-medium text-small overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5'
         >
-          <span className="relative z-10 font-semibold tracking-wide">
+          <span className='relative z-10 font-semibold tracking-wide'>
             Explore All Services
           </span>
           <motion.div
             animate={{ x: [0, 3, 0], y: [0, -3, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-            className="relative z-10 flex items-center justify-center"
+            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+            className='relative z-10 flex items-center justify-center'
           >
-            <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <ArrowUpRight className='w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5' />
           </motion.div>
         </Link>
       </Container>
@@ -66,10 +66,10 @@ export default function ServiceItem({
         {services.map((service) => {
           const isActive = service.id === activeTab
           return (
-            <div key={service.id} className="flex items-center justify-center">
+            <div key={service.id} className='flex items-center justify-center'>
               <button
                 onClick={() => setActiveTab(service.id)}
-                className={`flex items-center gap-2 text-sm md:text-base transition-colors duration-200 cursor-pointer ${
+                className={`flex items-center gap-2 text-small md:text-body transition-colors duration-200 cursor-pointer ${
                   isActive ? 'text-primary font-semibold' : 'text-caption hover:opacity-80'
                 }`}
               >
@@ -82,7 +82,7 @@ export default function ServiceItem({
       </Container>
 
       {/* Visual Preview */}
-      <div className='relative w-full flex items-center justify-center min-h-[440px] sm:min-h-[520px] my-6'>
+      <div className='relative w-full flex items-center justify-center min-h-105 my-4'>
         <div className='absolute inset-0 flex items-center overflow-hidden pointer-events-none z-0'>
           <motion.div
             animate={{ x: ['0%', '-25%'] }}
@@ -91,7 +91,7 @@ export default function ServiceItem({
           >
             {marqueeItems.map((title, index) => (
               <div key={index} className='flex items-center gap-8 md:gap-12'>
-                <Sparkles className="w-6 h-6 sm:w-10 sm:h-10 shrink-0 text-primary" />
+                <Sparkles className='w-6 h-6 sm:w-10 sm:h-10 shrink-0 text-primary' />
                 <span className='text-[4.5rem] sm:text-[7.5rem] lg:text-[9rem] font-bold text-heading/70 leading-none tracking-tight font-primary'>
                   {title}
                 </span>
@@ -100,34 +100,36 @@ export default function ServiceItem({
           </motion.div>
         </div>
 
-      
+        <AnimatePresence mode='wait'>
+          <Link href={fullServicesHref} className='z-10'>
+            <motion.div
+              key={activeService.id}
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              transition={{ duration: 0.35, ease: 'easeInOut' }}
+              className='relative w-75 sm:w-110 h-80 sm:h-100 rounded-3xl overflow-hidden shadow-2xl border border-border-subtle group cursor-pointer'
+            >
+              <img
+                src={activeService.image}
+                alt={activeService.title}
+                className='w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105'
+              />
+              <div className='absolute inset-0 bg-linear-to-t from-dark-500/80 via-transparent to-transparent flex items-end p-6'>
+                <div className='flex items-center justify-between w-full text-white'>
+                  <span className='font-bold text-body'>{activeService.title}</span>
+                  <span className='text-caption font-mono uppercase tracking-wider flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-white font-semibold shadow-sm'>
+                    View Details <ArrowUpRight className='w-3.5 h-3.5' />
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </Link>
+        </AnimatePresence>
       </div>
 
-      {/* Service Details */}
-      {/* <AnimatePresence mode="wait">
-        <motion.div
-          key={activeService.id}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.3 }}
-          className='max-w-xl mx-auto w-full text-center flex flex-col items-center gap-6 z-10'
-        >
-          <p className='text-caption text-sm md:text-base leading-relaxed max-w-md'>
-            {activeService.description}
-          </p>
-          <div className='flex flex-wrap items-center justify-center gap-3'>
-            {activeService.tags.map((tag, index) => (
-              <span
-                key={index}
-                className='px-4 py-1.5 text-xs md:text-sm text-heading bg-surface-default border border-border-subtle rounded-full backdrop-blur-sm shadow-sm'
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </motion.div>
-      </AnimatePresence> */}
     </Section>
   )
 }
+
+export default ServicesTeaser
