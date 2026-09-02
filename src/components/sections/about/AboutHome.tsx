@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Container from '@/components/atoms/Container'
+import Section  from '@/components/atoms/Section'
 import motion from 'framer-motion'
 
 const ABOUT_DETAILS = [
@@ -13,7 +14,7 @@ const ABOUT_DETAILS = [
 
 const AboutSection = () => {
   return (
-    <section className='w-full bg-surface-page'>
+    <Section className='w-full bg-surface-page'>
       {/* Container handles the 80px margin naturally — no py-16 needed */}
       <Container className='w-full flex flex-col gap-6'>
         
@@ -25,7 +26,7 @@ const AboutSection = () => {
         </div>
 
         {/* Hero Image Card */}
-        <div className='relative w-full aspect-[16/7] min-h-[340px] sm:min-h-[480px] rounded-3xl overflow-hidden border border-border-subtle/20'>
+        <div className='relative w-full aspect-16/7 min-h-85 sm:min-h-120 rounded-3xl overflow-hidden border border-border-subtle/20'>
           <img
             src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop"
             alt="About Rato Panda Digitals"
@@ -34,9 +35,9 @@ const AboutSection = () => {
           
           {/* Carousel Dots */}
           <div className='absolute bottom-6 left-6 flex items-center gap-2 z-10'>
-            <span className='w-3 h-3 rounded-full bg-white shadow-sm' />
-            <span className='w-3 h-3 rounded-full bg-white/40 backdrop-blur-sm' />
-            <span className='w-3 h-3 rounded-full bg-white/40 backdrop-blur-sm' />
+            <span className='w-3 h-3 rounded-full text-heading shadow-sm' />
+            <span className='w-3 h-3 rounded-full text-heading/40 backdrop-blur-sm' />
+            <span className='w-3 h-3 rounded-full text-heading/40 backdrop-blur-sm' />
           </div>
 
           {/* Badge */}
@@ -44,7 +45,7 @@ const AboutSection = () => {
             <div className='relative w-full h-full flex items-center justify-center'>
               <svg viewBox="0 0 100 100" className="w-full h-full animate-spin-slow">
                 <path id="circlePath" d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" fill="none" />
-                <text className="text-[8.5px] uppercase font-mono tracking-widest fill-white/80">
+                <text className="text-[8.5px] uppercase font-mono tracking-widest text-caption4">
                   <textPath href="#circlePath">
                     • SINCE 2020 • AWARD WINNING DESIGNER
                   </textPath>
@@ -85,7 +86,7 @@ const AboutSection = () => {
         </div>
 
       </Container>
-    </section>
+    </Section>
   )
 }
 

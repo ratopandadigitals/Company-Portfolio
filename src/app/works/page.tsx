@@ -1,3 +1,10 @@
-import { WorksGridSection } from "@/components/sections/works/WorksGridSection";
-export const metadata = { title: "Works" };
-export default function WorksPage() { return <WorksGridSection />; }
+import React from 'react'
+import WorkHero from '@/components/sections/works/WorkHero'
+
+const heroo = () => {
+  return (
+    <div><WorkHero /></div>
+  )
+}
+
+export default heroo

@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
+import Section from '@/components/atoms/Section'
 
 type FlowerIconProps = {
   colorClassName?: string
@@ -9,7 +10,7 @@ type FlowerIconProps = {
 
 const FlowerIcon = (props: FlowerIconProps) => {
 
-  const colorClassName = props.colorClassName || 'text-white'
+  const colorClassName = props.colorClassName || 'text=heading'
 
   return (
     <svg
@@ -49,7 +50,7 @@ const DiagonalBanner = (props: DiagonalBannerProps) => {
   const track2 = [...orangeTrackItems, ...orangeTrackItems]
 
   return (
-    <section className='relative w-full h-90 sm:h-105 bg-surface-page overflow-hidden flex items-center justify-center select-none'>
+    <Section className='relative w-full h-90 sm:h-105 bg-surface-page overflow-hidden flex items-center justify-center select-none'>
 
       {/* Black banner — switches with theme (bg-heading), tilted down-left to up-right */}
       <div className='absolute w-[140%] -rotate-6 z-10 pointer-events-none'>
@@ -91,7 +92,7 @@ const DiagonalBanner = (props: DiagonalBannerProps) => {
         </div>
       </div>
 
-    </section>
+    </Section>
   )
 }
 

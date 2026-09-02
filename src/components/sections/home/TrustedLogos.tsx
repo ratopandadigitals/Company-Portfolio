@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
+import Section from '@/components/atoms/Section';
 
 type Logo = { name: string; src: string }
 type TrustedLogosProps = { logos?: Logo[]; speed?: number }
@@ -22,7 +23,7 @@ const TrustedLogos = (props: TrustedLogosProps) => {
   const marqueeLogos = [...logos, ...logos]
 
   return (
-    <section className='w-full py-10 sm:py-14 bg-surface-page overflow-hidden'>
+    <Section className='w-full py-10 sm:py-14 bg-surface-page overflow-hidden'>
       <div className='relative w-full overflow-hidden flex items-center'>
 
         {/* Side vignette fades */}
@@ -52,7 +53,7 @@ const TrustedLogos = (props: TrustedLogosProps) => {
         </div>
 
       </div>
-    </section>
+    </Section>
   )
 }
 

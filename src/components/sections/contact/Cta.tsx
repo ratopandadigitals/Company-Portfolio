@@ -1,0 +1,96 @@
+import React from 'react'
+import Link from 'next/link'
+import { Star, ArrowUpRight } from 'lucide-react'
+import Container from '@/components/atoms/Container'
+import Section from '@/components/atoms/Section'
+
+type CtaProps = {
+  headline?: string
+  headlineAccent?: string
+  description?: string
+  ctaLabel?: string
+  ctaHref?: string
+}
+
+const AVATARS = [
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
+  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80',
+]
+
+const Cta = (props: CtaProps) => {
+
+  const headline = props.headline || 'Project In Mind?'
+  const headlineAccent = props.headlineAccent || 'Get In Touch'
+  const description = props.description || 'Tell us about your project — we\u2019ll bring the tools, vision, and energy to make it real.'
+  const ctaLabel = props.ctaLabel || 'Get Started'
+  const ctaHref = props.ctaHref || '/contact'
+
+  return (
+    <Section>
+      <Container>
+        <div className='relative rounded-3xl border border-border-subtle overflow-hidden px-8 py-8 md:px-10 md:py-10 flex flex-col justify-between shadow-2xl bg-surface-default'>
+
+          {/* Ambient crimson glow — stays crimson in both modes, matches your fixed accent rule */}
+          <div
+            aria-hidden='true'
+            className='absolute -bottom-24 -right-24 w-125 h-125 bg-primary/15 rounded-full blur-[130px] pointer-events-none'
+          />
+
+          <div className='relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 h-full min-h-70'>
+
+            <div className='max-w-md flex flex-col gap-6 justify-between h-full'>
+              <div className='flex flex-col gap-3'>
+                <div className='flex flex-col text-h3 sm:text-h2 font-primary font-bold leading-tight'>
+                  <span className='text-heading'>{headline}</span>
+                  <span className='text-primary'>{headlineAccent}</span>
+                </div>
+                <p className='text-small font-secondary text-caption leading-relaxed'>
+                  {description}
+                </p>
+              </div>
+
+              <div className='flex items-center gap-3 pt-2'>
+                <div className='flex -space-x-2.5 overflow-hidden'>
+                  {AVATARS.map((url, idx) => (
+                    <img
+                      key={idx}
+                      src={url}
+                      alt='User avatar'
+                      className='inline-block h-9 w-9 rounded-full border-2 border-surface-default object-cover'
+                    />
+                  ))}
+                </div>
+
+                <div className='flex flex-col gap-0.5'>
+                  <div className='flex items-center gap-0.5 text-warning'>
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className='w-3.5 h-3.5 fill-current' />
+                    ))}
+                  </div>
+                  <span className='text-caption font-secondary  font-medium'>
+                    Trusted by 500+ creators
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className='shrink-0'>
+              <Link
+                href={ctaHref}
+                className='group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-surface-page hover:bg-surface-primary text-heading hover:text-white font-secondary font-medium text-small border border-border-subtle hover:border-primary transition-all duration-300 shadow-lg'
+              >
+                <span>{ctaLabel}</span>
+                <ArrowUpRight className='w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5' />
+              </Link>
+            </div>
+
+          </div>
+        </div>
+      </Container>
+    </Section>
+  )
+}
+
+export default Cta

@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
@@ -24,11 +25,11 @@ const Button = (props: ButtonProps) => {
   
     ? 'bg-heading text-surface-page hover:opacity-90'
     : variant === 'outline'
-    ? 'bg-transparent border-2 border-border-subtle text-heading hover:bg-heading hover:text-surface-page'
+    ? 'bg-transparent border border-border-subtle text-heading hover:bg-heading hover:text-surface-page'
     : 'bg-surface-primary hover:bg-surface-primary-hover text-white'
 
   const classes = [
-    'group inline-flex items-center gap-1.5 px-5 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 whitespace-nowrap shrink-0',
+    'group inline-flex items-center gap-1.5 px-6 py-3.5 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 whitespace-nowrap shrink-0',
     variantClasses,
     'text-cta font-medium font-secondary transition-colors',
     fullWidth ? 'w-full justify-center' : '',

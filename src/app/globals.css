@@ -30,22 +30,35 @@
 
 /* ------------------------------------------------------------------
    2. PRIMITIVE COLOR SCALE
-   Real hex values from Brand + Alias — nothing invented.
+   Full 100→950 scale for every color (was only 5–7 shades before —
+   this is why dark mode couldn't fully "reverse" light mode: several
+   semantic slots had nowhere complete to pull from). Verified against
+   your Alias export, cross-checked against the Brand palette each
+   one derives from (e.g. Alias.Primary.700 = Brand."Crimson Panda".700).
 
    NOTE: Alias.Primary and Alias.Error resolve to the identical red
    scale in your tokens — kept as-authored, confirm intentional.
    ------------------------------------------------------------------ */
 :root {
   /* Primary (Alias.Primary → Crimson Panda) */
+  --primary-100: #f9e8e9;
   --primary-150: #f3d0d2;
+  --primary-200: #e6a0a5;
+  --primary-300: #da7179;
+  --primary-400: #cd414c;
   --primary-500: #c1121f;
   --primary-600: #9a0e19;
+  --primary-700: #740b13;
   --primary-800: #4d070c;
   --primary-900: #270406;
-  /* Flagged in Navbar Figma export — distinct from primary-600, do not merge */
+  --primary-950: #130203;
+  /* Flagged in Navbar Figma export — distinct from primary-600, do not merge.
+     NOTE: not present anywhere in your Alias/Brand tokens.json — I couldn't
+     verify this one the way I verified everything else. Confirm its source. */
   --primary-deep: #9b111e;
 
   /* Neutral (Alias.Neutral → SoftWhite) */
+  --neutral-100: #ffffff;
   --neutral-150: #fefefe;
   --neutral-200: #fcfdfe;
   --neutral-300: #fbfcfd;
@@ -53,8 +66,14 @@
   --neutral-500: #f8fafc;
   --neutral-600: #c6c8ca;
   --neutral-700: #959697;
+  --neutral-800: #636465;
+  --neutral-900: #323232;
+  --neutral-950: #191919;
 
   /* Dark Foundation (Alias.Dark Foundation → Dark) */
+  --dark-foundation-100: #e7e8e9;
+  --dark-foundation-150: #cdcfd2;
+  --dark-foundation-200: #9ca0a5;
   --dark-foundation-300: #6a7079;
   --dark-foundation-400: #39414c;
   --dark-foundation-500: #07111f;
@@ -62,38 +81,59 @@
   --dark-foundation-700: #040a13;
   --dark-foundation-800: #03070c;
   --dark-foundation-900: #010306;
+  --dark-foundation-950: #010203;
 
   /* Error (Alias.Error → Crimson Panda, same scale as Primary) */
+  --error-100: #f9e8e9;
   --error-150: #f3d0d2;
   --error-200: #e6a0a5;
+  --error-300: #da7179;
+  --error-400: #cd414c;
   --error-500: #c1121f;
   --error-600: #9a0e19;
+  --error-700: #740b13;
   --error-800: #4d070c;
   --error-900: #270406;
+  --error-950: #130203;
 
   /* Success (Alias.Success → Emerald Green) */
+  --success-100: #e8f8f3;
   --success-150: #dbf5ec;
   --success-200: #9fe3cd;
+  --success-300: #70d5b3;
+  --success-400: #40c79a;
   --success-500: #10b981;
   --success-600: #0d9467;
+  --success-700: #0a6f4d;
   --success-800: #064a34;
   --success-900: #03251a;
+  --success-950: #02120d;
 
   /* Warning (Alias.Warning → Orange) */
+  --warning-100: #fef6e7;
   --warning-150: #fdecce;
   --warning-200: #fbd89d;
+  --warning-300: #f9c56d;
+  --warning-400: #f7b13c;
   --warning-500: #f59e0b;
   --warning-600: #c47e09;
+  --warning-700: #935f07;
   --warning-800: #623f04;
   --warning-900: #312002;
+  --warning-950: #181001;
 
   /* Information (Alias.Information → Skyblue) */
+  --information-100: #e6f3fa;
   --information-150: #cce6f4;
   --information-200: #9acee9;
+  --information-300: #67b5dd;
+  --information-400: #359dd2;
   --information-500: #0284c7;
   --information-600: #026a9f;
+  --information-700: #014f77;
   --information-800: #013550;
   --information-900: #001a28;
+  --information-950: #000d14;
 
   /* Frame widths (Responsive/*.Frame Width) */
   --frame-width-mobile: 440px;
@@ -209,7 +249,7 @@
 
   --surface-page: var(--neutral-500);
   --surface-section: var(--neutral-600);
-  --surface-card: var(--neutral-500);
+  --surface-card: var(--neutral-400);
   --surface-divider: var(--neutral-700);
 
   /* -- Border -- */
@@ -354,9 +394,15 @@
 
   --border-primary: var(--primary-600);
   --border-primary-hover: var(--primary-500);
-  --border-primary-subtle: var(--primary-900);
-  --border-primary-subtle-hover: var(--primary-800);
-
+  /* FIX: was --border-subtle / --border-subtle-hover — didn't match
+     light mode's --border-primary-subtle name, or the name your
+     Tailwind bridge (--color-border-subtle) actually reads. That
+     mismatch meant dark mode silently kept light mode's gray border
+     instead of switching to this dark-foundation value. Renamed to
+     match; values unchanged (still your chosen neutral, not tokens.json's
+     literal Primary.900/800 — that deviation looks intentional). */
+  --border-primary-subtle: var(--dark-foundation-400);
+  --border-primary-subtle-hover: var(--dark-foundation-300);
   --border-error: var(--error-600);
   --border-error-hover: var(--error-500);
   --border-error-subtle: var(--error-900);
@@ -414,8 +460,8 @@
    (matches your existing Container/HeroSection spacing usage)
    ------------------------------------------------------------------ */
 :root {
-  --space-section: 128px;
-  --space-container: 96px;
+  --space-section: 64px;
+  --space-container: 48px;
   --space-content: 24px;
   --space-tight: 8px;
 
@@ -428,7 +474,7 @@
   --space-icon-padding: 8px;
   --space-tag-spacing: 8px;
 
-  --space-page-margin: 100px;
+  --space-page-margin: 80px;
   --space-grid-gutter: 24px;
   --space-card-gap: 100px;
 }

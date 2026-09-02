@@ -1,5 +1,9 @@
-import { notFound } from "next/navigation";
-import { ProjectDetailSection } from "@/components/sections/works/ProjectDetailSection";
-import { findWork } from "@/data/content";
+import React from 'react'
 
-export default async function WorkPage({ params }: PageProps<"/works/[slug]">) { const { slug } = await params; const work = findWork(slug); if (!work) notFound(); return <ProjectDetailSection work={work} />; }
+const page = () => {
+  return (
+    <div>page</div>
+  )
+}
+
+export default page

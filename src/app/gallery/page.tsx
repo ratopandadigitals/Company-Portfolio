@@ -1,3 +1,10 @@
-import { GallerySection } from "@/components/sections/gallery/GallerySection";
-export const metadata = { title: "Gallery" };
-export default function GalleryPage() { return <GallerySection />; }
+import React from 'react'
+import GalleryHero from '@/components/sections/gallery/GalleryHero'
+
+const Hero = () => {
+  return (
+    <div><GalleryHero /></div>
+  )
+}
+
+export default Hero
