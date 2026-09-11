@@ -1,11 +1,14 @@
 'use client'
 
-import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Check } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import Section from '@/components/atoms/Section'
 import Container from '@/components/atoms/Container'
+import FoldText from '@/components/Animation/FoldText'
 import { SERVICES_DATA, ServiceItem } from './Service'
+import { LetterCascade } from '@/components/Animation/HoverText'
 
 type WhatWeDoProps = {
   eyebrow?: string
@@ -14,162 +17,257 @@ type WhatWeDoProps = {
 }
 
 const WhatWeDo = (props: WhatWeDoProps) => {
-
   const eyebrow = props.eyebrow || 'Services'
-  const heading = props.heading || 'What we can Do'
+  const heading = props.heading || 'What We Can Do For You'
   const services = props.services || SERVICES_DATA
 
-  const [active, setActive] = useState(0)
+  const [activeItem, setActiveItem] = useState<ServiceItem | null>(null)
+
+  // Split services into 2 rows preserving custom width layout
+ const columns = useMemo(() => {
+  
+  return [
+    { id: 1, elements: services.slice(0, 2) },
+    { id: 2, elements: services.slice(2) },
+  ]
+}, [services]
+  )
 
   return (
-    <Section className='w-full bg-surface-page py-stack-section px-4 md:px-stack-container overflow-hidden'>
-      <Container className='max-w-7xl mx-auto flex flex-col gap-10'>
-
-        {/* Header */}
-        <div className='flex flex-col gap-2'>
-          <span className='text-caption font-mono tracking-wider uppercase block'>
+    <Section className="w-full bg-surface-page py-stack-section overflow-hidden">
+      <Container className="max-w-7xl mx-auto flex flex-col gap-10">
+        {/* Header strictly styled with design tokens */}
+        <div className="flex flex-col gap-2 text-heading">
+          <span className="text-caption font-mono tracking-wider uppercase block">
             {eyebrow}
           </span>
-          <h2 className='text-h2 md:text-h1 font-primary font-extrabold tracking-tight text-heading'>
-            {heading}
-          </h2>
+          <FoldText
+            text={heading}
+            splitBy="char"
+            hinge="top"
+            duration={0.20}
+            stagger={0.045}
+            ease="power3.out"
+            perspective={700}
+            fontSize="clamp(1.75rem, 3.5vw, 2.75rem)"
+            fontWeight={800}
+          />
         </div>
 
-        {/* Responsive Container: Vertical stack on mobile, horizontal accordion on desktop */}
-        <div className='w-full flex flex-col lg:flex-row gap-4 h-auto lg:h-140'>
-          {services.map((service: ServiceItem, i: number) => {
-            const isActive = i === active
-            const formattedNum = String(i + 1).padStart(2, '0')
-
-            return (
-              <motion.div
-                key={service.id || i}
-                onMouseEnter={() => setActive(i)}
-                onClick={() => setActive(i)}
-                animate={{
-                  flex: isActive ? 5 : 1,
-                }}
-                transition={{ duration: 0.45, ease: [0.25, 1, 0.5, 1] }}
-                className={`relative overflow-hidden rounded-2xl border cursor-pointer select-none transition-colors duration-500 min-h-30 lg:min-h-0 ${
-                  isActive
-                    ? 'bg-surface-card border-border-subtle shadow-2xl'
-                    : 'bg-surface-section border-transparent hover:bg-surface-divider/20'
-                }`}
-              >
-                {/* Background Image Layer with Zoom on Active & Blur on Inactive */}
-               <div className='absolute inset-0 w-full h-full overflow-hidden'>
-  <motion.img
-    src={service.image}
-    alt={service.title}
-    animate={{
-      scale: isActive ? 1.05 : 1.0,
-      filter: isActive ? 'blur(0px)' : 'blur(2px)',
-      opacity: isActive ? 0.95 : 0.35,
-    }}
-    transition={{ duration: 0.5, ease: 'easeOut' }}
-    className='w-full h-full object-cover'
-  />
-
-                  {/* Gradient & Darkening Overlay */}
-                  <div
-                    className={`absolute inset-0 transition-all duration-500 ${
-                      isActive
-                        ? 'bg-linear-to-t from-surface-card via-surface-card/20 to-transparent'
-                        : 'bg-surface-card/80'
-                    }`}
-                  />
-                </div>
-
-                {/* Collapsed State Layout */}
-                {!isActive && (
-                  <>
-                    {/* Desktop Vertical View */}
-                    <div className='hidden lg:flex absolute inset-0 p-8 flex-col justify-between items-center z-10 pointer-events-none'>
-                      <span className='text-caption font-mono font-bold tracking-widest'>
-                        {formattedNum}
-                      </span>
-                      <div className='-rotate-90 origin-center whitespace-nowrap mb-16'>
-                        <h3 className='text-heading font-primary font-bold text-small tracking-tight'>
-                          {service.title}
-                        </h3>
-                      </div>
-                      <div className='w-2 h-2' />
-                    </div>
-
-                    {/* Mobile Collapsed Bar View */}
-                    <div className='flex lg:hidden absolute inset-0 p-6 items-center justify-between z-10'>
-                      <span className='font-mono font-bold text-primary'>
-                        {formattedNum}
-                      </span>
-                      <h3 className='text-heading font-primary font-bold tracking-tight'>
-                        {service.title}
-                      </h3>
-                      <span className='text-caption text-xs uppercase font-mono'>
-                        Expand +
-                      </span>
-                    </div>
-                  </>
-                )}
-
-                {/* Expanded State: Content Layered Above Active Image */}
-     <AnimatePresence mode='wait'>
-     {isActive && (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.35, ease: 'easeOut' }}
-      className='relative z-20 w-full h-full p-6 sm:p-10 flex flex-col justify-end gap-6'
-    >
-      <div className='flex flex-col gap-3 max-w-2xl'>
-        {/* Animated Service Eyebrow Badge */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, y: -6, filter: 'blur(2px)' }}
-          transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-          className='inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-surface-card/10 border border-primary/25 text-primary text-xs font-mono font-bold tracking-wider uppercase w-fit backdrop-blur-md shadow-xs'
-        >
-          <motion.span
-            animate={{ scale: [1, 1.35, 1], opacity: [0.7, 1, 0.7] }}
-            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className='w-1.5 h-1.5 rounded-full bg-primary shrink-0'
-          />
-          <span>{formattedNum} // SERVICE</span>
-        </motion.div>
-
-        <h3 className='text-h3 sm:text-h2 font-primary font-extrabold text-heading tracking-tight leading-tight'>
-          {service.title}
-        </h3>
-        <p className='text-body font-secondary leading-relaxed max-w-xl'>
-          {service.description}
-        </p>
-      </div>
-
-      {/* Tag Pills */}
-      <div className='flex flex-wrap gap-2.5 pt-1'>
-        {service.tags?.map((tag, tagIndex) => (
-          <div
-            key={tagIndex}
-            className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-card font-secondary text-heading text-small font-semibold border border-border-subtle/40'
+        {/* Gallery / Morph Stage */}
+        <div className="h-full w-full flex flex-col items-center justify-center gap-5 relative min-h-[480px] hover:cursor-pointer shadow-lg transition-shadow duration-300">
+          {/* Matrix Row Layout preserving item.width */}
+          {!activeItem && (
+          <motion.div
+            className="flex flex-col gap-5 w-full items-center"
+            layout
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            style={{ pointerEvents: activeItem !== null ? 'none' : 'auto' }}
           >
-            <span className='flex items-center justify-center w-4 h-4 rounded-full bg-primary text-primary-foreground shrink-0'>
-              <Check className='w-2.5 h-2.5 stroke-[3]' />
-            </span>
-            <span>{tag}</span>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  )}
-</AnimatePresence>
+            {columns.map((column) => (
+              <motion.div
+                className="flex items-center justify-center gap-5 flex-wrap"
+                key={column.id}
+                animate={{ opacity: activeItem !== null ? 0 : 1 }}
+                style={{ willChange: 'opacity' }}
+              >
+                {column.elements.map((ele) => (
+                  <ServiceCard
+                    item={ele}
+                    key={ele.id}
+                  
+                    onClick={() => setActiveItem(ele)}
+                  />
+                ))}
               </motion.div>
-            )
-          })}
+            ))}
+          </motion.div>
+          )}
+          {/* Active Card Expanded View */}
+          <AnimatePresence mode="popLayout">
+            {activeItem && (
+              <motion.div
+                key="active-modal"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                style={{ willChange: 'opacity' }}
+                className="absolute inset-0 w-full h-full overflow-hidden"
+              >
+                <div className="w-full h-full flex flex-col lg:flex-row items-center justify-center gap-8 overflow-hidden z-20">
+                  {/* Expanded Hero Card */}
+                  <motion.div
+                   
+                      layoutId={`card-${activeItem.id}`}
+                      className=" group relative w-full max-w-[460px] min-h-[420px] rounded-2xl cursor-pointer overflow-hidden border border-border-subtle bg-surface-card shadow-2xl shrink-0"
+                      onClick={() => setActiveItem(null)}
+                    >
+                    <img
+                      src={activeItem.image}
+                      alt={activeItem.title}
+                      className="absolute inset-0 w-full h-full object-cover scale-110 filter blur-xs brightness-80 transition-transform duration-500 group-hover:scale-115"
+                    />
+
+                    {/* High contrast gradient overlay using surface tokens */}
+                    <div className="absolute inset-0 bg-linear-to-t to-transparent flex flex-col p-6 sm:p-8 gap-3 text-left pointer-events-auto">
+                    <LetterCascade
+                                text={activeItem.title}
+                                className="text-heading group-hover:text-primary font-primary font-bold text-size-h3 sm:text-2xl tracking-tight mt-4 mb-4 transition-colors duration-300"
+                              />
+                              {activeItem.description && (
+                                <p className="text-size-body font-secondary leading-relaxed text-heading/90 line-clamp-3 mt-3 transition-transform duration-300 group-hover:-translate-y-1">
+                                  {activeItem.description}
+                                </p>
+                      )}
+
+                      {/* Tag Pills matching ServiceProcess token structure */}
+                      {activeItem.tags && activeItem.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1 w-full">
+                          {activeItem.tags.map((tag, tagIndex) => (
+                            <div
+                              key={tagIndex}
+                             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full  font-secondary text-heading text-size-caption font-semibold border border-border-subtle/40 backdrop-blur-md w-fit whitespace-nowrap"
+                            >
+                              <span className="flex items-center justify-center w-4 h-4 rounded-full bg-success text-white shrink-0">
+                                <Check className="w-2.5 h-2.5 stroke-3" />
+                              </span>
+                              <span>{tag}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Footer pricing & timeline meta info */}
+                      {(activeItem.price || activeItem.timeline) && (
+                        <div className="flex items-center gap-32 text-size-body mt-auto pt-5 font-mono uppercase text-heading border-t border-border-subtle/40">
+                          {activeItem.price && <span>{activeItem.price}</span>}
+                         {activeItem.timeline && (
+                          <div className="flex items-center gap-1.5">
+                            {activeItem.price && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                            )}
+                            <span>{activeItem.timeline}</span>
+                          </div>
+    )}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+
+                  {/* Thumbnail Switcher */}
+                  <motion.div
+                    className="flex flex-row lg:flex-col gap-4 justify-center items-center flex-wrap"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    {services
+                      .filter((ele) => ele.id !== activeItem.id)
+                      .map((ele) => (
+                        <ServiceCard
+                          key={ele.id}
+                          item={ele}
+                          onClick={() => setActiveItem(ele)}
+                          isSmall
+                        />
+                      ))}
+                  </motion.div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </Container>
     </Section>
   )
 }
+const ServiceCard = (props: {
+  item: ServiceItem
+  onClick: () => void
+  isSmall?: boolean
+}) => {
+  const cardWidth = props.isSmall ? 80 : props.item.width || 250
+  const cardHeight = props.isSmall ? 80 : 180
+  const cardLabel = props.item.label || props.item.title
+
+  return (
+    <motion.div
+      style={{
+        width: cardWidth,
+        minWidth: cardWidth,
+        height: cardHeight,
+      }}
+      className={cn(
+        'group relative shrink-0 overflow-hidden rounded-2xl border border-border-subtle/40  cursor-pointer'
+      )}
+      layoutId={props.isSmall ? undefined : `card-${props.item.id}`}
+      onClick={props.onClick}
+    >
+      {/* Card Image */}
+      <motion.img
+        src={props.item.image}
+        alt={props.item.title}
+        className="h-full w-full object-cover  transition-transform duration-500 group-hover:scale-110"
+      />
+
+      {/* Title Overlay */}
+      {!props.isSmall && (
+        <div className="absolute inset-0 flex flex-col backdrop-blur-[1px] justify-end end p-4 pointer-events-auto">
+          <LetterCascade
+            text={cardLabel}
+            frontClassName="text-heading"
+    
+            className= "font-secondary text-size-small font-medium uppercase tracking-wide line-clamp-2 leading-tight transition-colors duration-300"
+          />
+        </div>
+      )}
+    </motion.div>
+  )
+}
+
+// const ServiceCard = (props: {
+//   item: ServiceItem
+//   onClick: () => void
+//   isSmall?: boolean
+// }) => {
+//   // Respect custom width from ServiceItem
+//   const cardWidth = props.isSmall ? 80 : props.item.width || 250
+//   const cardHeight = props.isSmall ? 80 : 180
+//   const cardLabel = props.item.label || props.item.title
+
+//   return (
+//     <motion.div
+//    style={{
+//   width: cardWidth,
+//   minWidth: cardWidth, // <-- ADD THIS LINE
+//   height: cardHeight,
+// }}
+//       className={cn(
+//         'rounded-2xl cursor-pointer overflow-hidden relative border border-border-subtle/40 bg-surface-card shrink-0'
+//       )}
+//      layoutId={props.isSmall ? undefined : `card-${props.item.id}`}
+//       onClick={props.onClick}
+//     >
+//       <motion.img
+//         src={props.item.image}
+//         alt={props.item.title}
+//         className="w-full h-full object-cover"
+//         whileHover={{ scale: 1.20 }}
+//         transition={{ duration: 0.3 }}
+//       />
+
+//       {!props.isSmall && (
+//        <div className="absolute inset-0 bg-linear-to-t from-surface-card/60 via-surface-card/ to-transparent flex flex-col p-6 sm:p-8 gap-3 text-left pointer-events-none">
+//          <LetterCascade
+//             text={cardLabel}
+//             className="text-heading group-hover:text-primary font-secondary  text-size-body font-medium uppercase tracking-wider line-clamp-2 leading-tight transition-colors duration-300"
+//           />
+//         </div>
+//       )}
+//     </motion.div>
+//   )
+// }
 
 export default WhatWeDo

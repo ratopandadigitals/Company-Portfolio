@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Container from '@/components/atoms/Container'
-
+import Section from '@/components/atoms/Section'
 type StatItem = {
   value: string
   label: string
@@ -76,16 +76,16 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
   const current = testimonials[currentIndex]
 
   return (
-    <section className='w-full bg-surface-page py-16 flex flex-col items-center'>
+    <Section className='w-full bg-surface-page py-16 flex flex-col items-center'>
       <Container className='max-w-360 w-full flex flex-col gap-6'>
 
         {/* Header — watermark uses text-heading/10, which already switches
             light/dark on its own, instead of two hardcoded values */}
         <div className='flex flex-col items-center w-full gap-2'>
-          <span className='text-caption text-sm font-medium tracking-wide text-center'>
+          <span className='text-caption text-small font-secondary font-medium tracking-wide text-center'>
             {eyebrow}
           </span>
-          <h2 className='w-full text-left text-6xl sm:text-8xl lg:text-[100px] font-bold tracking-tight text-heading/10 leading-none select-none'>
+          <h2 className='w-full text-left text-6xl sm:text-8xl lg:text-[100px] font-primary font-bold tracking-tight text-heading/10 leading-none select-none'>
             {title}
           </h2>
         </div>
@@ -107,10 +107,10 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
             <div className='relative z-10 flex flex-col justify-between h-full gap-8'>
               {stats.map((stat, index) => (
                 <div key={index} className='flex flex-col'>
-                  <span className='text-5xl sm:text-6xl font-extrabold text-white tracking-tight leading-none'>
+                  <span className='text-5xl sm:text-6xl font-primary font-extrabold text-white tracking-tight leading-none'>
                     {stat.value}
                   </span>
-                  <span className='text-sm font-medium text-white/70 mt-1'>
+                  <span className='text-small font-secondary font-medium text-white/70 mt-1'>
                     {stat.label}
                   </span>
                 </div>
@@ -135,20 +135,20 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
             <div className='absolute inset-0 bg-dark-500/40 backdrop-brightness-90 pointer-events-none z-1' />
             <div className='absolute inset-0 bg-linear-to-t from-dark-500/95 via-dark-500/40 to-transparent pointer-events-none z-1' />
 
-            <div className='relative z-10 text-xs font-semibold tracking-widest text-white/70'>
+            <div className='relative z-10 text-caption font-secondary font-semibold tracking-widest text-white/70'>
               {current.id} / {String(testimonials.length).padStart(2, '0')}
             </div>
 
             <div className='relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-16'>
               <div className='max-w-xl flex flex-col gap-4'>
-                <p className='text-xl sm:text-2xl lg:text-3xl font-medium leading-snug tracking-tight text-white transition-all duration-300'>
+                <p className='text-cta sm:text-h3 font-secondary font-medium leading-snug tracking-tight text-white transition-all duration-300'>
                   {current.quote}
                 </p>
                 <div className='flex flex-col'>
-                  <span className='text-base font-semibold text-white'>
+                  <span className='text-body font-secondary font-semibold text-white'>
                     {current.name}
                   </span>
-                  <span className='text-xs text-white/70'>
+                  <span className='text-caption font-secondary text-white/70'>
                     {current.role}
                   </span>
                 </div>
@@ -174,7 +174,7 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
           </div>
         </div>
       </Container>
-    </section>
+    </Section>
   )
 }
 

@@ -31,7 +31,8 @@ type FooterProps = {
   companyLinks?: string[]
   socialLinks?: string[]
   copyrightText?: string
-  location?: string
+  TermsConditions?: string
+  PrivacyPolicy?: string
 }
 
 const Footer = ({
@@ -40,7 +41,9 @@ const Footer = ({
   companyLinks = COMPANY_LINKS_DEFAULT,
   socialLinks = SOCIAL_LINKS_DEFAULT,
   copyrightText = '© 2026 Rato Panda Digitals. All rights reserved.',
-  location = 'Biratnagar,  Nepal',
+  TermsConditions = 'Terms & Conditions',
+  PrivacyPolicy = 'Privacy Policy',
+ 
 }: FooterProps) => {
   return (
     <footer className="bg-surface-page border-t border-border-subtle">
@@ -66,9 +69,18 @@ const Footer = ({
           <span className="text-caption text-sm font-secondary">
             {copyrightText}
           </span>
-          <span className="text-caption text-sm font-secondary">
-            {location}
+          <div className="gap-8 flex items-center justify-center">
+          <span className="text-caption underline text-sm font-secondary">
+            {TermsConditions } 
           </span>
+          <span className="text-caption underline text-sm font-secondary">
+           | 
+          </span>
+          <span className="text-caption underline text-sm font-secondary">
+            {PrivacyPolicy}
+          </span>
+          </div>
+        
         </Container>
       </div>
     </footer>

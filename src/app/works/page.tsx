@@ -1,10 +1,15 @@
 import React from 'react'
 import WorkHero from '@/components/sections/works/WorkHero'
+import SelectedWork from '@/components/sections/works/SelectedWork'
+import { WORK_ITEMS } from '@/data/works'
 
-const heroo = () => {
+const WorksPage = () => {
   return (
-    <div><WorkHero /></div>
+    <div>
+    <WorkHero />
+    <SelectedWork title="All Projects" items={WORK_ITEMS} />
+    </div>
   )
 }
 
-export default heroo
+export default WorksPage

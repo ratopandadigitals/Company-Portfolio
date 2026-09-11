@@ -1,8 +1,12 @@
 import React from 'react'
 import EventHero from '@/components/sections/events/EventHero'
+import EventsSection from '@/components/sections/events/EventsSection'
 const Hero = () => {
   return (
-    <div><EventHero /></div>
+   <main>
+      <EventHero />
+    <EventsSection />
+  </main>
   )
 }
 

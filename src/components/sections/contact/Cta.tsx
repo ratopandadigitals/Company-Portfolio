@@ -3,9 +3,12 @@ import Link from 'next/link'
 import { Star, ArrowUpRight } from 'lucide-react'
 import Container from '@/components/atoms/Container'
 import Section from '@/components/atoms/Section'
+import { title } from 'process'
 
 type CtaProps = {
   headline?: string
+  eyebrow?: string
+  title?: string
   headlineAccent?: string
   description?: string
   ctaLabel?: string
@@ -22,6 +25,8 @@ const AVATARS = [
 const Cta = (props: CtaProps) => {
 
   const headline = props.headline || 'Project In Mind?'
+  const eyebrow = props.eyebrow || 'Testimonials'
+  const title = props.title || 'Lets Connect.'
   const headlineAccent = props.headlineAccent || 'Get In Touch'
   const description = props.description || 'Tell us about your project — we\u2019ll bring the tools, vision, and energy to make it real.'
   const ctaLabel = props.ctaLabel || 'Get Started'
@@ -30,6 +35,14 @@ const Cta = (props: CtaProps) => {
   return (
     <Section>
       <Container>
+        <div className='flex flex-col items-center w-full gap-2'>
+          <span className='text-caption text-sm font-medium tracking-wide text-center'>
+            {eyebrow}
+          </span>
+          <h2 className='w-full text-center gap-2 text-6xl sm:text-8xl lg:text-[100px] font-bold tracking-tight text-heading/10 leading-none select-none'>
+            {title}
+          </h2>
+        </div>
         <div className='relative rounded-3xl border border-border-subtle overflow-hidden px-8 py-8 md:px-10 md:py-10 flex flex-col justify-between shadow-2xl bg-surface-default'>
 
           {/* Ambient crimson glow — stays crimson in both modes, matches your fixed accent rule */}
@@ -42,11 +55,11 @@ const Cta = (props: CtaProps) => {
 
             <div className='max-w-md flex flex-col gap-6 justify-between h-full'>
               <div className='flex flex-col gap-3'>
-                <div className='flex flex-col text-h3 sm:text-h2 font-primary font-bold leading-tight'>
+                <div className='flex flex-col text-size-h3 sm:text-size-h2 font-primary  gap-4 font-bold leading-tight'>
                   <span className='text-heading'>{headline}</span>
                   <span className='text-primary'>{headlineAccent}</span>
                 </div>
-                <p className='text-small font-secondary text-caption leading-relaxed'>
+                <p className='text-size-small font-secondary text-caption leading-relaxed'>
                   {description}
                 </p>
               </div>
@@ -79,7 +92,7 @@ const Cta = (props: CtaProps) => {
             <div className='shrink-0'>
               <Link
                 href={ctaHref}
-                className='group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-surface-page hover:bg-surface-primary text-heading hover:text-white font-secondary font-medium text-small border border-border-subtle hover:border-primary transition-all duration-300 shadow-lg'
+                className='group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-surface-page hover:bg-surface-primary text-heading hover:text-white font-secondary font-medium text-size-small border border-border-subtle hover:border-primary transition-all duration-300 shadow-lg'
               >
                 <span>{ctaLabel}</span>
                 <ArrowUpRight className='w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5' />

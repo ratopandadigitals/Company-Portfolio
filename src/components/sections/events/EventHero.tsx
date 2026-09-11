@@ -6,11 +6,11 @@ import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
 import Section from '@/components/atoms/Section'
 
-type WorkHeroProps = {
+type EventHeroProps = {
   description?: string
   ctaLabel?: string
   ctaHref?: string
-  workImageSrcs?: string[]
+  eventImageSrcs?: string[]
 }
 
 // Parent stagger — triggers elements top to bottom
@@ -45,21 +45,21 @@ const pillEntranceVariants: Variants = {
   },
 }
 
-const WorkHero = (props: WorkHeroProps) => {
+const EventHero = (props: EventHeroProps) => {
   const description =
     props.description ||
     'Events, workshops and experiences designed with intention. Real event information and registration details coming soon.'
-  const ctaLabel = props.ctaLabel || 'Start a Project'
+  const ctaLabel = props.ctaLabel || 'View Upcoming Events'
   const ctaHref = props.ctaHref || '/contact'
 
-  const workImageSrcs = props.workImageSrcs || [
+  const eventImageSrcs = props.eventImageSrcs || [
     'https://images.unsplash.com/photo-1616469829941-c7200edec809?auto=format&fit=crop&w=200&q=80',
     'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=200&q=80',
   ]
 
   return (
     <Section className='bg-surface-page'>
-      <Container className='py-stack-container'>
+      <Container className=''>
         <motion.div
           className='flex flex-col items-center gap-6 text-center'
           variants={containerVariants}
@@ -87,7 +87,7 @@ const WorkHero = (props: WorkHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[0]} alt='Project preview' className='w-full h-full object-cover' />
+                  <img src={eventImageSrcs[0]} alt='Project preview' className='w-full h-full object-cover' />
                   
                 </motion.div>
               </motion.div>
@@ -113,7 +113,7 @@ const WorkHero = (props: WorkHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[1]} alt='Project preview' className='w-full h-full object-cover' />
+                  <img src={eventImageSrcs[1]} alt='Project preview' className='w-full h-full object-cover' />
                 </motion.div>
               </motion.div>
               <span className='text-caption opacity-40'>PURPOSE.</span>
@@ -142,4 +142,4 @@ const WorkHero = (props: WorkHeroProps) => {
   )
 }
 
-export default WorkHero
+export default EventHero 

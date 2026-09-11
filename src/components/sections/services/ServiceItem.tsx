@@ -85,8 +85,8 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
       <div className='relative w-full flex items-center justify-center min-h-105 my-4'>
         <div className='absolute inset-0 flex items-center overflow-hidden pointer-events-none z-0'>
           <motion.div
-            animate={{ x: ['0%', '-25%'] }}
-            transition={{ duration: 30, ease: 'linear', repeat: Infinity }}
+            animate={{ x: ['0%', '-35%'] }}
+            transition={{ duration: 60, ease: 'linear', repeat: Infinity }}
             className='whitespace-nowrap flex items-center gap-8 md:gap-12 select-none'
           >
             {marqueeItems.map((title, index) => (
@@ -118,9 +118,9 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
               <div className='absolute inset-0 bg-linear-to-t from-dark-500/80 via-transparent to-transparent flex items-end p-6'>
                 <div className='flex items-center justify-between w-full text-white'>
                   <span className='font-bold text-body'>{activeService.title}</span>
-                  <span className='text-caption font-mono uppercase tracking-wider flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-white font-semibold shadow-sm'>
-                    View Details <ArrowUpRight className='w-3.5 h-3.5' />
-                  </span>
+               <span className='text-caption font-mono uppercase tracking-wider flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-white font-semibold shadow-sm whitespace-nowrap shrink-0'>
+  View Details <ArrowUpRight className='w-3.5 h-3.5' />
+</span>
                 </div>
               </div>
             </motion.div>
