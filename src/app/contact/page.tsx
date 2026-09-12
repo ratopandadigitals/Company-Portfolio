@@ -1,3 +1,15 @@
+import ContactHero from '@/components/sections/contact/ContactHero' 
 
-export const metadata = { title: "Contact" };
-export default function ContactPage() { return ; }
+import ContactSection from '@/components/sections/contact/ContactSection' 
+const Contact = () => {
+  return (
+    <div>
+        <ContactHero/>
+        <ContactSection />
+    
+    
+    </div>
+  )
+}
+
+export default Contact

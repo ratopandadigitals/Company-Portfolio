@@ -15,27 +15,43 @@ export const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 } as const
 
-export const useStickyStack = <T>(items: T[]) => {
+type UseStickyStackOptions = {
+  /**
+   * Class name applied to each stacked card. Defaults to a generic,
+   * domain-agnostic name so this hook works for events, testimonials,
+   * portfolio pieces, or anything else — override it only if you need
+   * multiple different stacks with different selectors on the same page.
+   *
+   * IMPORTANT: don't hardcode this string again at the call site. Apply
+   * the `cardClassName` this hook RETURNS to your card elements instead
+   * (see EventsSection.tsx). That way the hook is the single source of
+   * truth for the selector — the query inside this file and the class
+   * on your JSX can never drift out of sync / typo apart from each other.
+   */
+  cardSelector?: string
+}
+
+export const useStickyStack = <T>(items: T[], options?: UseStickyStackOptions) => {
   const containerRef = useRef<HTMLDivElement>(null)
+  const cardSelector = options?.cardSelector ?? 'sticky-stack-card'
 
   useGSAP(
     () => {
       gsap.registerPlugin(ScrollTrigger)
 
-      // 1. Wait for React's DOM render batch to settle before running GSAP
       const rafId = requestAnimationFrame(() => {
-        // Kill existing triggers and revert DOM completely
         ScrollTrigger.getAll().forEach((st) => st.kill(true))
 
-        const cards = gsap.utils.toArray('.event-card', containerRef.current) as HTMLDivElement[]
+        // Scoped to containerRef.current, so even if two different
+        // useStickyStack instances on the same page both use the default
+        // selector, each only ever queries cards inside its own container.
+        const cards = gsap.utils.toArray(`.${cardSelector}`, containerRef.current) as HTMLDivElement[]
         const totalCards = cards.length
 
         if (totalCards === 0 || !containerRef.current) return
 
-        // Clear inline styles from prior animations
         gsap.set(cards, { clearProps: 'all' })
 
-        // Explicitly set Card 0 to top, Card 1+ offset 100% down
         cards.forEach((card, i) => {
           gsap.set(card, {
             yPercent: i === 0 ? 0 : 100,
@@ -50,7 +66,6 @@ export const useStickyStack = <T>(items: T[]) => {
           return
         }
 
-        // Build stack timeline
         const scrollTimeline = gsap.timeline({
           scrollTrigger: {
             trigger: containerRef.current,
@@ -80,5 +95,5 @@ export const useStickyStack = <T>(items: T[]) => {
     { scope: containerRef, dependencies: [items] }
   )
 
-  return { containerRef }
+  return { containerRef, cardClassName: cardSelector }
 }

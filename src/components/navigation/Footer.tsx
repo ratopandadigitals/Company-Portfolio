@@ -2,7 +2,9 @@ import React from 'react'
 import Logo from '@/components/atoms/Logo'
 import Button from '@/components/atoms/Button'
 import Container from '@/components/atoms/Container'
+import Section from '../atoms/Section'
 import Input from '@/components/atoms/Input'
+import Link from 'next/link'
 
 const SERVICE_LINKS_DEFAULT = ['Brand Identity', 'UI/UX Design', 'Web Development', 'Product Design', 'Digital Solutions', 'Growth']
 const COMPANY_LINKS_DEFAULT = ['About', 'Work', 'Services', 'Events', 'Gallery', 'Contact']
@@ -46,7 +48,7 @@ const Footer = ({
  
 }: FooterProps) => {
   return (
-    <footer className="bg-surface-page border-t border-border-subtle">
+    <Section className="bg-surface-page border-t border-border-subtle">
       <Container className="py-12 grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-28">
         <div className="lg:col-span-1 flex flex-col gap-6">
           <Logo />
@@ -70,20 +72,28 @@ const Footer = ({
             {copyrightText}
           </span>
           <div className="gap-8 flex items-center justify-center">
-          <span className="text-caption underline text-sm font-secondary">
-            {TermsConditions } 
-          </span>
-          <span className="text-caption underline text-sm font-secondary">
-           | 
-          </span>
-          <span className="text-caption underline text-sm font-secondary">
-            {PrivacyPolicy}
-          </span>
+        <Link 
+    href="/terms-and-conditions" 
+    className="text-caption underline text-sm font-secondary hover:text-heading transition-colors"
+  >
+    {TermsConditions}
+  </Link>
+  
+  <span className="text-caption text-sm font-secondary">
+    |
+  </span>
+  
+  <Link 
+    href="/privacy-policy" 
+    className="text-caption underline text-sm font-secondary hover:text-heading transition-colors"
+  >
+    {PrivacyPolicy}
+  </Link>
           </div>
         
         </Container>
       </div>
-    </footer>
+    </Section>
   )
 }
 

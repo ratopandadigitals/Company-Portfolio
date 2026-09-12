@@ -4,7 +4,7 @@ import Container from '@/components/atoms/Container'
 import Section from '@/components/atoms/Section'
 
 type WorkDetailPageProps = {
- params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>
 }
 
 const WorkDetailPage = async (props: WorkDetailPageProps) => {
@@ -52,11 +52,19 @@ const WorkDetailPage = async (props: WorkDetailPageProps) => {
 
       <Section className='w-full bg-surface-page'>
         <Container>
-          <div className='w-full rounded-2xl overflow-hidden border border-border-subtle'>
+          {/* CHANGED: was a plain w-full/h-auto img with object-cover (a
+              no-op together — object-cover needs a fixed-size box to crop
+              into, h-auto gave it none, so tall source photos rendered at
+              full natural height and blew up the page). Now: a fixed
+              aspect-ratio box (aspect-video) the image is cropped INTO via
+              absolute inset-0 + object-cover, so every project page gets
+              the same hero shape regardless of the source photo's
+              dimensions. */}
+          <div className='relative w-full aspect-video rounded-2xl overflow-hidden border border-border-subtle'>
             <img
               src={project.bgImage}
               alt={project.title}
-              className='w-full h-auto object-cover'
+              className='absolute inset-0 w-full h-full object-cover'
             />
           </div>
         </Container>

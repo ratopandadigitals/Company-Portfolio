@@ -14,6 +14,7 @@ import FaqSection from "@/components/sections/Faq/FaqSection";
 import Cta from "@/components/sections/contact/Cta";
 import AboutHome from "@/components/sections/about/AboutHome";
 import { WORK_ITEMS } from "@/data/works";
+import Homeprocess from "@/components/sections/services/HomeProcess";
 
 const Home = () => {
   const featuredProjects = WORK_ITEMS.slice(0, 3)
@@ -27,6 +28,7 @@ const Home = () => {
       <Marquee />
       <WhyUs />
     <SelectedWork title="Selected Works" items={featuredProjects} />
+    <Homeprocess />
     <ClientProof />
     <FaqSection />
     <Cta />

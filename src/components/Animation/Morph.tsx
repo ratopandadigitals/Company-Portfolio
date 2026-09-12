@@ -3,8 +3,6 @@ import type { CSSProperties } from 'react';
 import { Renderer, Triangle, Program, Mesh, Texture } from 'ogl';
 import { gsap } from 'gsap';
 
-import './MorphSlider.css';
-
 export type MorphTransition = 'melt' | 'ripple' | 'shear' | 'swirl';
 
 export interface MorphItem {
@@ -13,8 +11,16 @@ export interface MorphItem {
 }
 
 export interface MorphSliderProps {
-  items?: MorphItem[];
+  /** Required — no default content ships with this component. */
+  items: MorphItem[];
   startIndex?: number;
+  /** External control: when set and different from the current slide,
+   *  morphs to it. Lets a parent (e.g. hovering a tab) drive the image
+   *  without disabling the slider's own autoplay/drag/arrows. */
+  activeIndex?: number;
+  /** Fires whenever the shown slide changes, from ANY source — hover-
+   *  driven activeIndex, internal autoplay, drag, or arrow clicks. */
+  onIndexChange?: (index: number) => void;
   transition?: MorphTransition;
   duration?: number;
   ease?: string;
@@ -50,24 +56,9 @@ type GL = Renderer['gl'];
 
 const TRANSITIONS: Record<MorphTransition, number> = { melt: 0, ripple: 1, shear: 2, swirl: 3 };
 
-const DEFAULT_ITEMS: MorphItem[] = [
-  {
-    image: 'https://images.unsplash.com/photo-1782977389500-dd7adad33ebe?q=80&w=1600&auto=format&fit=crop',
-    caption: 'One'
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1781499455083-6ccc3beb20cd?q=80&w=1600&auto=format&fit=crop',
-    caption: 'Two'
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1776394254711-4a0d7345269a?q=80&w=1600&auto=format&fit=crop',
-    caption: 'Three'
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1781242629922-6f39cc3671cd?q=80&w=1600&auto=format&fit=crop',
-    caption: 'Four'
-  }
-];
+// No default sample items — a shared component like this should carry
+// no content of its own. `items` is a required prop (see MorphSliderProps
+// below); every usage must pass its own array.
 
 const vertexShader = `
 attribute vec2 position;
@@ -310,7 +301,7 @@ class MorphEngine {
     this.gl.clearColor(0.05, 0.05, 0.06, 1);
 
     this.canvas = this.gl.canvas as HTMLCanvasElement;
-    this.canvas.className = 'morph-slider-canvas';
+    this.canvas.className = 'block w-full h-full';
     container.appendChild(this.canvas);
 
     this.geometry = new Triangle(this.gl);
@@ -440,6 +431,36 @@ class MorphEngine {
     );
   }
 
+  // Jumps straight to an arbitrary slide in one morph, regardless of
+  // distance from the current slide — needed so external control (e.g.
+  // hovering tab 3 while sitting on slide 0) doesn't have to step
+  // through every slide in between.
+  goToIndex(target: number): void {
+    if (this.animating || this.dragging || this.items.length < 2) return;
+    if (target === this.current) return;
+    const opts = this.getOptions();
+    const dir = target > this.current ? 1 : -1;
+    this.syncOptions();
+    this.program.uniforms.tCurrent.value = this.textures[this.current];
+    this.program.uniforms.uCurrentSize.value = this.sizes[this.current];
+    this.program.uniforms.tNext.value = this.textures[target];
+    this.program.uniforms.uNextSize.value = this.sizes[target];
+    this.program.uniforms.uDir.value = dir;
+    this.animating = true;
+    this.announce(target);
+    const duration = this.reducedMotion ? Math.min(opts.duration, 0.4) : opts.duration;
+    this.tween = gsap.fromTo(
+      this.program.uniforms.uProgress,
+      { value: 0 },
+      {
+        value: 1,
+        duration,
+        ease: opts.ease,
+        onComplete: () => this.commit(target)
+      }
+    );
+  }
+
   private announce(index: number): void {
     if (index === this.shownIndex) return;
     this.shownIndex = index;
@@ -547,8 +568,10 @@ class MorphEngine {
 }
 
 export default function MorphSlider({
-  items = DEFAULT_ITEMS,
+  items,
   startIndex = 0,
+  activeIndex,
+  onIndexChange,
   transition = 'melt',
   duration = 1.1,
   ease = 'power2.inOut',
@@ -595,7 +618,10 @@ export default function MorphSlider({
       reducedMotion,
       dprCap: 2,
       getOptions: () => optsRef.current,
-      onIndexChange: setIndex
+      onIndexChange: (i) => {
+        setIndex(i);
+        onIndexChange?.(i);
+      }
     });
     engineRef.current = engine;
     setIndex(startIndex);
@@ -606,6 +632,12 @@ export default function MorphSlider({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, startIndex]);
+
+  useEffect(() => {
+    if (activeIndex === undefined) return;
+    if (activeIndex === index) return;
+    engineRef.current?.goToIndex(activeIndex);
+  }, [activeIndex, index]);
 
   const handleNext = useCallback(() => engineRef.current?.next(), []);
   const handlePrev = useCallback(() => engineRef.current?.prev(), []);
@@ -678,7 +710,7 @@ export default function MorphSlider({
 
   return (
     <div
-      className={`morph-slider ${className}`.trim()}
+      className={`relative w-full h-full overflow-hidden isolate ${className}`.trim()}
       style={
         {
           borderRadius: `${radius}px`,
@@ -692,7 +724,7 @@ export default function MorphSlider({
     >
       <div
         ref={containerRef}
-        className="morph-slider-stage"
+        className="absolute inset-0 outline-none"
         role="group"
         aria-roledescription="carousel"
         aria-label="Image morph slider"
@@ -701,13 +733,15 @@ export default function MorphSlider({
       />
 
       {showCaptions && hasCaptions && (
-        <div className="morph-slider-caption" aria-live="polite">
+        <div className="absolute left-6 bottom-5 z-[2] pointer-events-none" aria-live="polite">
           {items.map((item, i) =>
             item.caption ? (
               <span
                 key={i}
                 aria-hidden={i === index ? undefined : true}
-                className={`morph-slider-caption-text ${i === index ? 'is-active' : ''}`}
+                className={`absolute left-0 bottom-0 whitespace-nowrap font-bold text-lg text-white transition-[opacity,transform] duration-[var(--ms-swap)] ease-out ${
+                  i === index ? 'relative opacity-100 translate-y-0' : 'opacity-0 translate-y-1.5'
+                }`}
               >
                 {item.caption}
               </span>
@@ -717,36 +751,32 @@ export default function MorphSlider({
       )}
 
       {showControls && (
-        <div className="morph-slider-controls">
-          <button type="button" className="morph-slider-btn" aria-label="Previous slide" onClick={handlePrev}>
+        <div className="absolute right-4 bottom-4 z-[2] flex gap-2">
+          <button
+            type="button"
+            className="flex items-center justify-center w-9 h-9 rounded-full border border-white/25 bg-black/35 text-white cursor-pointer backdrop-blur-md transition-[background,transform] duration-fast hover:bg-black/55 hover:-translate-y-px"
+            aria-label="Previous slide"
+            onClick={handlePrev}
+          >
             <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-              <path
-                d="M15 5l-7 7 7 7"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <button type="button" className="morph-slider-btn" aria-label="Next slide" onClick={handleNext}>
+          <button
+            type="button"
+            className="flex items-center justify-center w-9 h-9 rounded-full border border-white/25 bg-black/35 text-white cursor-pointer backdrop-blur-md transition-[background,transform] duration-fast hover:bg-black/55 hover:-translate-y-px"
+            aria-label="Next slide"
+            onClick={handleNext}
+          >
             <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-              <path
-                d="M9 5l7 7-7 7"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </div>
       )}
 
       {showIndicators && (
-        <div className="morph-slider-indicators" role="tablist" aria-label="Slides">
+        <div className="absolute left-6 top-5 z-[2] flex gap-1.5" role="tablist" aria-label="Slides">
           {items.map((item, i) => (
             <button
               key={i}
@@ -754,11 +784,13 @@ export default function MorphSlider({
               role="tab"
               aria-selected={i === index}
               aria-label={`Go to slide ${i + 1}`}
-              className={`morph-slider-dot ${i === index ? 'is-active' : ''}`}
+              className={`h-1.5 rounded-full border-none cursor-pointer transition-[background,width] duration-[var(--ms-dot)] ease-out ${
+                i === index ? 'w-4.5 bg-primary' : 'w-1.5 bg-white/40'
+              }`}
               onClick={() => {
                 const engine = engineRef.current;
                 if (!engine || i === index) return;
-                engine.goTo(i > index ? 1 : -1);
+                engine.goToIndex(i);
               }}
             />
           ))}

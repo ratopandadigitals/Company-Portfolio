@@ -33,7 +33,7 @@ const Cta = (props: CtaProps) => {
   const ctaHref = props.ctaHref || '/contact'
 
   return (
-    <Section>
+    <Section className='pb-16'>
       <Container>
         <div className='flex flex-col items-center w-full gap-2'>
           <span className='text-caption text-sm font-medium tracking-wide text-center'>

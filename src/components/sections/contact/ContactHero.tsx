@@ -6,11 +6,11 @@ import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
 import Section from '@/components/atoms/Section'
 
-type ServiceHeroProps = {
+type ContactHeroProps = {
   description?: string
   ctaLabel?: string
   ctaHref?: string
-  workImageSrcs?: string[]
+  contactImageSrcs?: string[]
 }
 
 // Parent stagger — triggers elements top to bottom
@@ -45,20 +45,21 @@ const pillEntranceVariants: Variants = {
   },
 }
 
-const ServiceHero = (props: ServiceHeroProps) => {
+const ContactHero = (props: ContactHeroProps) => {
   const description =
-    'We turn ideas, stories, and strategies from the creative edge covering design development, and the tools that bring bold digital work to life.'
-  const ctaLabel = props.ctaLabel || 'Get Started'
+    props.description ||
+    'Have a project, idea, or challenge? We’d love to hear it. Let’s collaborate and bring something meaningful to life.'
+  const ctaLabel = props.ctaLabel || 'Contact'
   const ctaHref = props.ctaHref || '/contact'
 
-  const workImageSrcs = props.workImageSrcs || [
+  const ContactImageSrcs = props.contactImageSrcs || [
     'https://images.unsplash.com/photo-1616469829941-c7200edec809?auto=format&fit=crop&w=200&q=80',
     'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=200&q=80',
   ]
 
   return (
     <Section className='bg-surface-page'>
-      <Container className='py-stack-container'>
+      <Container className=''>
         <motion.div
           className='flex flex-col items-center gap-6 text-center'
           variants={containerVariants}
@@ -70,7 +71,7 @@ const ServiceHero = (props: ServiceHeroProps) => {
             
             {/* Line 1 */}
             <motion.div variants={itemVariants} className='flex items-center gap-2 sm:gap-3 flex-nowrap whitespace-nowrap justify-center'>
-              <span className='text-caption opacity-40'>Our Creative</span>
+              <span className='text-caption opacity-40'>LET'S BUILT</span>
               <motion.div variants={pillEntranceVariants}>
                 <motion.div
                   animate={{
@@ -86,16 +87,16 @@ const ServiceHero = (props: ServiceHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[0]} alt='Project preview' className='w-full h-full object-cover' />
+                  <img src={ContactImageSrcs[0]} alt='Project preview' className='w-full h-full object-cover' />
                   
                 </motion.div>
               </motion.div>
-              <span className='text-orange-500'>Services,</span>
+              <span className='text-orange-500'>SOMETHING</span>
             </motion.div>
 
             {/* Line 2 */}
             <motion.div variants={itemVariants} className='flex items-center gap-2 sm:gap-3 mt-0 sm:mt-1 flex-nowrap whitespace-nowrap justify-center'>
-              <span className='text-caption'>Excellence</span>
+              <span className='text-caption'>TOGETHER</span>
               <motion.div variants={pillEntranceVariants}>
                 <motion.div
                   animate={{
@@ -112,10 +113,10 @@ const ServiceHero = (props: ServiceHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[1]} alt='Project preview' className='w-full h-full object-cover' />
+                  <img src={ContactImageSrcs[1]} alt='Project preview' className='w-full h-full object-cover' />
                 </motion.div>
               </motion.div>
-              <span className='text-caption opacity-40'>Delievered.</span>
+              <span className='text-caption opacity-40'>CONTACT.</span>
             </motion.div>
 
           </div>
@@ -130,7 +131,7 @@ const ServiceHero = (props: ServiceHeroProps) => {
 
           {/* CTA Button */}
           <motion.div variants={itemVariants}>
-            <Button href={ctaHref} variant='liquid'>
+            <Button href={ctaHref} variant='dark'>
               {ctaLabel}
             </Button>
           </motion.div>
@@ -141,4 +142,4 @@ const ServiceHero = (props: ServiceHeroProps) => {
   )
 }
 
-export default ServiceHero
+export default ContactHero 

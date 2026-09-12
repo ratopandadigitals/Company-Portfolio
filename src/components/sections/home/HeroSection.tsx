@@ -211,7 +211,7 @@ const HeroSection = (props: HeroSectionProps) => {
 
           {/* Button (Shows hover arrow icon since icon prop is omitted) */}
           <motion.div variants={itemVariants}>
-            <Button href={ctaHref} variant='outline'>
+            <Button href={ctaHref} variant='liquid'>
               {ctaLabel}
             </Button>
           </motion.div>

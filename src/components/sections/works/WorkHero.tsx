@@ -131,7 +131,7 @@ const WorkHero = (props: WorkHeroProps) => {
 
           {/* CTA Button */}
           <motion.div variants={itemVariants}>
-            <Button href={ctaHref} variant='outline'>
+            <Button href={ctaHref} variant='liquid'>
               {ctaLabel}
             </Button>
           </motion.div>
