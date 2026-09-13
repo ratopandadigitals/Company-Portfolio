@@ -774,6 +774,7 @@
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
+  
 }
 
 
@@ -787,6 +788,13 @@ html {
 
 html[data-theme="dark"] {
   color-scheme: dark;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 * {

@@ -41,15 +41,15 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
   )
 
   return (
-    <Section className='relative w-full bg-surface-page text-heading py-16 px-6 md:px-12 overflow-hidden flex flex-col justify-between transition-colors duration-300'>
+    <Section className='relative w-full bg-surface-page text-heading  overflow-hidden flex flex-col justify-between transition-colors duration-300'>
 
       {/* Header + CTA Button — unchanged */}
-      <Container className='w-full z-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6'>
+      <Container className='w-full z-10 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6'>
         <div>
           <span className='text-xs md:text-small tracking-wider text-caption block mb-2 font-mono'>
             {eyebrow}
           </span>
-          <h2 className='text-h2 md:text-h1 font-extrabold tracking-tight text-heading font-primary'>
+          <h2 className='text-h2 md:text-h1 font-extrabold tracking-tight text-caption font-primary'>
             {heading}
           </h2>
         </div>
@@ -58,7 +58,7 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
           href={fullServicesHref}
           className='group relative inline-flex items-center gap-3 px-6 py-3 rounded-full bg-primary text-white font-medium text-small overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5'
         >
-          <span className='relative z-10 font-semibold tracking-wide'>Explore All Services</span>
+          <span className='relative z-10 font-semibold text-size-caption tracking-wide'>Explore All Services</span>
           <motion.div
             animate={{ x: [0, 3, 0], y: [0, -3, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
@@ -70,7 +70,7 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
       </Container>
 
       {/* Navigation Tabs — unchanged, still onClick + onMouseEnter */}
-      <Container className='w-full border-t border-border-subtle/30 pt-6 my-6 grid grid-cols-2 md:grid-cols-4 items-center gap-4 z-10'>
+      <Container className='w-full z-10 flex flex-col sm:flex-row items-start pt-6 mt-6 :items-end justify-between gap-6'>
         {services.map((service) => {
           const isActive = service.id === activeTab
           return (
@@ -78,11 +78,12 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
               <button
                 onMouseEnter={() => setActiveTab(service.id)}
                 onClick={() => setActiveTab(service.id)}
-                className={`flex items-center gap-2 text-small md:text-body transition-colors duration-200 cursor-pointer ${
-                  isActive ? 'text-primary font-semibold' : 'text-caption hover:opacity-80'
+                className={`flex items-center gap-2 px-2 py-2 rounded-full whitespace-nowrap shrink-0 text-size-body md:text-size-body transition-colors duration-200 cursor-pointer ${
+  isActive ? 'bg-primary text-heading' : 'bg-surface-section text-caption hover:bg-surface-section/70'
+
                 }`}
               >
-                {isActive && <span className='w-2 h-2 rounded-full bg-primary shrink-0' />}
+                {isActive && <span className='w-2 h-2 rounded-full bg-success shrink-0' />}
                 <span>{service.label}</span>
               </button>
             </div>
@@ -101,7 +102,7 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
             {marqueeItems.map((title, index) => (
               <div key={index} className='flex items-center gap-8 md:gap-12'>
                 <Sparkles className='w-6 h-6 sm:w-10 sm:h-10 shrink-0 text-primary' />
-                <span className='text-[4.5rem] sm:text-[7.5rem] lg:text-[9rem] font-bold text-heading/70 leading-none tracking-tight font-primary'>
+                <span className='text-[3.5rem] sm:text-[6.5rem] lg:text-[7rem] font-bold text-heading/70 leading-none tracking-tight font-primary'>
                   {title}
                 </span>
               </div>
@@ -111,7 +112,7 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
 
         <Link
           href={fullServicesHref}
-          className='z-10 relative w-75 sm:w-110 h-80 sm:h-100 rounded-3xl overflow-hidden shadow-2xl border border-border-subtle group cursor-pointer block'
+          className='z-10 relative w-85 sm:w-120 h-70 sm:h-90 rounded-3xl overflow-hidden shadow-2xl border border-border-subtle group cursor-pointer block'
         >
           <MorphSlider
             items={morphItems}

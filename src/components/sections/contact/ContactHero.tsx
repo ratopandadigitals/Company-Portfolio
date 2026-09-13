@@ -131,7 +131,7 @@ const ContactHero = (props: ContactHeroProps) => {
 
           {/* CTA Button */}
           <motion.div variants={itemVariants}>
-            <Button href={ctaHref} variant='dark'>
+            <Button href={ctaHref} variant='liquid'>
               {ctaLabel}
             </Button>
           </motion.div>

@@ -4,6 +4,7 @@ import React from 'react'
 import { motion, Variants } from 'framer-motion'
 import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
+import Section from '@/components/atoms/Section'
 
 type HeroSectionProps = {
   eyebrow?: string
@@ -90,7 +91,7 @@ const HeroSection = (props: HeroSectionProps) => {
   ]
 
   return (
-    <section className='bg-surface-page'>
+    <Section className='bg-surface-page'>
       <Container className='py-stack-container'>
         <motion.div
           className='flex flex-col items-center gap-4 text-center'
@@ -217,7 +218,7 @@ const HeroSection = (props: HeroSectionProps) => {
           </motion.div>
         </motion.div>
       </Container>
-    </section>
+    </Section>
   )
 }
 
