@@ -14,9 +14,7 @@ export interface MorphSliderProps {
   /** Required — no default content ships with this component. */
   items: MorphItem[];
   startIndex?: number;
-  /** External control: when set and different from the current slide,
-   *  morphs to it. Lets a parent (e.g. hovering a tab) drive the image
-   *  without disabling the slider's own autoplay/drag/arrows. */
+ 
   activeIndex?: number;
   /** Fires whenever the shown slide changes, from ANY source — hover-
    *  driven activeIndex, internal autoplay, drag, or arrow clicks. */
@@ -595,7 +593,20 @@ export default function MorphSlider({
   const [index, setIndex] = useState(startIndex);
   const [hovering, setHovering] = useState(false);
 
-  const optsRef = useRef<EngineOptions>({
+ const optsRef = useRef<EngineOptions>({
+  transition,
+  duration,
+  ease,
+  intensity,
+  scale,
+  aberration,
+  drift,
+  overlayColor,
+  loop,
+})
+
+useEffect(() => {
+  optsRef.current = {
     transition,
     duration,
     ease,
@@ -604,9 +615,19 @@ export default function MorphSlider({
     aberration,
     drift,
     overlayColor,
-    loop
-  });
-  optsRef.current = { transition, duration, ease, intensity, scale, aberration, drift, overlayColor, loop };
+    loop,
+  }
+}, [
+  transition,
+  duration,
+  ease,
+  intensity,
+  scale,
+  aberration,
+  drift,
+  overlayColor,
+  loop,
+])
 
   useEffect(() => {
     if (!containerRef.current) return undefined;
@@ -733,13 +754,13 @@ export default function MorphSlider({
       />
 
       {showCaptions && hasCaptions && (
-        <div className="absolute left-6 bottom-5 z-[2] pointer-events-none" aria-live="polite">
+        <div className="absolute left-6 bottom-5 z-2 pointer-events-none" aria-live="polite">
           {items.map((item, i) =>
             item.caption ? (
               <span
                 key={i}
                 aria-hidden={i === index ? undefined : true}
-                className={`absolute left-0 bottom-0 whitespace-nowrap font-bold text-lg text-white transition-[opacity,transform] duration-[var(--ms-swap)] ease-out ${
+                className={`absolute left-0 bottom-0 whitespace-nowrap font-bold text-lg text-white transition-[opacity,transform] duration-(--ms-swap) ease-out ${
                   i === index ? 'relative opacity-100 translate-y-0' : 'opacity-0 translate-y-1.5'
                 }`}
               >
@@ -751,7 +772,7 @@ export default function MorphSlider({
       )}
 
       {showControls && (
-        <div className="absolute right-4 bottom-4 z-[2] flex gap-2">
+        <div className="absolute right-4 bottom-4 z-2 flex gap-2">
           <button
             type="button"
             className="flex items-center justify-center w-9 h-9 rounded-full border border-white/25 bg-black/35 text-white cursor-pointer backdrop-blur-md transition-[background,transform] duration-fast hover:bg-black/55 hover:-translate-y-px"
@@ -776,7 +797,7 @@ export default function MorphSlider({
       )}
 
       {showIndicators && (
-        <div className="absolute left-6 top-5 z-[2] flex gap-1.5" role="tablist" aria-label="Slides">
+        <div className="absolute left-6 top-5 z-2 flex gap-1.5" role="tablist" aria-label="Slides">
           {items.map((item, i) => (
             <button
               key={i}
@@ -784,7 +805,7 @@ export default function MorphSlider({
               role="tab"
               aria-selected={i === index}
               aria-label={`Go to slide ${i + 1}`}
-              className={`h-1.5 rounded-full border-none cursor-pointer transition-[background,width] duration-[var(--ms-dot)] ease-out ${
+              className={`h-1.5 rounded-full border-none cursor-pointer transition-[background,width] duration-(--ms-dot) ease-out ${
                 i === index ? 'w-4.5 bg-primary' : 'w-1.5 bg-white/40'
               }`}
               onClick={() => {

@@ -5,6 +5,7 @@ import { motion, Variants } from 'framer-motion'
 import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
 import Section from '@/components/atoms/Section'
+import Image from 'next/image'
 
 type HeroSectionProps = {
   eyebrow?: string
@@ -92,7 +93,7 @@ const HeroSection = (props: HeroSectionProps) => {
 
   return (
     <Section className='bg-surface-page'>
-      <Container className='py-stack-container'>
+      <Container className=''>
         <motion.div
           className='flex flex-col items-center gap-4 text-center'
           variants={containerVariants}
@@ -106,14 +107,20 @@ const HeroSection = (props: HeroSectionProps) => {
           >
             <div className='flex -space-x-1'>
               {avatarSrcs.map((src, index) => (
-                <motion.img
-                  key={src}
-                  custom={index}
-                  variants={avatarVariants}
-                  src={src}
-                  alt='Team member'
-                  className='h-6 w-6 rounded-full ring-2 ring-surface-page object-cover'
-                />
+        <motion.div
+          key={src}
+          custom={index}
+          variants={avatarVariants}
+          className='relative h-6 w-6 shrink-0'
+        >
+          <Image
+            src={src}
+            alt='Team member'
+            fill
+            sizes='24px'
+            className='rounded-full object-cover ring-2 ring-surface-page'
+          />
+</motion.div>
               ))}
             </div>
 
@@ -143,10 +150,16 @@ const HeroSection = (props: HeroSectionProps) => {
                     repeatType: 'mirror',
                     ease: 'easeInOut',
                   }}
-                  className='h-10 sm:h-16 aspect-81/64 rounded-full bg-primary overflow-hidden shrink-0'
+                  className='relative h-10 sm:h-16 aspect-81/64 rounded-full bg-primary overflow-hidden shrink-0'
 
                 >
-                  <img src={workImageSrcs[0]} alt='Project preview' className='w-full h-full object-cover' />
+                   <Image
+                    src={workImageSrcs[1]}
+                    alt='Project preview'
+                    fill
+                    sizes='(max-width: 640px) 40px, 64px'
+                    className='object-cover'
+                  />
                 </motion.div>
               </motion.div>
               <span className='text-primary'>/</span>
@@ -171,7 +184,13 @@ const HeroSection = (props: HeroSectionProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-81/64 rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[1]} alt='Project preview' className='w-full h-full object-cover' />
+                  <Image
+                    src={workImageSrcs[1]}
+                    alt='Project preview'
+                    fill
+                    sizes='(max-width: 640px) 40px, 64px'
+                    className='object-cover'
+                  />
                 </motion.div>
               </motion.div>
               <span className='text-heading'>/</span>
@@ -196,7 +215,13 @@ const HeroSection = (props: HeroSectionProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-81/64 rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[2]} alt='Project preview' className='w-full h-full object-cover' />
+                  <Image
+                    src={workImageSrcs[2]}
+                    alt='Project preview'
+                    fill
+                    sizes='(max-width: 640px) 40px, 64px'
+                    className='object-cover'
+                  />
                 </motion.div>
               </motion.div>
             </motion.div>

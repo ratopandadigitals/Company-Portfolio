@@ -8,7 +8,7 @@ type LogoProps = {
   href?: string
 }
 
-const Logo = ({ lightSrc = '/light.png', darkSrc = '/dark.png', href = '/' }: LogoProps) => {
+const Logo = ({ lightSrc = '/Light.png', darkSrc = '/Dark.png', href = '/' }: LogoProps) => {
   return (
     <Link href={href} className="flex items-center gap-2.5 sm:gap-3 shrink-0">
       <Image

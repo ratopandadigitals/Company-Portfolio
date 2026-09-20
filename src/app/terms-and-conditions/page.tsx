@@ -163,7 +163,7 @@ export default function TermsPage() {
               <h2 className='text-h3 font-primary font-bold text-heading'>14. Contact Us</h2>
               <p>For questions regarding these Terms &amp; Conditions, please contact:</p>
               <div className='p-6 rounded-2xl bg-surface-section border border-border-subtle flex flex-col gap-2'>
-                <span className='font-primary font-bold text-heading text-body'>Rato Panda Digitals</span>
+                <span className='font-primary font-bold text-heading text-size-body'>Rato Panda Digitals</span>
                 <span>Biratnagar Metropolitan City-4, Morang, Nepal</span>
                 <span>
                   Email:{' '}

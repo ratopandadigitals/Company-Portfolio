@@ -5,6 +5,7 @@ import { motion, Variants } from 'framer-motion'
 import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
 import Section from '@/components/atoms/Section'
+import Image from 'next/image'
 
 type WorkHeroProps = {
   description?: string
@@ -59,7 +60,7 @@ const WorkHero = (props: WorkHeroProps) => {
 
   return (
     <Section className='bg-surface-page'>
-      <Container className='py-stack-container'>
+      <Container className=''>
         <motion.div
           className='flex flex-col items-center gap-6 text-center'
           variants={containerVariants}
@@ -87,8 +88,13 @@ const WorkHero = (props: WorkHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[0]} alt='Project preview' className='w-full h-full object-cover' />
-                  
+                  <Image
+                    src={workImageSrcs[0]}
+                    alt='Project preview'
+                    fill
+                    sizes='(max-width: 640px) 40px, 64px'
+                    className='object-cover'
+                  />
                 </motion.div>
               </motion.div>
               <span className='text-orange-500'>IN ACTION,</span>
@@ -113,7 +119,13 @@ const WorkHero = (props: WorkHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[1]} alt='Project preview' className='w-full h-full object-cover' />
+                  <Image
+                    src={workImageSrcs[1]}
+                    alt='Project preview'
+                    fill
+                    sizes='(max-width: 640px) 40px, 64px'
+                    className='object-cover'
+                  />
                 </motion.div>
               </motion.div>
               <span className='text-caption opacity-40'>Work.</span>

@@ -4,13 +4,14 @@ import React from 'react'
 import { motion, Variants } from 'framer-motion'
 import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
+import Image from 'next/image'
 import Section from '@/components/atoms/Section'
 
 type GalleryHeroProps = {
   description?: string
   ctaLabel?: string
   ctaHref?: string
-  workImageSrcs?: string[]
+  galleryImageSrcs?: string[]
 }
 
 // Parent stagger — triggers elements top to bottom
@@ -48,18 +49,18 @@ const pillEntranceVariants: Variants = {
 const GalleryHero = (props: GalleryHeroProps) => {
   const description =
     props.description ||
-    'Explore selected visual work, project details, brand assets, process moments and media created by Rato Panda Digitals.'
+    'Explore selected visual gallery, project details, brand assets, process moments and media created by Rato Panda Digitals.'
   const ctaLabel = props.ctaLabel || 'Explore Our Gallery'
   const ctaHref = props.ctaHref || '/gallery'
 
-  const workImageSrcs = props.workImageSrcs || [
+  const galleryImageSrcs = props.galleryImageSrcs || [
     'https://images.unsplash.com/photo-1616469829941-c7200edec809?auto=format&fit=crop&w=200&q=80',
     'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=200&q=80',
   ]
 
   return (
     <Section className='bg-surface-page'>
-      <Container className='py-stack-container'>
+      <Container className=''>
         <motion.div
           className='flex flex-col items-center gap-6 text-center'
           variants={containerVariants}
@@ -87,7 +88,13 @@ const GalleryHero = (props: GalleryHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[0]} alt='Project preview' className='w-full h-full object-cover' />
+                    <Image
+            src={galleryImageSrcs[0]}
+            alt='gallery preview'
+            fill
+            sizes='(max-width: 640px) 40px, 64px'
+            className='object-cover'
+          />
                   
                 </motion.div>
               </motion.div>
@@ -113,8 +120,14 @@ const GalleryHero = (props: GalleryHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[1]} alt='Project preview' className='w-full h-full object-cover' />
-                </motion.div>
+                            <Image
+            src={galleryImageSrcs[1]}
+            alt='gallery preview'
+            fill
+            sizes='(max-width: 640px) 40px, 64px'
+            className='object-cover'
+          />
+              </motion.div>
               </motion.div>
               <span className='text-caption opacity-40'>DIGITAL CRAFT.</span>
             </motion.div>

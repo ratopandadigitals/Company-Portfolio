@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useCallback,useEffect, useState,useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Container from '@/components/atoms/Container'
 import Section from '@/components/atoms/Section'
@@ -53,8 +53,51 @@ const TESTIMONIALS: TestimonialItem[] = [
     bgImage: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop',
   },
 ]
+const CountUp = ({ value }: { value: string }) => {
+  const numericTarget = parseInt(value.replace(/\D/g, ''), 10) || 0
+  const suffix = value.replace(/[0-9]/g, '')
+  const [count, setCount] = useState(0)
+  const [hasTriggered, setHasTriggered] = useState(false)
+  const ref = useRef<HTMLSpanElement>(null)
 
-const ClientProofSection = (props: ClientProofSectionProps) => {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasTriggered(true)
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!hasTriggered) return
+
+    let current = 0
+    const duration = 1500
+    const steps = 40
+    const increment = numericTarget / steps
+
+    const timer = setInterval(() => {
+      current += increment
+      if (current >= numericTarget) {
+        setCount(numericTarget)
+        clearInterval(timer)
+      } else {
+        setCount(Math.floor(current))
+      }
+    }, duration / steps)
+
+    return () => clearInterval(timer)
+  }, [hasTriggered, numericTarget])
+
+  return <span ref={ref}>{count}{suffix}</span>
+}
+  const ClientProofSection = (props: ClientProofSectionProps) => {
 
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -69,9 +112,17 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
     setCurrentIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))
   }
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))
-  }
+const handleNext = useCallback(() => {
+  setCurrentIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))
+}, [testimonials.length])
+
+ useEffect(() => {
+  const timer = setInterval(() => {
+    handleNext()
+  }, 5000)
+
+  return () => clearInterval(timer)
+}, [handleNext])
 
   const current = testimonials[currentIndex]
 
@@ -82,10 +133,10 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
         {/* Header — watermark uses text-heading/10, which already switches
             light/dark on its own, instead of two hardcoded values */}
         <div className='flex flex-col items-center w-full gap-2'>
-          <span className='text-caption text-small font-secondary font-medium tracking-wide text-center'>
+          <span className='text-caption text-size-cta font-secondary font-medium tracking-wide text-center'>
             {eyebrow}
           </span>
-          <h2 className='w-full text-left text-6xl sm:text-8xl lg:text-[100px] font-primary font-bold tracking-tight text-heading/10 leading-none select-none'>
+          <h2 className='w-full text-center text-6xl sm:text-8xl lg:text-[100px] font-primary font-bold tracking-tight text-heading/10 leading-none select-none'>
             {title}
           </h2>
         </div>
@@ -95,7 +146,7 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
         <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-h-115'>
 
           {/* Left: stats card */}
-          <div className='lg:col-span-4 relative rounded-3xl overflow-hidden bg-dark-500 border border-white/10 p-8 sm:p-10 flex flex-col justify-between min-h-115'>
+          <div className='group lg:col-span-4 relative rounded-3xl overflow-hidden bg-dark-500 border border-white/10 p-8 sm:p-10 flex flex-col justify-between min-h-115'>
             <div
               className='absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity pointer-events-none'
               style={{
@@ -108,10 +159,10 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
               {stats.map((stat, index) => (
                 <div key={index} className='flex flex-col'>
                   <span className='text-5xl sm:text-6xl font-primary font-extrabold text-white tracking-tight leading-none'>
-                    {stat.value}
+                    <CountUp value={stat.value} />
                   </span>
-                  <span className='text-small font-secondary font-medium text-white/70 mt-1'>
-                    {stat.label}
+                  <span className='text-size-cta font-secondary font-medium text-white/70 mt-1'>
+                   {stat.label} 
                   </span>
                 </div>
               ))}
@@ -119,13 +170,13 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
           </div>
 
           {/* Right: testimonial card */}
-          <div className='lg:col-span-8 relative rounded-3xl overflow-hidden bg-dark-500 border border-white/10 min-h-115 flex flex-col justify-between p-8 sm:p-10'>
+          <div className=' group lg:col-span-8 relative rounded-3xl overflow-hidden bg-dark-500 border border-white/10 min-h-115 flex flex-col justify-between p-8 sm:p-10'>
 
             {/* 3 stacked background layers, crossfading */}
             {testimonials.map((item, index) => (
               <div
                 key={item.id}
-                className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out pointer-events-none ${
+                className={`absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-all duration-700 ease-in-out pointer-events-none ${
                   currentIndex === index ? 'opacity-100 z-0' : 'opacity-0 z-0'
                 }`}
                 style={{ backgroundImage: `url(${item.bgImage})` }}
@@ -135,7 +186,7 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
             <div className='absolute inset-0 bg-dark-500/40 backdrop-brightness-90 pointer-events-none z-1' />
             <div className='absolute inset-0 bg-linear-to-t from-dark-500/95 via-dark-500/40 to-transparent pointer-events-none z-1' />
 
-            <div className='relative z-10 text-caption font-secondary font-semibold tracking-widest text-white/70'>
+            <div className='relative z-10 text-size-caption font-secondary font-semibold tracking-widest text-white/70'>
               {current.id} / {String(testimonials.length).padStart(2, '0')}
             </div>
 
@@ -145,10 +196,11 @@ const ClientProofSection = (props: ClientProofSectionProps) => {
                   {current.quote}
                 </p>
                 <div className='flex flex-col'>
-                  <span className='text-body font-secondary font-semibold text-white'>
+                  <span className='text-size
+                  body font-secondary font-semibold text-white'>
                     {current.name}
                   </span>
-                  <span className='text-caption font-secondary text-white/70'>
+                  <span className='text-size-cta font-secondary text-white/70'>
                     {current.role}
                   </span>
                 </div>

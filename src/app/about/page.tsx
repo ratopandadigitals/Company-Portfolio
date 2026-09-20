@@ -6,7 +6,6 @@ import CompanySpecs from '@/components/sections/about/CompanySpecs'
 import Marquee from '@/components/sections/home/Marquee'
 import AboutSection from '@/components/sections/about/AboutHome'
 import TeamSection from '@/components/sections/about/TeamSection'
-import { FaQ } from 'react-icons/fa6'
 import FaqSection from '@/components/sections/Faq/FaqSection'
 import Cta from '@/components/sections/contact/Cta'
 

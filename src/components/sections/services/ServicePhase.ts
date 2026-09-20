@@ -22,7 +22,7 @@ export const SERVICE_PROCESS: ServicePhase[] = [
     description:
       'We learn about your target users, industry, and competitors to understand what people need, where they struggle, and what already works in the market. This gives us a clear direction before we start designing.',
     icon: 'Search',
-    image: '/images/services/01-research.webp',
+    image: '/Rd.png',
     bullets: [
       'Target audience and user research',
       'Industry and competitor analysis',
@@ -44,7 +44,7 @@ export const SERVICE_PROCESS: ServicePhase[] = [
     description:
       'We define what the product needs to include, from pages and features to content and functionality. This gives everyone a clear understanding of what we are building before design and development begin.',
     icon: 'FileText',
-    image: '/images/services/02-scope.webp',
+    image: '/Rs.png',
     bullets: [
       'Page and feature requirements',
       'Content and functionality mapping',

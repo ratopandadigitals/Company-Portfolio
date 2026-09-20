@@ -28,19 +28,19 @@ const Homeprocess = ({
         {/* Top Header Row with Link */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div className="flex flex-col gap-2">
-            <span className="text-size-caption text-primary font-mono tracking-wider uppercase font-bold">
+            <span className="text-size-body text-primary  font-secondary uppercase font-bold">
               {eyebrow}
             </span>
-            <h2 className="text-h2 font-primary font-bold text-heading tracking-tight">
+            <h2 className="text-size-h2 font-primary font-bold text-heading ">
               {heading}
             </h2>
           </div>
 
           <Link
             href={ctaHref}
-            className="inline-flex items-center gap-1.5 text-small font-mono font-semibold text-caption hover:text-primary transition-colors group"
+            className="inline-flex items-center gap-1.5 font-mono  font-semibold text-caption hover:text-primary transition-colors group"
           >
-            <span>Explore Full Process</span>
+            <span className='text-size-caption'>Explore Full Process</span>
             <ArrowUpRight className="w-4 h-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </Link>
         </div>
@@ -65,11 +65,11 @@ const Homeprocess = ({
                   <span className="text-size-caption font-mono font-bold text-primary">
                     {stepNum}
                   </span>
-                  <span className="w-2 h-2 rounded-full bg-border-subtle group-hover:bg-primary transition-colors duration-300" />
+                  <span className="w-2 h-2 rounded-full bg-border-subtle group-hover:bg-heading transition-colors duration-300" />
                 </div>
 
                 {/* Title Only */}
-                <h3 className="text-size-body font-primary font-bold text-heading group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-size-body font-primary font-bold text-heading group-hover:text-heading transition-colors duration-300">
                   {service.title}
                 </h3>
               </motion.div>

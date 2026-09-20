@@ -28,7 +28,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
 
         {/* Header */}
         <div className='flex flex-col gap-2  items-center text-heading'>
-          <span className='text-caption text-size-body font-mono tracking-wider uppercase block'>
+          <span className='text-caption text-size-body font-secondary tracking-wider uppercase block'>
             {eyebrow}
           </span>
           <FoldText
@@ -60,7 +60,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                 className={`relative overflow-hidden rounded-2xl border cursor-pointer select-none transition-colors duration-500 min-h-30 lg:min-h-0 ${
                   isActive
                     ? 'bg-surface-card border-border-subtle shadow-2xl'
-                    : 'bg-surface-section border-transparent hover:bg-surface-divider/20'
+                    : 'bg-surface-card border-transparent hover:bg-surface-divider/20'
                 }`}
               >
                 {/* Background Image Layer with Zoom on Active & Blur on Inactive */}
@@ -96,7 +96,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                         {formattedNum}
                       </span>
                       <div className='-rotate-90 origin-center  whitespace-nowrap mb-16'>
-                        <h3 className='text-heading font-primary shadow-sky-500 font-bold text-small tracking-tight'>
+                        <h3 className='text-white font-primary shadow-sky-500 font-bold text-small tracking-tight'>
                           {service.title}
                         </h3>
                       </div>

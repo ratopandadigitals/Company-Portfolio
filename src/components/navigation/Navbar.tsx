@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState} from 'react'
 import { usePathname } from 'next/navigation'
 import { Sun, Moon, Menu, X } from 'lucide-react'
 import Logo from '@/components/atoms/Logo'
@@ -38,12 +38,18 @@ const Navbar = (props: NavbarProps) => {
   const ctaLabel = props.ctaLabel || 'Contact'
   const ctaHref = props.ctaHref || '/contact'
   const badgeText = props.badgeText || 'Available for New Projects'
-  const logoLightSrc = props.logoLightSrc || '/light.png'
-  const logoDarkSrc = props.logoDarkSrc || '/dark.png'
+  const logoLightSrc = props.logoLightSrc || '/Light.png'
+  const logoDarkSrc = props.logoDarkSrc || '/Dark.png'
 
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(true)
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+  if (typeof window === 'undefined') return true
+
+  const savedTheme = localStorage.getItem('theme')
+
+  return savedTheme !== 'light'
+})
 
   const toggleTheme = () => {
     const next = !isDarkMode
@@ -51,6 +57,7 @@ const Navbar = (props: NavbarProps) => {
     document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
     localStorage.setItem('theme', next ? 'dark' : 'light')
   }
+  
 
   return (
     <header className='w-full bg-surface-page/90 backdrop-blur-md sticky top-0 z-50 transition-colors'>
@@ -84,16 +91,25 @@ const Navbar = (props: NavbarProps) => {
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className='lg:hidden p-2 text-caption rounded-sm hover:bg-surface-default'
-            aria-label='Toggle menu'
-          >
-            {isMobileMenuOpen ? <X className='w-6 h-6' /> : <Menu className='w-6 h-6' />}
-          </button>
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls='mobile-navigation'
+              >
+              {isMobileMenuOpen ? (
+      <X aria-hidden='true' className='w-6 h-6' />
+    ) : (
+      <Menu aria-hidden='true' className='w-6 h-6' />
+    )}
+              </button>
         </div>
       </Container>
 
       {isMobileMenuOpen && (
-        <div className='lg:hidden border-t border-border-subtle bg-surface-page px-4 pt-2 pb-6 space-y-3'>
-          {navItems.map((item) => (
+      <div
+        id='mobile-navigation'
+        className='lg:hidden border-t border-border-subtle bg-surface-page px-4 pt-2 pb-6 space-y-3'
+      >
+        {navItems.map((item) => (
             <NavLink
               key={item.href}
               href={item.href}

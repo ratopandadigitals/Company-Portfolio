@@ -1,9 +1,9 @@
 import React from 'react'
-import Link from 'next/link'
-import { Star, ArrowUpRight } from 'lucide-react'
+import { Star,} from 'lucide-react'
 import Container from '@/components/atoms/Container'
 import Section from '@/components/atoms/Section'
-import { title } from 'process'
+import Button from '@/components/atoms/Button'
+import Image from 'next/image'
 
 type CtaProps = {
   headline?: string
@@ -67,12 +67,14 @@ const Cta = (props: CtaProps) => {
               <div className='flex items-center gap-3 pt-2'>
                 <div className='flex -space-x-2.5 overflow-hidden'>
                   {AVATARS.map((url, idx) => (
-                    <img
-                      key={idx}
-                      src={url}
-                      alt='User avatar'
-                      className='inline-block h-9 w-9 rounded-full border-2 border-surface-default object-cover'
-                    />
+                    <Image
+                  key={idx}
+                  src={url}
+                  alt='User avatar'
+                  width={36}
+                  height={36}
+                  className='inline-block h-9 w-9 rounded-full border-2 border-surface-default object-cover'
+                />
                   ))}
                 </div>
 
@@ -89,15 +91,11 @@ const Cta = (props: CtaProps) => {
               </div>
             </div>
 
-            <div className='shrink-0'>
-              <Link
-                href={ctaHref}
-                className='group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-surface-page hover:bg-surface-primary text-heading hover:text-white font-secondary font-medium text-size-small border border-border-subtle hover:border-primary transition-all duration-300 shadow-lg'
-              >
-                <span>{ctaLabel}</span>
-                <ArrowUpRight className='w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5' />
-              </Link>
-            </div>
+                <div className='shrink-0'>
+      <Button href={ctaHref} variant='liquid'>
+        {ctaLabel}
+      </Button>
+    </div>
 
           </div>
         </div>

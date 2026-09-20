@@ -3,7 +3,11 @@
 import React from 'react'
 import Container from '@/components/atoms/Container'
 import Section  from '@/components/atoms/Section'
-import motion from 'framer-motion'
+import Image from 'next/image'
+
+type AboutSectionProps = {
+  aboutSectionSrcs?: string[]
+}
 
 const ABOUT_DETAILS = [
   { label: 'THINK DEEPLY.', value: 'Philosophy' },
@@ -11,8 +15,11 @@ const ABOUT_DETAILS = [
   { label: 'BUILD PRECISELY.', value: 'Promise' },
   { label: 'Creative Technology', value: 'Est. 2026' },
 ]
-
-const AboutSection = () => {
+  
+const AboutSection = (props: AboutSectionProps) => {
+const aboutSectionSrcs = props.aboutSectionSrcs || [
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop',
+  ]
   return (
     <Section className='w-full bg-surface-page'>
       {/* Container handles the 80px margin naturally — no py-16 needed */}
@@ -27,10 +34,11 @@ const AboutSection = () => {
 
         {/* Hero Image Card */}
         <div className='relative w-full aspect-16/7 min-h-85 sm:min-h-120 rounded-3xl overflow-hidden border border-border-subtle/20'>
-          <img
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop"
+          <Image
+            src={aboutSectionSrcs[0]}
             alt="About Rato Panda Digitals"
             className='w-full h-full object-cover'
+            fill
           />
           
           {/* Carousel Dots */}

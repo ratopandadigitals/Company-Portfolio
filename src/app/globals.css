@@ -811,12 +811,12 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--primary-500);
+  outline: 2px solid var(--border-primary);
   outline-offset: 2px;
 }
 
 ::selection {
-  background-color: var(--primary-150);
+ background-color: var(--surface-primary-subtle);
   color: var(--text-heading);
 }
 

@@ -1,17 +1,21 @@
 'use client'
 
-import React from 'react'
+
+import React, { useState, useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import Container from '@/components/atoms/Container'
 import FoldText from '@/components/Animation/FoldText'
 import Section from '@/components/atoms/Section'
 import StickyCard from '@/components/Animation/StickyCard'
 import { WORK_ITEMS, WorkItem } from '@/data/works'
+import { SERVICES_DATA } from '@/components/sections/services/Service'
 
 type SelectedWorkProps = {
   eyebrow?: string
   title?: string
   items?: WorkItem[]
+  showFilter?: boolean
 } 
 
 
@@ -20,23 +24,57 @@ const SelectedWork = (props: SelectedWorkProps) => {
   const eyebrow = props.eyebrow || '(Why client love RatoPandadigitals)'
   const title = props.title || "(Selected Works)"
   const items = props.items || WORK_ITEMS
+  const [filter, setFilter] = useState<string>('all')
 
+  const showFilter= props.showFilter ?? true
+
+  // Extract all unique services dynamically for filter options
+ const categories = useMemo(
+  () => ['all', ...SERVICES_DATA.map((s) => s.label)],
+  []
+)
+
+  // Filter items based on active selection
+  const filteredItems = useMemo(
+    () => (filter === 'all' ? items : items.filter((item) => item.services.includes(filter))),
+    [filter, items]
+  )
+  
   return (
     <Section className="w-full bg-surface-page py-6 px-2 flex flex-col items-center justify-center">
-      <Container className="max-w-work-card w-full flex flex-col -space-y-10">
+      <Container className="max-w-work-card w-full flex flex-col space-y-10">
         {/* Header */}
         <div className="flex flex-col items-center w-full gap-2">
-          <span className="text-caption text-small font-secondary font-medium tracking-wide text-center">
+          <span className="text-caption text-size-cta font-secondary font-semibold tracking-wide text-center">
             {eyebrow}
           </span>
           <h2 className="w-full text-center text-6xl sm:text-8xl lg:text-[100px] font-primary font-bold tracking-tight text-heading/10 leading-none select-none">
             {title}
           </h2>
         </div>
-
+        {/* Filter Bar */}
+        {showFilter && (
+        <div className="flex flex-wrap items-center justify-center gap-3 z-20 mb-0 py-4">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setFilter(cat)}
+              className={`px-5 py-2 rounded-full text-size-caption font-semibold font-secondary transition-colors duration-200 cursor-pointer${
+                filter === cat
+                  ? 'bg-primary text-white'
+                  : 'bg-surface-section text-caption border border-border-subtle hover:text-heading transition  '
+              }`}
+            >
+              {cat === 'all' ? 'All' : cat}
+            </button>
+          ))}
+        </div>
+        )}
         {/* Animated Sticky Card Stack - LINES 58 to 123 */}
         <StickyCard 
-          items={items}
+          key={filter}
+  items={filteredItems}
           renderCard={(item) => (
              <Link
                 href={`/works/${item.slug}`}
@@ -50,10 +88,20 @@ const SelectedWork = (props: SelectedWorkProps) => {
 
               <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full h-full">
                 {/* Left column */}
-                <div className="lg:col-span-4 flex flex-col justify-between h-full gap-stack-content">
-                  <p className="font-secondary text-body leading-relaxed max-w-xs">
+{/* REPLACE Line 94 */}
+<div className="lg:col-span-4 flex flex-col justify-between h-full py-2 gap-16 font-secondary text-size-cta">                  <p className="font-secondary text-body leading-relaxed max-w-xs">
                     {item.description}
                   </p>
+                  <div className="flex flex-col gap-2">
+                    <span className="text-size-body text-heading font-bold uppercase tracking-wider">
+                      tools
+                    </span>
+                    <ul className="flex flex-col gap-1 text-size-cta sm:text-size-cta">
+                      {item.tools.map((tool) => (
+                        <li key={tool}>{tool}</li>
+                      ))}
+                    </ul>
+                  </div>
                   <div className="flex flex-col gap-2 mt-auto text-heading">
                     <span className="text-caption font-secondary tracking-widest">
                       {item.id}
@@ -67,7 +115,7 @@ const SelectedWork = (props: SelectedWorkProps) => {
                       stagger={0.045}
                       ease="power3.out"
                       perspective={700}
-                      fontSize="clamp(1.75rem, 3.5vw, 2.75rem)"
+                      fontSize="clamp(1.75rem, 2.8vw, 2.75rem)"
                       fontWeight={800}
                     />
                     
@@ -77,10 +125,11 @@ const SelectedWork = (props: SelectedWorkProps) => {
                 {/* Center column: mockup image */}
                 <div className="lg:col-span-4 flex justify-center items-center">
                   <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-                    <img
+                    <Image
                       src={item.previewImage}
                       alt={item.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="w-full h-full object-contain"
                     />
                   </div>
                 </div>

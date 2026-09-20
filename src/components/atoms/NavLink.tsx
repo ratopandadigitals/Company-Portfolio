@@ -19,7 +19,7 @@ const NavLink = (props: NavLinkProps) => {
       className={[
         'py-1 text-base font-medium font-secondary transition-colors',
         active
-          ? 'text-heading font-semibold border-b-2 )'
+          ? 'text-heading font-semibold border-b-2 '
           : 'text-caption hover:text-heading',
       ].join(' ')}
     >

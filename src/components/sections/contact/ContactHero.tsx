@@ -4,6 +4,7 @@ import React from 'react'
 import { motion, Variants } from 'framer-motion'
 import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
+import Image from 'next/image'
 import Section from '@/components/atoms/Section'
 
 type ContactHeroProps = {
@@ -48,7 +49,7 @@ const pillEntranceVariants: Variants = {
 const ContactHero = (props: ContactHeroProps) => {
   const description =
     props.description ||
-    'Have a project, idea, or challenge? We’d love to hear it. Let’s collaborate and bring something meaningful to life.'
+    'Have a project, idea, or challenge? We would love to hear it. Let’s collaborate and bring something meaningful to life.'
   const ctaLabel = props.ctaLabel || 'Contact'
   const ctaHref = props.ctaHref || '/contact'
 
@@ -71,7 +72,7 @@ const ContactHero = (props: ContactHeroProps) => {
             
             {/* Line 1 */}
             <motion.div variants={itemVariants} className='flex items-center gap-2 sm:gap-3 flex-nowrap whitespace-nowrap justify-center'>
-              <span className='text-caption opacity-40'>LET'S BUILT</span>
+              <span className='text-caption opacity-40'>LET&apos;S BUILT</span>
               <motion.div variants={pillEntranceVariants}>
                 <motion.div
                   animate={{
@@ -87,7 +88,13 @@ const ContactHero = (props: ContactHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={ContactImageSrcs[0]} alt='Project preview' className='w-full h-full object-cover' />
+                  <Image
+                    src={ContactImageSrcs[0]}
+                    alt='Project preview'
+                    fill
+                    sizes='(max-width: 640px) 40px, 64px'
+                    className='object-cover'
+                  />
                   
                 </motion.div>
               </motion.div>
@@ -111,9 +118,15 @@ const ContactHero = (props: ContactHeroProps) => {
                     ease: 'easeInOut',
                     delay: 0.3,
                   }}
-                  className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
+                  className='relative h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={ContactImageSrcs[1]} alt='Project preview' className='w-full h-full object-cover' />
+                 <Image
+                  src={ContactImageSrcs[1]}
+                  alt='Project preview'
+                  fill
+                  sizes='(max-width: 640px) 40px, 64px'
+                  className='object-cover'
+                />
                 </motion.div>
               </motion.div>
               <span className='text-caption opacity-40'>CONTACT.</span>

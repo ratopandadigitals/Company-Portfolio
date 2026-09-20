@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, Children, useRef, useLayoutEffect, HTMLAttributes, ReactNode } from 'react'
+import React, { useCallback, useState, useEffect, Children, useRef, useLayoutEffect, HTMLAttributes, ReactNode } from 'react'
 import { motion, AnimatePresence, Variants } from 'framer-motion'
 import { Check } from 'lucide-react'
 
@@ -53,14 +53,18 @@ export function AnimatedStepper({
   const isCompleted = currentStep > totalSteps
   const isLastStep = currentStep === totalSteps
 
-  const updateStep = (newStep: number) => {
+  const updateStep = useCallback(
+  (newStep: number) => {
     setCurrentStep(newStep)
+
     if (newStep > totalSteps) {
       onFinalStepCompleted()
     } else {
       onStepChange(newStep)
     }
-  }
+  },
+  [totalSteps, onFinalStepCompleted, onStepChange]
+)
 
   const handleBack = () => {
     if (currentStep > 1) {
@@ -94,7 +98,7 @@ useEffect(() => {
     }, autoPlayInterval)
 
     return () => clearInterval(timer)
-  }, [autoPlay, autoPlayInterval, currentStep, isCompleted, isLastStep])
+  }, [autoPlay, autoPlayInterval, currentStep, isCompleted, isLastStep, updateStep])
   return (
     <div
       className={`flex w-full flex-col items-center justify-center ${rest.className || ''}`}

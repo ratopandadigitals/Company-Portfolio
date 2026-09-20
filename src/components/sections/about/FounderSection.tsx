@@ -3,7 +3,8 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
-import { FaLinkedin, FaTwitter } from 'react-icons/fa'
+import { FaLinkedin, FaGithub } from 'react-icons/fa'
+import Image from 'next/image'
 
 type Founder = {
   id: string
@@ -12,9 +13,9 @@ type Founder = {
   bio: string
   photo: string
   linkedinHref?: string
-  twitterHref?: string
+  githubHref?: string
   badgeText?: string
-  highlights?: string[]
+  projects?: string[]
 }
 
 const FOUNDERS: Founder[] = [
@@ -24,21 +25,21 @@ const FOUNDERS: Founder[] = [
     title: 'Co-Founder & CEO',
     bio: 'Drives overall strategic vision, growth strategy, and global client partnerships across all digital divisions.',
     photo: '/Team2.jpeg', // update path
-    linkedinHref: '#',
-    twitterHref: '#',
+    linkedinHref: 'https://www.linkedin.com/in/nischitshrestha',
+    githubHref: 'https://github.com/nischitshrestha',
     badgeText: 'Strategic Vision',
-    highlights: ['10+ Years Leadership', 'Global Client Operations', 'Product Innovation'],
+    projects: ['Hamro Docs FullStack Web app', 'Global Client Operations', 'Product Innovation'],
   },
   {
     id: 'dipesh',
     name: 'Dipesh Basnet',
     title: 'Co-Founder & CTO',
-    bio: 'Leads engineering, software architecture, and technical execution across every project.',
+    bio: 'Frontend Developer(React) & UI/UX Designer with a passion for creating intuitive and engaging user experiences.',
     photo: '/Team1.jpeg', // update path
-    linkedinHref: '#',
-    twitterHref: '#',
+    linkedinHref: 'https://www.linkedin.com/in/dipesh-basnet98',
+    githubHref: 'https://github.com/dipeshbasnt',
     badgeText: "Dipesh's latest build →",
-    highlights: ['Cloud Architecture', 'Full-Stack Performance', 'AI Integrations'],
+    projects: ['Agency Portfolio','UI/UX Design','Portfolio Ui/UX Design','AgencyPortfolio UI/UX Design'],
   },
 ]
 
@@ -48,13 +49,13 @@ const FounderSection = () => {
   
 
   return (
-    <div className='w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+    <div className='w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
       {/* Header */}
       <div className='mb-8'>
-        <span className='text-caption font-secondary text-primary tracking-wider uppercase text-xs font-semibold'>
+        <span className='text-size-h2 font-secondary text-primary tracking-wider uppercase  font-semibold'>
           BEHIND THE SCENES
         </span>
-        <h2 className='text-3xl md:text-4xl font-primary font-bold text-heading mt-1'>
+        <h2 className='text-size-h2 md:text-size-h3 font-primary font-bold text-heading mt-1'>
           The people behind Rato Panda
         </h2>
       </div>
@@ -77,19 +78,21 @@ const FounderSection = () => {
                 }`}
               >
                 <div className='w-20 h-20 rounded-xl overflow-hidden shrink-0'>
-                  <img
+                   <Image
                     src={founder.photo}
                     alt={founder.name}
+                    width={80}
+                    height={80}
                     className={`w-full h-full object-cover transition-all duration-500 ${
                       isActive ? 'grayscale-0' : 'grayscale'
                     }`}
                   />
                 </div>
                 <div className='flex flex-col justify-center'>
-                  <h3 className='text-body font-primary font-bold text-heading'>
+                  <h3 className='text-size-body font-primary font-bold text-heading'>
                     {founder.name}
                   </h3>
-                  <p className='text-small font-secondary text-primary text-xs'>
+                  <p className='text-size-caption font-secondary text-primary'>
                     {founder.title}
                   </p>
                 </div>
@@ -136,9 +139,9 @@ const FounderSection = () => {
                       <FaLinkedin className='w-5 h-5' />
                     </a>
                   )}
-                  {activeFounder.twitterHref && (
-                    <a href={activeFounder.twitterHref} target='_blank' rel='noreferrer' className='text-caption hover:text-primary transition-colors'>
-                      <FaTwitter className='w-5 h-5' />
+                  {activeFounder.githubHref && (
+                    <a href={activeFounder.githubHref} target='_blank' rel='noreferrer' className='text-caption hover:text-primary transition-colors'>
+                      <FaGithub className='w-5 h-5' />
                     </a>
                   )}
                 </div>
@@ -157,10 +160,10 @@ const FounderSection = () => {
                 </p>
               </div>
 
-              {/* Highlights / Pills */}
-              {activeFounder.highlights && (
+              {/* Projects / Pills */}
+              {activeFounder.projects && (
                 <div className='flex flex-wrap gap-2 pt-4 border-t border-border-subtle'>
-                  {activeFounder.highlights.map((item, idx) => (
+                  {activeFounder.projects.map((item, idx) => (
                     <span
                       key={idx}
                       className='px-3 py-1 text-xs font-secondary rounded-lg bg-surface-subtle text-caption border border-border-subtle'

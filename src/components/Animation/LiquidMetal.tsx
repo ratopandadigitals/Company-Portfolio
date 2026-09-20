@@ -24,8 +24,26 @@ function useCssVar(name: string, fallback: string) {
   const [value, setValue] = useState(fallback)
 
   useEffect(() => {
-    const resolved = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-    if (resolved) setValue(resolved)
+    const updateValue = () => {
+      const resolved = getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim()
+
+      if (resolved) {
+        setValue(resolved)
+      }
+    }
+
+    updateValue()
+
+    const observer = new MutationObserver(updateValue)
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    })
+
+    return () => observer.disconnect()
   }, [name])
 
   return value

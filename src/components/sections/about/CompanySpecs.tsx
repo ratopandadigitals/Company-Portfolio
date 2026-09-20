@@ -67,14 +67,14 @@ const CompanySpecs = (props: CompanySpecsProps) => {
       <Container className='grid grid-cols-1 lg:grid-cols-12 gap-12 items-start'>
 
         {/* Left column: heading + paragraph */}
-        <div className='lg:col-span-5 space-y-6'>
-          <span className='text-caption font-semibold tracking-wider text-primary uppercase font-mono'>
+        <div className='lg:col-span-5 gap-6 flex flex-col justify-center'>
+          <span className='text-size-cta font-bold tracking-wider text-primary uppercase font-primary'>
             {eyebrow}
           </span>
-          <h2 className='text-h3 sm:text-h2 font-primary font-bold text-heading tracking-tight leading-tight'>
+          <h2 className='text-size-h3 sm:text-size-h2 font-secondary font-medium text-heading tracking-tight leading-tight'>
             {heading}
           </h2>
-          <p className='text-caption font-secondary text-body sm:text-cta leading-relaxed'>
+          <p className='text-size-caption font-secondary text-body sm:text-size-cta leading-relaxed'>
             {paragraph}
           </p>
         </div>
@@ -86,17 +86,17 @@ const CompanySpecs = (props: CompanySpecsProps) => {
             return (
               <div
                 key={spec.id}
-                className='border border-border-subtle rounded-xl bg-surface-default overflow-hidden transition-colors hover:border-primary/40'
+                className='border border-border-subtle/60 rounded-xl bg-surface-default overflow-hidden transition-colors hover:border-primary/40'
               >
                 <button
                   onClick={() => toggleAccordion(spec.id)}
                   className='w-full px-6 py-5 flex items-center justify-between text-left cursor-pointer select-none'
                 >
-                  <span className='font-secondary text-small font-medium text-caption'>
+                  <span className='font-secondary text-size-caption font-medium text-caption'>
                     {spec.label}
                   </span>
                   <div className='flex items-center gap-4'>
-                    <span className='font-primary text-body sm:text-cta font-semibold text-heading'>
+                    <span className='font-primary text-size-body sm:text-cta font-semibold text-heading'>
                       {spec.value}
                     </span>
                     <motion.div

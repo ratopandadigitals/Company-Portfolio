@@ -4,6 +4,7 @@ import React from 'react'
 import { motion, Variants } from 'framer-motion'
 import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
+import Image from 'next/image'
 import Section from '@/components/atoms/Section'
 
 type EventHeroProps = {
@@ -87,8 +88,13 @@ const EventHero = (props: EventHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={eventImageSrcs[0]} alt='Project preview' className='w-full h-full object-cover' />
-                  
+                    <Image
+                              src={eventImageSrcs[0]}
+                              alt='event preview'
+                              fill
+                              sizes='(max-width: 640px) 40px, 64px'
+                              className='object-cover'
+                            />
                 </motion.div>
               </motion.div>
               <span className='text-orange-500'>DESIGNED,</span>
@@ -113,7 +119,13 @@ const EventHero = (props: EventHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={eventImageSrcs[1]} alt='Project preview' className='w-full h-full object-cover' />
+                    <Image
+                              src={eventImageSrcs[1]}
+                              alt='event preview'
+                              fill
+                              sizes='(max-width: 640px) 40px, 64px'
+                              className='object-cover'
+                            />
                 </motion.div>
               </motion.div>
               <span className='text-caption opacity-40'>PURPOSE.</span>

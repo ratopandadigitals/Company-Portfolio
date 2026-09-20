@@ -16,7 +16,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     id: 'brand-design-system',
     label: 'Brand & Design System',
     title: 'Brand & Design System',
-    image: 'https://picsum.photos/seed/brand-design-system/900/700',
+    image: '/',
     description:
       'We build the full foundation of your brand\u2019s visual identity \u2014 logo design, visual guidelines, color palettes, typography, and core design assets.',
     tags: ['Brand Identity'],

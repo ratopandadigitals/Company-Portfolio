@@ -8,7 +8,7 @@ import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
 import { EVENTS_DATA, EventItem } from '@/data/events'
 
-import { useStickyStack, containerVariants, itemVariants } from '@/components/hooks/useStickyStack'
+import { useStickyStack } from '@/components/hooks/useStickyStack'
 
 type EventFilter = 'all' | 'upcoming' | 'past'
 
@@ -147,66 +147,7 @@ const [selectedTicketEvent, setSelectedTicketEvent] = useState<EventItem | null>
           ))}
         </div>
 
-        {/* Mobile View
-            FIX 2: this is the actual reason mobile animation "isn't working" —
-            it was `animate='visible'`, which fires the instant the component
-            mounts (i.e. on page load), regardless of whether it's on-screen.
-            On mobile this section sits well below the fold, so by the time
-            someone scrolls down to it, the animation already finished a
-            second or two earlier off-screen — it LOOKS like nothing is
-            animating, because nothing is, anymore, by the time it's visible.
-            `whileInView` fixes that: it only plays once this block actually
-            scrolls into the viewport. */}
-        {/* <AnimatePresence mode='wait'>
-          <motion.div
-            key={filter}
-            className='flex lg:hidden flex-col gap-5'
-            variants={containerVariants}
-            initial='hidden'
-            whileInView='visible'
-            viewport={{ once: true, margin: '-60px' }}
-            exit='hidden'
-          >
-            {filteredEvents.map((event) => (
-              <motion.div
-                key={event.id}
-                variants={itemVariants}
-                className='relative rounded-2xl overflow-hidden bg-surface-section border border-border-subtle shadow-md'
-              >
-                <div className='relative w-full aspect-4/3 overflow-hidden'>
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className='w-full h-full object-cover'
-                  />
-                  <div className='absolute inset-0 bg-linear-to-t from-surface-page via-surface-page/50 to-transparent' />
-                </div>
-
-                <div className='p-6 flex flex-col gap-3'>
-                  <span className='font-secondary tracking-widest text-caption'>
-                    {event.id} / {String(filteredEvents.length).padStart(2, '0')}
-                  </span>
-                  <h2 className='text-h3 font-primary font-bold text-heading tracking-tight'>
-                    {event.title}
-                  </h2>
-                  <div className='flex items-center gap-3 text-small font-secondary text-caption'>
-                    <span>{event.date}</span>
-                    <span className='w-1 h-1 rounded-full bg-caption' />
-                    <span>{event.location}</span>
-                  </div>
-                  <p className='text-small font-secondary text-caption leading-relaxed'>
-                    {event.description}
-                  </p>
-                  <div className='pt-1'>
-                    <Link href={`/events/${event.slug}`}>
-                      <Button icon>{event.ctaLabel}</Button>
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </AnimatePresence> */}
+       
 <AnimatePresence>
   {selectedTicketEvent && (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">

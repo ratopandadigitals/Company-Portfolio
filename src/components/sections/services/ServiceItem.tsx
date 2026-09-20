@@ -18,7 +18,7 @@ type ServicesTeaserProps = {
 }
 
 const ServicesTeaser = (props: ServicesTeaserProps) => {
-  const eyebrow = props.eyebrow || '(What We Build)'
+  const eyebrow = props.eyebrow || '(Services)'
   const heading = props.heading || 'WHAT WE BUILD.'
   const services = props.services || SERVICES_DATA
   const fullServicesHref = props.fullServicesHref || '/services'
@@ -44,12 +44,12 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
     <Section className='relative w-full bg-surface-page text-heading  overflow-hidden flex flex-col justify-between transition-colors duration-300'>
 
       {/* Header + CTA Button — unchanged */}
-      <Container className='w-full z-10 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6'>
+      <Container className='w-full z-10 flex flex-col sm:flex-row items-center sm:items-center justify-between gap-6'>
         <div>
-          <span className='text-xs md:text-small tracking-wider text-caption block mb-2 font-mono'>
+          <span className='text-xs md:text-small tracking-tight text-caption block mb-2 font-mono'>
             {eyebrow}
           </span>
-          <h2 className='text-h2 md:text-h1 font-extrabold tracking-tight text-caption font-primary'>
+          <h2 className='text-size-h2 md:text-size-h1 font-extrabold tracking-wider text-caption font-primary'>
             {heading}
           </h2>
         </div>
@@ -70,7 +70,7 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
       </Container>
 
       {/* Navigation Tabs — unchanged, still onClick + onMouseEnter */}
-      <Container className='w-full z-10 flex flex-col sm:flex-row items-start pt-6 mt-6 :items-end justify-between gap-6'>
+      <Container className='w-full z-10 flex flex-wrap  whitespace-nowrap sm:flex-row items-start pt-6 mt-6  justify-between gap-6'>
         {services.map((service) => {
           const isActive = service.id === activeTab
           return (
@@ -78,9 +78,8 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
               <button
                 onMouseEnter={() => setActiveTab(service.id)}
                 onClick={() => setActiveTab(service.id)}
-                className={`flex items-center gap-2 px-2 py-2 rounded-full whitespace-nowrap shrink-0 text-size-body md:text-size-body transition-colors duration-200 cursor-pointer ${
-  isActive ? 'bg-primary text-heading' : 'bg-surface-section text-caption hover:bg-surface-section/70'
-
+                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap shrink-0 text-size-caption md:text-size-caption text-bold transition-colors duration-200 cursor-pointer ${
+  isActive ? 'bg-primary text-white' : ' border border-border-subtle/80 text-caption hover:bg-surface-section/90'
                 }`}
               >
                 {isActive && <span className='w-2 h-2 rounded-full bg-success shrink-0' />}
@@ -130,7 +129,7 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
 
           <div className='absolute inset-0 bg-linear-to-t from-dark-500/80 via-transparent to-transparent flex items-end p-6 pointer-events-none z-20'>
             <div className='flex items-center justify-between w-full text-white'>
-              <span className='font-bold text-body'>{activeService.title}</span>
+              <span className='font-bold  text-white text-size-body'>{activeService.title}</span>
               <span className='text-size-caption font-secondary tracking-wider flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-white font-medium shadow-sm whitespace-nowrap shrink-0'>
                 View Details <ArrowUpRight className='w-3.5 h-3.5' />
               </span>

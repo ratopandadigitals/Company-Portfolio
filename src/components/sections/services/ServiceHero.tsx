@@ -5,12 +5,13 @@ import { motion, Variants } from 'framer-motion'
 import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
 import Section from '@/components/atoms/Section'
+import Image from 'next/image'
 
 type ServiceHeroProps = {
   description?: string
   ctaLabel?: string
   ctaHref?: string
-  workImageSrcs?: string[]
+  servicesImageSrcs?: string[]
 }
 
 // Parent stagger — triggers elements top to bottom
@@ -47,18 +48,18 @@ const pillEntranceVariants: Variants = {
 
 const ServiceHero = (props: ServiceHeroProps) => {
   const description =
-    'We turn ideas, stories, and strategies from the creative edge covering design development, and the tools that bring bold digital work to life.'
+    'We turn ideas, stories, and strategies from the creative edge covering design development, and the tools that bring bold digital works to life.'
   const ctaLabel = props.ctaLabel || 'Get Started'
   const ctaHref = props.ctaHref || '/contact'
 
-  const workImageSrcs = props.workImageSrcs || [
+  const servicesImageSrcs = props.servicesImageSrcs || [
     'https://images.unsplash.com/photo-1616469829941-c7200edec809?auto=format&fit=crop&w=200&q=80',
     'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=200&q=80',
   ]
 
   return (
     <Section className='bg-surface-page'>
-      <Container className='py-stack-container'>
+      <Container className=''>
         <motion.div
           className='flex flex-col items-center gap-6 text-center'
           variants={containerVariants}
@@ -86,7 +87,13 @@ const ServiceHero = (props: ServiceHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[0]} alt='Project preview' className='w-full h-full object-cover' />
+                <Image
+                src={servicesImageSrcs[0]}
+                 alt='service preview'
+                fill
+                sizes='(max-width: 640px) 40px, 64px'
+                className='object-cover'
+                />             
                   
                 </motion.div>
               </motion.div>
@@ -112,7 +119,13 @@ const ServiceHero = (props: ServiceHeroProps) => {
                   }}
                   className='h-10 sm:h-16 aspect-square rounded-full overflow-hidden shrink-0'
                 >
-                  <img src={workImageSrcs[1]} alt='Project preview' className='w-full h-full object-cover' />
+                    <Image
+                              src={servicesImageSrcs[1]}
+                              alt='service preview'
+                              fill
+                              sizes='(max-width: 640px) 40px, 64px'
+                              className='object-cover'
+                            />
                 </motion.div>
               </motion.div>
               <span className='text-caption opacity-40'>Delievered.</span>

@@ -1,13 +1,14 @@
 'use client'
 
 import React from 'react'
-import { motion } from 'framer-motion'
+
 import { Check } from 'lucide-react'
 import Section from '@/components/atoms/Section'
 import Container from '@/components/atoms/Container'
 import FoldText from '@/components/Animation/FoldText'
 import { AnimatedStepper, Step } from '@/components/Animation/AnimatedStepper'
 import { SERVICE_PROCESS, ServicePhase } from './ServicePhase'
+import Image from 'next/image'
 
 type ServiceProcessProps = {
   eyebrow?: string
@@ -68,7 +69,7 @@ const ServiceProcess = (props: ServiceProcessProps) => {
                   <div className="lg:col-span-7 flex flex-col gap-5">
 
                     {/* Badge */}
-                    <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-surface-section border border-primary/25 text-primary text-caption font-mono font-bold tracking-wider uppercase w-fit shadow-xs">
+                    <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-surface-card border border-primary/25 text-heading text-size-caption caption font-secondary font-bold tracking-wider uppercase w-fit shadow-xs">
                       <span className="w-1.5 h-1.5 rounded-full bg-success shrink-0" />
                       <span>{formattedNum} Process</span>
                     </div>
@@ -89,7 +90,7 @@ const ServiceProcess = (props: ServiceProcessProps) => {
                         {service.deliverables.map((deliverable, tagIndex) => (
                           <div
                             key={tagIndex}
-                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-section font-secondary text-heading text-size-small font-semibold border border-border-subtle/40"
+                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-page font-secondary text-heading text-size-small font-semibold border border-border-subtle/40"
                           >
                             <span className="flex items-center justify-center w-4 h-4 rounded-full bg-success text-heading shrink-0">
                               <Check className="w-2.5 h-2.5 stroke-3" />
@@ -102,13 +103,15 @@ const ServiceProcess = (props: ServiceProcessProps) => {
                   </div>
 
                   {/* Right Column: Visual Feature Image */}
-                  <div className="lg:col-span-5 relative w-full h-64 lg:h-72 rounded-2xl overflow-hidden border border-border-subtle">
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-linear-to-t from-surface-card via-transparent to-transparent opacity-60" />
+                          <div className="lg:col-span-5 relative w-full h-64 lg:h-72 rounded-2xl overflow-hidden border border-border-subtle">
+                            <Image
+                          src={service.image}
+                          alt={service.title}
+                          fill
+                          sizes='(max-width: 1024px) 100vw, 42vw'
+                          className='object-cover'
+                        />
+                            <div className="absolute inset-0 bg-linear-to-t from-surface-card via-transparent to-transparent opacity-60" />
                   </div>
 
                 </div>

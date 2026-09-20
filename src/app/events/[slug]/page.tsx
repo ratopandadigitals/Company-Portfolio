@@ -1,25 +1,44 @@
 import { notFound } from 'next/navigation'
-import { EVENTS_DATA } from '@/data/events'
+import Link from 'next/link'
+import Image from 'next/image'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { EVENTS_DATA} from '@/data/events'
 import Container from '@/components/atoms/Container'
-import Section from '@/components/atoms/Section'
 
-type eventDetailPageProps = {
+type EventtDetailPageProps = {
   params: Promise<{ slug: string }>
 }
 
-const eventDetailPage = async (props: eventDetailPageProps) => {
+const EventDetailPage = async (props: EventtDetailPageProps) => {
   const params = await props.params
-  const event = EVENTS_DATA.find((item) => item.slug === params.slug)
+  const eventIndex = EVENTS_DATA.findIndex((item) => item.slug === params.slug)
+  const event = EVENTS_DATA[eventIndex]
 
   if (!event) {
     notFound()
   }
 
+  // Circular navigation logic
+  const nextEvent = EVENTS_DATA[(eventIndex + 1) % EVENTS_DATA.length]
+  const prevEvent = EVENTS_DATA[(eventIndex - 1 + EVENTS_DATA.length) % EVENTS_DATA.length]
+
   return (
-    <>
-      <Section className='w-full bg-surface-page'>
-        <Container className='flex flex-col gap-8 pt-8'>
-          <div className='flex flex-col gap-2'>
+    <section className='w-full bg-surface-page pb-12'>
+      {/* Top Section: Back Button + Metadata Grid */}
+      <Container className='flex flex-col gap-8 pt-4'>
+        {/* Back Link */}
+        <Link
+          href='/events'
+          className='inline-flex items-center gap-2 text-caption text-size-small font-secondary hover:text-heading transition-colors w-fit'
+        >
+          <ArrowLeft className='w-4 h-4' />
+          Back to Events
+        </Link>
+
+        {/* 12-Column Responsive Layout */}
+        <div className='grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8'>
+          {/* Left Column (7 cols): Title & Overview */}
+          <div className='lg:col-span-7 flex flex-col gap-4'>
             <span className='text-caption text-size-small font-secondary tracking-widest'>
               {event.id}
             </span>
@@ -29,40 +48,81 @@ const eventDetailPage = async (props: eventDetailPageProps) => {
             <p className='text-size-body font-secondary text-caption max-w-2xl leading-relaxed'>
               {event.description}
             </p>
+            
           </div>
 
-          <div className='grid grid-cols-2 sm:grid-cols-4 gap-6 border-t border-border-subtle pt-6'>
-            <div className='flex flex-col gap-1'>
-              <span className='text-caption uppercase tracking-wider text-size-caption'>Year</span>
-              <span className='text-size-body font-secondary font-bold text-heading'>{event.date}</span>
+          {/* Right Sidebar (5 cols): Metadata + Tools */}
+          <div className='lg:col-span-5 flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-border-subtle pt-6 lg:pt-0 lg:pl-8'>
+            <div className='grid grid-cols-2 gap-6'>
+              <div className='flex flex-col gap-1'>
+                <span className='text-caption uppercase tracking-wider'>Date</span>
+                <span className='text-size-body font-secondary font-bold text-heading'>{event.date}</span>
+              </div>
+              <div className='flex flex-col gap-1'>
+                <span className='text-caption uppercase tracking-wider'>location</span>
+                <span className='text-size-body font-secondary font-bold text-heading'>{event.location}</span>
+              </div>
             </div>
-            <div className='flex flex-col gap-1'>
-              <span className='text-caption uppercase tracking-wider text-size-caption'>Role</span>
-              <span className='text-size-body font-secondary font-bold text-heading'>{event.location}</span>
-            </div>
-            <div className='flex flex-col gap-1 col-span-2 sm:col-span-2'>
-              <span className='text-caption uppercase tracking-wider text-size-caption'>Services</span>
+             <div className='flex flex-col gap-1'>
+              <span className='text-caption uppercase tracking-wider'>Status</span>
               <span className='text-size-body font-secondary font-bold text-heading'>
                 {event.status}
               </span>
             </div>
-          </div>
-        </Container>
-      </Section>
 
-      <Section className='w-full bg-surface-page'>
-        <Container>
-          <div className='w-full rounded-2xl overflow-hidden border border-border-subtle'>
-            <img
-            
+            {/* Status */}
+           
+
+          
+          </div>
+        </div>
+      </Container>
+
+      {/* Hero Frame: Previous | Hero Image | Next */}
+      <Container className='mt-12'>
+        <div className='flex items-center gap-3 sm:gap-6 w-full'>
+          {/* Previous Link */}
+          <Link
+            href={`/events/${prevEvent.slug}`}
+            className='group flex flex-col gap-1 text-left shrink-0 max-w-30 sm:max-w-40'
+          >
+            <span className='inline-flex items-center gap-1.5 text-caption text-size-small font-secondary uppercase tracking-wider group-hover:text-heading transition-colors'>
+              <ArrowLeft className='w-3.5 h-3.5 shrink-0' />
+              Previous
+            </span>
+            <span className='text-small sm:text-size-body font-secondary font-bold text-heading truncate'>
+              {prevEvent.title}
+            </span>
+          </Link>
+
+          {/* Center Image Container */}
+          <div className='flex-1 max-w-2xl lg:max-w-3xl aspect-video relative rounded-2xl overflow-hidden border border-border-subtle shadow-md mx-auto'>
+            <Image
+              src={event.image}
               alt={event.title}
-              className='w-full h-auto object-cover'
+              fill
+              priority
+              className='object-cover'
             />
           </div>
-        </Container>
-      </Section>
-    </>
+
+          {/* Next Link */}
+          <Link
+            href={`/events/${nextEvent.slug}`}
+            className='group flex flex-col gap-1 text-right items-end shrink-0 max-w-30 sm:max-w-40'
+          >
+            <span className='inline-flex items-center gap-1.5 text-caption text-size-small font-secondary uppercase tracking-wider group-hover:text-heading transition-colors'>
+              Next
+              <ArrowRight className='w-3.5 h-3.5 shrink-0' />
+            </span>
+            <span className='text-small sm:text-size-body font-secondary font-bold text-heading truncate'>
+              {nextEvent.title}
+            </span>
+          </Link>
+        </div>
+      </Container>
+    </section>
   )
 }
 
-export default eventDetailPage
+export default EventDetailPage

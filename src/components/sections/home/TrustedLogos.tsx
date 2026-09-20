@@ -1,26 +1,62 @@
 'use client'
 
 import React from 'react'
-import { motion } from 'framer-motion'
 import Section from '@/components/atoms/Section';
+import Image from 'next/image'
 
 type Logo = { name: string; src: string }
-type TrustedLogosProps = { logos?: Logo[]; speed?: number }
+
+type TrustedLogosProps = {
+  logos?: Logo[]
+  speed?: number                    // seconds for one full loop (lower = faster)
+  direction?: 'left' | 'right'      // which way the marquee scrolls
+  logoHeight?: string               // e.g. 'h-6 sm:h-7' — controls logo image size
+  card?: boolean                    // true = each logo sits in a bordered card
+  repeat?: number                   // how many times to repeat the logo list (default 2)
+}
 
 const defaultLogos: Logo[] = [
-  { name: 'Sum', src: '/logos/sum.svg' },
-  { name: 'Logoipsum 1', src: '/logos/logoipsum-1.svg' },
-  { name: 'Logoipsum 2', src: '/logos/logoipsum-2.svg' },
-  { name: 'Logoipsum 3', src: '/logos/logoipsum-3.svg' },
-  { name: 'Logoipsum 4', src: '/logos/logoipsum-4.svg' },
-  { name: 'Logoipsum 5', src: '/logos/logoipsum-5.svg' },
+  { name: 'Sum', src: '/icon.png' },
+  { name: 'Logoipsum 1', src: '/Light.png' },
+  { name: 'Logoipsum 2', src: '/Light.png' },
+  { name: 'Logoipsum 3', src: '/Light.png' },
+  { name: 'Logoipsum 4', src: '/Light.png' },
+  { name: 'Logoipsum 5', src: '/Light.png' },
 ]
 
 const TrustedLogos = (props: TrustedLogosProps) => {
 
   const logos = props.logos || defaultLogos
-  const speed = props.speed || 25
-  const marqueeLogos = [...logos, ...logos]
+  const speed = props.speed || 20
+  const direction = props.direction || 'left'
+  const logoHeight = props.logoHeight || 'h-12 sm:h-14'
+  const card = props.card ?? false
+
+  // Minimum of 2 — the seamless-loop trick requires at least two identical
+  // copies. Raise this if you have very few logos and want a fuller-looking
+  // marquee on wide screens (e.g. repeat={4}).
+  const repeatCount = Math.max(2, props.repeat ?? 4)
+
+  // FIX: this used to be manually written out as
+  // [...logos, ...logos, ...logos, logos, logos, ...logos] — two of those
+  // entries were missing the "..." spread, which inserts the whole array as
+  // a single broken element instead of individual logos (logo.name /
+  // FIX: this used to be manually written out as
+  // [...logos, ...logos, ...logos, logos, logos, ...logos] — two of those
+  // entries were missing the "..." spread, which inserts the whole array as
+  // a single broken element instead of individual logos (logo.name /
+  // logo.src come back undefined for those). Array.from(...).flat() below
+  // always spreads correctly, no matter how many times you repeat it.
+  const marqueeLogos = Array.from({ length: repeatCount }, () => logos).flat()
+
+  // The animation must shift by exactly "one copy's width" to loop
+  // seamlessly — that's 100% / repeatCount, NOT a hardcoded -50%.
+  // -50% is only correct when repeatCount is exactly 2. This CSS variable
+  // keeps the math correct automatically no matter what repeatCount is.
+  const marqueeStyle = {
+    animationDuration: `${speed}s`,
+    ['--marquee-repeat' as string]: repeatCount,
+  } as React.CSSProperties
 
   return (
     <Section className='w-full py-10 sm:py-14 bg-surface-page overflow-hidden'>
@@ -30,29 +66,75 @@ const TrustedLogos = (props: TrustedLogosProps) => {
         <div className='absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-linear-to-r from-surface-page to-transparent z-10 pointer-events-none' />
         <div className='absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-linear-to-l from-surface-page to-transparent z-10 pointer-events-none' />
 
-        {/* 1 row track — moves right (left to right), confirmed direction */}
+        {/*
+          Continuous CSS-driven loop (no JS restart hitch). The shift amount
+          (calc(-100% / var(--marquee-repeat))) always equals exactly "one
+          copy's width," so it stays seamless regardless of how many times
+          the logo list is repeated.
+        */}
         <div className='flex w-full overflow-hidden select-none'>
-          <motion.div
-            animate={{ x: ['-50%', '0%'] }}
-            transition={{ duration: speed, ease: 'linear', repeat: Infinity }}
-            className='flex flex-nowrap w-max shrink-0 items-center gap-12 sm:gap-20 pr-12 sm:pr-20'
+          <div
+            className={`marquee-track ${direction === 'left' ? 'marquee-left' : 'marquee-right'} flex flex-nowrap w-max shrink-0 items-center gap-6 sm:gap-10`}
+            style={marqueeStyle}
           >
-            {marqueeLogos.map((logo, index) => (
-              <div
-                key={`${logo.name}-${index}`}
-                className='shrink-0 flex items-center justify-center grayscale opacity-70 hover:opacity-100 dark:invert transition-all duration-300'
-              >
-                <img
-                  src={logo.src}
-                  alt={`${logo.name} logo`}
-                  className='h-6 sm:h-7 w-auto object-contain max-w-35'
-                />
-              </div>
-            ))}
-          </motion.div>
+            {marqueeLogos.map((logo, index) =>
+              card ? (
+                // CARD MODE — each logo in its own bordered, padded box
+                <div
+                  key={`${logo.name}-${index}`}
+                  className='relative shrink-0 flex items-center justify-center w-28 h-16 sm:w-36 sm:h-20 rounded-xl border border-border-subtle/40 bg-surface-default grayscale opacity-70 hover:opacity-100 hover:grayscale-0 transition-all duration-300'
+                >
+                <Image
+                src={logo.src}
+                alt={`${logo.name} logo`}
+                width={144}
+                height={56}
+                className={`${logoHeight} w-auto object-contain max-w-24`}
+              />
+                </div>
+              ) : (
+                // PLAIN MODE — no card, just the logo (original style)
+                <div
+                  key={`${logo.name}-${index}`}
+                  className='relative shrink-0 flex items-center justify-center grayscale opacity-70 hover:opacity-100 dark:invert transition-all duration-300'
+                >
+                  <Image
+                src={logo.src}
+                alt={`${logo.name} logo`}
+                width={144}
+                height={56}
+                className={`${logoHeight} w-auto object-contain max-w-24`}
+              />
+                </div>
+              )
+            )}
+          </div>
         </div>
 
       </div>
+
+      <style jsx>{`
+        .marquee-track {
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          will-change: transform;
+        }
+        .marquee-left {
+          animation-name: marquee-scroll-left;
+        }
+        .marquee-right {
+          animation-name: marquee-scroll-right;
+        }
+
+        @keyframes marquee-scroll-left {
+          from { transform: translateX(0%); }
+          to   { transform: translateX(calc(-100% / var(--marquee-repeat))); }
+        }
+        @keyframes marquee-scroll-right {
+          from { transform: translateX(calc(-100% / var(--marquee-repeat))); }
+          to   { transform: translateX(0%); }
+        }
+      `}</style>
     </Section>
   )
 }

@@ -3,7 +3,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
-import { FaLinkedin, FaTwitter } from 'react-icons/fa'
+import { FaLinkedin, FaGithub } from 'react-icons/fa'
+import Image from 'next/image'
 
 export type Member = {
   id: string
@@ -11,8 +12,8 @@ export type Member = {
   title: string
   bio: string
   photo: string
-  FalinkedinHref?: string
-  FatwitterHref?: string
+  linkedinHref?: string
+  githubHref?: string
   badgeText?: string
 }
 
@@ -21,30 +22,55 @@ type TeamMemberCardProps = {
   isActive: boolean
   onActivate: () => void
 }
-
 const TeamMemberCard = ({ member, isActive, onActivate }: TeamMemberCardProps) => {
   return (
     <motion.div
       layout
       onClick={onActivate}
+      role='button'
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') onActivate()
+      }}
       className='relative rounded-2xl bg-surface-default border border-border-subtle cursor-pointer'
       transition={{ layout: { duration: 0.4, ease: 'easeInOut' } }}
     >
-      {/* Floating badge */}
-      {isActive && member.badgeText && (
-        <motion.div
-          initial={{ opacity: 0, y: 10, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
-          className='absolute -top-3 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-full bg-primary text-white text-caption font-secondary font-medium whitespace-nowrap shadow-lg flex items-center gap-1'
-        >
-          {member.badgeText}
-          <ArrowRight className='w-3 h-3' />
-        </motion.div>
-      )}
-
       <motion.div layout='position' className='p-6 flex flex-col gap-4'>
-        {/* Active details (bio, title, socials) */}
+        {/* Member Portrait with Floating Top-Right Overlay Badge */}
+        <motion.div layout='position' className='group relative w-full aspect-square rounded-xl overflow-hidden'>
+         <Image
+          src={member.photo}
+          alt={member.name}
+          fill
+          sizes='(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 240px'
+          className='object-cover object-top transition-[filter,transform] duration-500 ease-out group-hover:scale-110'
+          style={{
+            filter: isActive ? 'none' : 'grayscale(100%) contrast(110%)',
+          }}
+        />
+
+          {/* Floating Badge (UI Standard Position) */}
+          {isActive && member.badgeText && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.2 }}
+              className='absolute top-3 right-3 z-10 px-3 py-1 rounded-full bg-primary text-white text-size-caption font-secondary font-medium whitespace-nowrap shadow-md flex items-center gap-1 backdrop-blur-md'
+            >
+              {member.badgeText}
+              <ArrowRight className='w-3 h-3' />
+            </motion.div>
+          )}
+        </motion.div>
+
+        {/* Inactive State Name */}
+        {!isActive && (
+          <span className='text-small font-secondary text-caption text-center'>
+            {member.name}
+          </span>
+        )}
+
+        {/* Active Details (Immediate Name -> Title -> Bio flow) */}
         {isActive && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -54,48 +80,29 @@ const TeamMemberCard = ({ member, isActive, onActivate }: TeamMemberCardProps) =
             className='flex flex-col gap-2'
           >
             <div className='flex flex-col'>
-              <span className='text-body font-primary font-bold text-heading'>
+              <span className='text-size-body font-primary font-bold text-heading'>
                 {member.name}
               </span>
-              <span className='text-small font-secondary text-primary'>
+              <span className='text-small font-secondary text-primary font-medium'>
                 {member.title}
               </span>
             </div>
             <p className='text-small font-secondary text-caption leading-relaxed'>
               {member.bio}
             </p>
-            <div className='flex items-center gap-3 pt-1'>
-              {member.FalinkedinHref && (
-                <a href={member.FalinkedinHref} onClick={(e) => e.stopPropagation()} aria-label='LinkedIn'>
+            <div className='flex items-center gap-3 pt-3 mt-1 border-t border-border-subtle'>
+              {member.linkedinHref && (
+                <a href={member.linkedinHref} onClick={(e) => e.stopPropagation()} aria-label='LinkedIn'>
                   <FaLinkedin className='w-4 h-4 text-caption hover:text-primary transition-colors' />
                 </a>
               )}
-              {member.FatwitterHref && (
-                <a href={member.FatwitterHref} onClick={(e) => e.stopPropagation()} aria-label='X / Twitter'>
-                  <FaTwitter className='w-4 h-4 text-caption hover:text-primary transition-colors' />
+              {member.githubHref && (
+                <a href={member.githubHref} onClick={(e) => e.stopPropagation()} aria-label='GitHub'>
+                  <FaGithub className='w-4 h-4 text-caption hover:text-primary transition-colors' />
                 </a>
               )}
             </div>
           </motion.div>
-        )}
-
-        {/* Member Portrait */}
-        <motion.div layout='position' className='w-full aspect-square rounded-xl overflow-hidden'>
-          <img
-            src={member.photo}
-            alt={member.name}
-            className='w-full h-full object-cover transition-[filter] duration-500'
-            style={{
-              filter: isActive ? 'none' : 'grayscale(100%) contrast(110%)',
-            }}
-          />
-        </motion.div>
-
-        {/* Compact Name (Inactive State) */}
-        {!isActive && (
-          <span className='text-small font-secondary text-caption text-center'>
-            {member.name}
-          </span>
         )}
       </motion.div>
     </motion.div>
