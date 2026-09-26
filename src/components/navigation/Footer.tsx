@@ -6,18 +6,15 @@ import Button from '@/components/atoms/Button'
 import Container from '@/components/atoms/Container'
 import Section from '../atoms/Section'
 import Input from '@/components/atoms/Input'
+import { SERVICES_DATA } from '@/components/sections/services/Service'
+
 import Link from 'next/link'
 
 type LinkItem = { label: string; href: string }
-
-const SERVICE_LINKS_DEFAULT: LinkItem[] = [
-  { label: 'Brand Identity', href: '/services/brand-identity' },
-  { label: 'UI/UX Design', href: '/services/ui-ux-design' },
-  { label: 'Web Development', href: '/services/web-development' },
-  { label: 'Product Design', href: '/services/product-design' },
-  { label: 'Digital Solutions', href: '/services/digital-solutions' },
-  { label: 'Growth', href: '/services/growth' },
-]
+const SERVICE_LINKS_DEFAULT: LinkItem[] = SERVICES_DATA.map((service) => ({
+  label: service.label,
+  href: `/services#${service.id}`,
+}))
 
 const COMPANY_LINKS_DEFAULT: LinkItem[] = [
   { label: 'About', href: '/about' },

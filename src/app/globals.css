@@ -17,26 +17,14 @@
    ================================================================== */
 
 
-/* ------------------------------------------------------------------
-   1. CUSTOM DARK VARIANT
-   Your ThemeToggle sets data-theme="dark" as an ATTRIBUTE on <html>,
-   not a CSS class. Tailwind's default dark: checks the browser's
-   system setting instead — this line overrides that so dark: (and
-   the [data-theme="dark"] block below) actually responds to your
-   toggle button, not the visitor's OS setting.
+/* 
    ------------------------------------------------------------------ */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 
 /* ------------------------------------------------------------------
    1b. FONT FAMILIES
-   FIX: --font-primary/secondary/mono were referenced in the @theme
-   bridge (section 7) but never actually defined anywhere — they were
-   self-referencing (var(--font-primary): var(--font-primary)), which
-   resolves to nothing. Defined here with safe system-font fallback
-   stacks. Swap the first name in each stack for your real brand
-   fonts (and add @font-face / next/font imports as needed) — the
-   fallback stack after it is generic and safe to keep either way.
+  .
    ------------------------------------------------------------------ */
 :root {
   --font-primary: "Your Heading Font", ui-sans-serif, system-ui, sans-serif;
@@ -69,9 +57,7 @@
   --primary-800: #4d070c;
   --primary-900: #270406;
   --primary-950: #130203;
-  /* Flagged in Navbar Figma export — distinct from primary-600, do not merge.
-     NOTE: not present anywhere in your Alias/Brand tokens.json — I couldn't
-     verify this one the way I verified everything else. Confirm its source. */
+  /* Extra deep shade for one-off uses (e.g. Navbar background) */
   --primary-deep: #9b111e;
 
   /* Neutral (Alias.Neutral → SoftWhite) */
@@ -411,13 +397,7 @@
 
   --border-primary: var(--primary-600);
   --border-primary-hover: var(--primary-500);
-  /* FIX: was --border-subtle / --border-subtle-hover — didn't match
-     light mode's --border-primary-subtle name, or the name your
-     Tailwind bridge (--color-border-subtle) actually reads. That
-     mismatch meant dark mode silently kept light mode's gray border
-     instead of switching to this dark-foundation value. Renamed to
-     match; values unchanged (still your chosen neutral, not tokens.json's
-     literal Primary.900/800 — that deviation looks intentional). */
+ 
   --border-primary-subtle: var(--dark-foundation-400);
   --border-primary-subtle-hover: var(--dark-foundation-300);
   --border-error: var(--error-600);
@@ -447,20 +427,20 @@
 
 /* ------------------------------------------------------------------
    5. TYPOGRAPHY SCALE — Brand Guidelines PDF "Hierarchy" page
-   Fixed values (not responsive-scaled) since no component currently
-   needs per-breakpoint type sizes. Fixes 3 bugs from before:
-   text-cta was missing, text-small pointed at the wrong number
-   (12px caption instead of 14px), text-h1 was missing entirely.
-   ------------------------------------------------------------------ */
+     ------------------------------------------------------------------ */
 :root {
-  --raw-display: 72px;
-  --raw-display-line-height: 80px;
-  --raw-h1: 56px;
-  --raw-h1-line-height: 64px;
-  --raw-h2: 40px;
-  --raw-h2-line-height: 48px;
-  --raw-h3: 32px;
-  --raw-h3-line-height: 40px;
+  /* Fluid — scale between 375px and 1440px viewport, unitless line-height
+     so it auto-follows the clamped font-size (no separate LH clamp needed) */
+  --raw-display: clamp(2.5rem, 1.795rem + 3vw, 4.5rem);   /* 40px → 72px */
+  --raw-display-line-height: 1.1;
+  --raw-h1: clamp(2rem, 1.47rem + 2.25vw, 3.5rem);        /* 32px → 56px */
+  --raw-h1-line-height: 1.15;
+  --raw-h2: clamp(1.625rem, 1.32rem + 1.3vw, 2.5rem);     /* 26px → 40px */
+  --raw-h2-line-height: 1.2;
+  --raw-h3: clamp(1.375rem, 1.16rem + 0.94vw, 2rem);      /* 22px → 32px */
+  --raw-h3-line-height: 1.25;
+
+  /* Fixed — small enough to not need fluid scaling */
   --text-body-size: 16px;
   --text-body-size--line-height: 28px;
   --raw-small: 14px;
@@ -472,32 +452,6 @@
 }
 
 
-/* ------------------------------------------------------------------
-   6. SPACING SCALE — tokens.json Spacing section, mobile-first
-   FIX: the previous version hardcoded one flat set of numbers and
-   labeled it "desktop values," but --space-section (64px) and
-   --space-container (48px) were actually tokens.json's MOBILE
-   numbers (Desktop is 128px / 96px) — meaning desktop screens were
-   silently getting mobile spacing. It also never read the Tablet or
-   Desktop breakpoints at all, so nothing here actually responded to
-   viewport size.
-
-   Fixed: base values below are the true Mobile numbers, then each
-   breakpoint overrides them via media query, matching frame widths
-   from tokens.json Responsive/Tablet (1024px) and Responsive/Desktop
-   (1440px). Variable names are unchanged, so nothing that already
-   consumes --space-* needs to change — only the resolved values do.
-
-   Tokens with a single shared value across all three breakpoints
-   (--space-mini, --space-icon-padding, --space-tag-spacing) are left
-   flat on purpose — tokens.json defines the same number for each.
-
-   --space-page-margin / --space-grid-gutter / --space-card-gap are
-   NOT present in tokens.json (project-specific additions) — left
-   flat since there's no source breakpoint data for them. Add media
-   query overrides for these yourself if your layout needs them to
-   scale too.
-   ------------------------------------------------------------------ */
 :root {
   /* Mobile base (< 1024px) */
   --space-section: 64px;
@@ -515,15 +469,15 @@
   --space-tag-spacing: 8px;
 
   /* Project-specific, no tokens.json breakpoint data — kept flat */
-  --space-page-margin: 80px;
+--space-page-margin: 24px;
   --space-grid-gutter: 24px;
-  --space-card-gap: 100px;
+  --space-card-gap: 24px;
 }
 
 /* Tablet (≥ 1024px) — Responsive/Tablet */
 @media (min-width: 1024px) {
   :root {
-    --space-section: 96px;
+    --space-sect-ion: 96px;
     --space-container: 64px;
     --space-content: 20px;
     --space-tight: 8px;
@@ -533,7 +487,9 @@
     --space-compact: 8px;
 
     --space-inline-sm: 24px;
-  }
+    --space-page-margin: 48px;
+    --space-card-gap: 48px;
+    }
 }
 
 /* Desktop (≥ 1440px) — Responsive/Desktop */
@@ -549,17 +505,13 @@
     --space-compact: 8px;
 
     --space-inline-sm: 32px;
+    --space-page-margin: 64px;
+    --space-card-gap: 64px;
   }
 }
 
 
-/* ------------------------------------------------------------------
-   6b. BORDER RADIUS SCALE
-   Did not exist before — adding now since components need it.
-   Matches values actually used across Navbar/Button/CollageSection/
-   SelectedWork so far. Add more steps here if a new value shows up,
-   rather than using a raw rounded-[Npx] in a component.
-   ------------------------------------------------------------------ */
+
 :root {
   --raw-radius-sm: 8px;
   --raw-radius-md: 12px;
@@ -578,13 +530,6 @@
 }
 
 
-/* ------------------------------------------------------------------
-   6d. FONT WEIGHT + LETTER SPACING
-   Not present in tokens.json — this is a generic, standard scale
-   (not tied to any specific brand), added because components will
-   need it. Adjust the numbers only if your brand guidelines specify
-   different weight values.
-   ------------------------------------------------------------------ */
 :root {
   --font-weight-regular: 400;
   --font-weight-medium: 500;
@@ -599,11 +544,7 @@
 
 /* ------------------------------------------------------------------
    6e. MOTION — duration + easing
-   Not present in tokens.json. Generic, widely-used defaults (Material/
-   Tailwind-style conventions) so hover/transition states you already
-   defined colors for (e.g. --primary-500 → --primary-600 on hover)
-   have a consistent, reusable timing to animate with instead of each
-   component inventing its own ms value.
+
    ------------------------------------------------------------------ */
 :root {
   --duration-fast: 150ms;
@@ -616,14 +557,9 @@
 }
 
 
-/* ------------------------------------------------------------------
-   6f. ELEVATION — shadows
-   Not present in tokens.json. Neutral black-based shadows (generic,
-   theme-agnostic) rather than tinted to --primary, since elevation
-   shadows conventionally stay neutral regardless of brand color —
-   this is intentional, not an oversight, and works unchanged when
-   Primary is swapped on a future project.
-   ------------------------------------------------------------------ */
+/* /* ------------------------------------------------------------------
+   6f. ELEVATION — shadows */
+  
 :root {
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 1px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
@@ -641,10 +577,7 @@
 
 /* ------------------------------------------------------------------
    6g. Z-INDEX SCALE
-   Not present in tokens.json. Generic layering scale so future
-   dropdowns/modals/toasts/tooltips don't each invent their own
-   z-index number (the usual cause of stacking-context bugs).
-   ------------------------------------------------------------------ */
+   -------------------------------------------------------- */
 :root {
   --z-dropdown: 1000;
   --z-sticky: 1100;

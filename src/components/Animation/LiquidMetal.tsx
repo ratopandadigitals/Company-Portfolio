@@ -1,6 +1,6 @@
 'use client'
 
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useRef, useState } from 'react'
 import { LiquidMetal as LiquidMetalShader } from '@paper-design/shaders-react'
 
 type LiquidMetalProps = {
@@ -12,13 +12,7 @@ type LiquidMetalProps = {
 }
 
 /**
- * Reads the resolved value of a CSS custom property at runtime, instead
- * of hardcoding a hex string here. The shader needs a real color value
- * (it's a GPU uniform, not a CSS property), so it can't just be told
- * `var(--primary-500)` the way a DOM element could — but hardcoding an
- * actual hex guess would silently drift out of sync if the token ever
- * changes, and would be inventing a brand color value rather than
- * reading the one that already exists.
+ * Reads the resolved value of a CSS custom property at runtime.
  */
 function useCssVar(name: string, fallback: string) {
   const [value, setValue] = useState(fallback)
@@ -49,6 +43,27 @@ function useCssVar(name: string, fallback: string) {
   return value
 }
 
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+    const updatePreference = () => {
+      setPrefersReducedMotion(mediaQuery.matches)
+    }
+
+    updatePreference()
+    mediaQuery.addEventListener('change', updatePreference)
+
+    return () => {
+      mediaQuery.removeEventListener('change', updatePreference)
+    }
+  }, [])
+
+  return prefersReducedMotion
+}
+
 export const LiquidMetal = memo(function LiquidMetal({
   className = '',
   speed = 0.4,
@@ -56,26 +71,51 @@ export const LiquidMetal = memo(function LiquidMetal({
   distortion = 0.15,
   scale = 1,
 }: LiquidMetalProps) {
-  // Reads your actual brand primary token — whatever it's set to per
-  // project (red here, green/navy on a future project) — rather than a
-  // color guessed and hardcoded into this file.
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(true)
+  const prefersReducedMotion = usePrefersReducedMotion()
+
   const primary = useCssVar('--primary-500', '#888888')
 
+  useEffect(() => {
+    const element = containerRef.current
+
+    if (!element) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting)
+      },
+      { threshold: 0 },
+    )
+
+    observer.observe(element)
+
+    return () => observer.disconnect()
+  }, [])
+
+  const effectiveSpeed =
+    prefersReducedMotion || !isVisible ? 0 : speed
+
   return (
-    <div className={`absolute inset-0 z-0 overflow-hidden ${className}`.trim()}>
+    <div
+      ref={containerRef}
+      className={`absolute inset-0 z-0 overflow-hidden ${className}`.trim()}
+    >
       <LiquidMetalShader
         colorBack={primary}
-        colorTint="#ffffff"
-        speed={speed}
+        colorTint='#ffffff'
+        speed={effectiveSpeed}
         repetition={repetition}
         distortion={distortion}
         softness={0}
         shiftRed={0.3}
         shiftBlue={-0.3}
         angle={45}
-        shape="none"
+        shape='none'
         scale={scale}
-        fit="cover"
+        fit='cover'
+        maxPixelCount={1920 * 1080}
         style={{ width: '100%', height: '100%' }}
       />
     </div>

@@ -1,27 +1,52 @@
 import type { Metadata } from "next"
-import { Inter, Roboto, JetBrains_Mono } from "next/font/google"
+import localFont from "next/font/local"
 import Footer from "@/components/navigation/Footer"
 import Navbar from "@/components/navigation/Navbar"
 
 import "./globals.css"
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+const inter = localFont({
+  src: [
+    { path: "../fonts/Inter/Inter-Regular.woff2", weight: "400" },
+    { path: "../fonts/Inter/Inter-Medium.woff2", weight: "500" },
+    { path: "../fonts/Inter/Inter-SemiBold.woff2", weight: "600" },
+    { path: "../fonts/Inter/Inter-Bold.woff2", weight: "700" },
+    { path: "../fonts/Inter/Inter-ExtraBold.woff2", weight: "800" },
+  ],
   variable: "--font-primary",
   display: "swap",
 })
 
-const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
+const roboto = localFont({
+  src: [
+    { path: "../fonts/Roboto/Roboto-Regular.ttf", weight: "400" },
+    { path: "../fonts/Roboto/Roboto-Medium.ttf", weight: "500" },
+    { path: "../fonts/Roboto/Roboto-SemiBold.ttf", weight: "600" },
+    { path: "../fonts/Roboto/Roboto-Bold.ttf", weight: "700" },
+  ],
   variable: "--font-secondary",
   display: "swap",
 })
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const jetbrainsMono = localFont({
+  src: [
+    {
+      path: "../fonts/JetBrainsMono/JetBrainsMono-Regular.woff2",
+      weight: "400",
+    },
+    {
+      path: "../fonts/JetBrainsMono/JetBrainsMono-Medium.woff2",
+      weight: "500",
+    },
+    {
+      path: "../fonts/JetBrainsMono/JetBrainsMono-SemiBold.woff2",
+      weight: "600",
+    },
+    {
+      path: "../fonts/JetBrainsMono/JetBrainsMono-Bold.woff2",
+      weight: "700",
+    },
+  ],
   variable: "--font-mono",
   display: "swap",
 })
@@ -29,7 +54,7 @@ export const metadata: Metadata = {
   title: { default: "Rato Panda Digitals", template: "%s | Rato Panda Digitals" },
   description: "A digital design and development studio.",
   icons: {
-    icon: { url: "/icon.png", sizes: "44x44" },
+    icon: { url: "/icon.webp", sizes: "180x130" },
   },
 }
 

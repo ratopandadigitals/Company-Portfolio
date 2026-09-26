@@ -85,20 +85,28 @@ export function AnimatedStepper({
     updateStep(totalSteps + 1)
   }
 useEffect(() => {
-    if (!autoPlay || isCompleted) return
+  if (!autoPlay || isCompleted) return
 
-    const timer = setInterval(() => {
-      if (isLastStep) {
-        setDirection(1)
-        updateStep(1) // Loops back to Step 1
-      } else {
-        setDirection(1)
-        updateStep(currentStep + 1)
-      }
-    }, autoPlayInterval)
+  const handleVisibilityChange = () => {
+    if (document.hidden) return
 
-    return () => clearInterval(timer)
-  }, [autoPlay, autoPlayInterval, currentStep, isCompleted, isLastStep, updateStep])
+    if (isLastStep) {
+      setDirection(1)
+      updateStep(1)
+    } else {
+      setDirection(1)
+      updateStep(currentStep + 1)
+    }
+  }
+
+  const timer = setInterval(() => {
+    if (!document.hidden) {
+      handleVisibilityChange()
+    }
+  }, autoPlayInterval)
+
+  return () => clearInterval(timer)
+}, [autoPlay, autoPlayInterval, currentStep, isCompleted, isLastStep, updateStep])
   return (
     <div
       className={`flex w-full flex-col items-center justify-center ${rest.className || ''}`}

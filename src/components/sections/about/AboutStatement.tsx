@@ -18,7 +18,7 @@ function Pill({ label, icon: Icon }: PillProps) {
 export default function RatoPandaSection() {
   return (
     <section className="w-full bg-surface-page py-16 px-6 flex flex-col items-center justify-center text-center">
-      <div className="max-w-4xl mx-auto flex flex-col items-center gap-4">
+      <div className="w-full min-w-0 max-w-4xl mx-auto flex flex-col items-center gap-4">
         
         {/* Top Accent: Brackets with Center Icon */}
         <div className="flex items-center gap-2 text-primary text-3xl font-highlight font-m">
@@ -39,7 +39,7 @@ export default function RatoPandaSection() {
 
         {/* Pills Layout with Lucide Icons */}
         <div className="flex flex-col items-center gap-3 pt-2">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <Pill label="Strategy" icon={Target} />
             <Pill label="Design" icon={Palette} />
             <Pill label="Technology" icon={Cpu} />

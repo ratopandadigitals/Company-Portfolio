@@ -13,7 +13,7 @@ type HeroSectionProps = {
   ctaLabel?: string
   ctaHref?: string
   avatarSrcs?: string[]
-  workImageSrcs?: string[]
+  workImageSrcs?: [string, string, string]
 }
 
 // Parent stagger — triggers elements top to bottom
@@ -74,22 +74,20 @@ const pillEntranceVariants: Variants = {
   },
 }
 
-const HeroSection = (props: HeroSectionProps) => {
-  const eyebrow = props.eyebrow || 'Creative Technology · Est. 2026'
-  const description =
-    props.description ||
-    'From strategy and UI/UX to development, we create purposeful digital experiences built around your brand and your users.'
-  const ctaLabel = props.ctaLabel || 'Start a Project'
-  const ctaHref = props.ctaHref || '/contact'
+const HeroSection = ({
+  eyebrow = 'Creative Technology · Est. 2026',
+  description = 'From strategy and UI/UX to development, we create purposeful digital experiences built around your brand and your users.',
+  ctaLabel = 'Start a Project',
+  ctaHref = '/contact',
+  avatarSrcs = ['/Team1.jpeg', '/Team2.jpeg'],
+  workImageSrcs = [
+    '/design.jpg',
+    '/craft.jpg',
+    '/build.jpg',
 
-  // Cap team images to max 2 avatars matching the video design
-  const avatarSrcs = (props.avatarSrcs || ['/Team1.jpeg', '/Team2.jpeg']).slice(0, 2)
 
-  const workImageSrcs = props.workImageSrcs || [
-    'https://images.unsplash.com/photo-1616469829941-c7200edec809?auto=format&fit=crop&w=200&q=80',
-    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=200&q=80',
-    'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=200&q=80',
-  ]
+  ],
+}: HeroSectionProps) => {
 
   return (
     <Section className='bg-surface-page'>
@@ -154,7 +152,7 @@ const HeroSection = (props: HeroSectionProps) => {
 
                 >
                    <Image
-                    src={workImageSrcs[1]}
+                    src={workImageSrcs[0]}
                     alt='Project preview'
                     fill
                     sizes='(max-width: 640px) 40px, 64px'
@@ -182,7 +180,7 @@ const HeroSection = (props: HeroSectionProps) => {
                     ease: 'easeInOut',
                     delay: 0.3,
                   }}
-                  className='h-10 sm:h-16 aspect-81/64 rounded-full overflow-hidden shrink-0'
+                  className=' relative h-10 sm:h-16 aspect-81/64 rounded-full overflow-hidden shrink-0'
                 >
                   <Image
                     src={workImageSrcs[1]}
@@ -213,7 +211,7 @@ const HeroSection = (props: HeroSectionProps) => {
                     ease: 'easeInOut',
                     delay: 0.6,
                   }}
-                  className='h-10 sm:h-16 aspect-81/64 rounded-full overflow-hidden shrink-0'
+                  className=' relative h-10 sm:h-16 aspect-81/64 rounded-full overflow-hidden shrink-0'
                 >
                   <Image
                     src={workImageSrcs[2]}

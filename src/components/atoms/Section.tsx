@@ -4,10 +4,11 @@ type SectionProps = {
   children: React.ReactNode
   className?: string
 }
-
-// Uses your design token (--space-section: 128px) via Tailwind v4 py-stack-section,
-// allowing section backgrounds to stretch full-width while managing vertical rhythm.
+// Add above the return:
+// NOTE: top-padding only, by design — see globals.css audit. Footer must supply
+// its own top spacing; do not change this to py- without checking Footer.
 const Section = ({ children, className = '' }: SectionProps) => {
+  
   return (
     <section className={`w-full pt-stack-container ${className}`}>
       {children}

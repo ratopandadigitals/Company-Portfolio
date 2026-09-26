@@ -103,6 +103,8 @@ const MediaItem = ({
     <Image
       src={item.url}
       alt={item.title || 'Gallery item'}
+      fill
+      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
       onClick={onClick}
       loading="lazy"
       decoding="async"

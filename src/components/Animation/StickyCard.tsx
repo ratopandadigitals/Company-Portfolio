@@ -76,7 +76,7 @@ export default function StickyCard<T>({
 
       return () => {
         scrollTimeline.kill()
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+      
       }
     },
     { scope: containerRef }

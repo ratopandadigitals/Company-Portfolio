@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState} from 'react'
+import React, { useEffect, useState} from 'react'
 import { usePathname } from 'next/navigation'
 import { Sun, Moon, Menu, X } from 'lucide-react'
 import Logo from '@/components/atoms/Logo'
@@ -38,18 +38,20 @@ const Navbar = (props: NavbarProps) => {
   const ctaLabel = props.ctaLabel || 'Contact'
   const ctaHref = props.ctaHref || '/contact'
   const badgeText = props.badgeText || 'Available for New Projects'
-  const logoLightSrc = props.logoLightSrc || '/Light.png'
-  const logoDarkSrc = props.logoDarkSrc || '/Dark.png'
+  const logoLightSrc = props.logoLightSrc || '/Light.webp'
+  const logoDarkSrc = props.logoDarkSrc || '/Dark.webp'
 
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-  if (typeof window === 'undefined') return true
+  const [isDarkMode, setIsDarkMode] = useState(true)
 
-  const savedTheme = localStorage.getItem('theme')
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme')
+    const shouldUseDarkMode = savedTheme !== 'light'
 
-  return savedTheme !== 'light'
-})
+    setIsDarkMode(shouldUseDarkMode)
+    document.documentElement.setAttribute('data-theme', shouldUseDarkMode ? 'dark' : 'light')
+  }, [])
 
   const toggleTheme = () => {
     const next = !isDarkMode

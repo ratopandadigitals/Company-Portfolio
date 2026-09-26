@@ -16,7 +16,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     id: 'brand-design-system',
     label: 'Brand & Design System',
     title: 'Brand & Design System',
-    image: '/',
+    image: '/Service/Brand&DesignSystem.webp',
     description:
       'We build the full foundation of your brand\u2019s visual identity \u2014 logo design, visual guidelines, color palettes, typography, and core design assets.',
     tags: ['Brand Identity'],
@@ -28,7 +28,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     id: 'ux-research-planning',
     label: 'UX Research & Product Planning',
     title: 'UX Research & Product Planning',
-    image: 'https://picsum.photos/seed/ux-research-planning/900/700',
+    image: '/Service/UXResearch&ProductPlanning.webp',
     description:
       'We start with target audience analysis, competitor benchmarking, and modern reference mapping, then map user flows and navigation structure, and define technical scope, feature specifications, and project milestones in a full PRD before any design begins.',
     tags: ['User & Market Research', 'Information Architecture', 'PRD'],
@@ -40,7 +40,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     id: 'ui-design-prototyping',
     label: 'UI Design & Prototyping',
     title: 'UI Design & Prototyping',
-    image: 'https://picsum.photos/seed/ui-design-prototyping/900/700',
+    image: '/Service/UiDesign&Prototyping.webp',
     description:
       'From low-fidelity wireframes defining content order and page flow, to high-fidelity Figma UI design built on your PRD and brand system, to fully clickable prototypes you can preview and approve before a single line of code is written.',
     tags: ['Wireframing', 'Figma UI Design', 'Interactive Prototyping'],
@@ -52,7 +52,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     id: 'engineering-development',
     label: 'Engineering & Development',
     title: 'Engineering & Development',
-    image: 'https://picsum.photos/seed/engineering-development/900/700',
+    image: '/Service/Development.webp',
     description:
       'Figma designs become production React and Next.js front-ends, backed by full-stack web applications with backend setup, database management, and API integrations \u2014 plus native iOS and Android app builds when you need them.',
     tags: ['Front-End Engineering', 'Full-Stack Development', 'Mobile App Development'],
@@ -64,7 +64,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     id: 'digital-growth',
     label: 'Digital Growth',
     title: 'Digital Growth',
-    image: 'https://picsum.photos/seed/digital-growth/900/700',
+    image: '/Service/DigitalGrowth.webp',
     description:
       'Paid advertisement setup and targeted campaign execution, paired with channel management, content deployment, and brand visibility optimization to keep growth compounding after launch.',
     tags: ['Social Media Boosting', 'Digital Media Strategy'],

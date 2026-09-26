@@ -16,12 +16,12 @@ type TrustedLogosProps = {
 }
 
 const defaultLogos: Logo[] = [
-  { name: 'Sum', src: '/icon.png' },
-  { name: 'Logoipsum 1', src: '/Light.png' },
-  { name: 'Logoipsum 2', src: '/Light.png' },
-  { name: 'Logoipsum 3', src: '/Light.png' },
-  { name: 'Logoipsum 4', src: '/Light.png' },
-  { name: 'Logoipsum 5', src: '/Light.png' },
+  { name: 'Sum', src: '/icon.webp' },
+  { name: 'Logoipsum 1', src: '/Light.webp' },
+  { name: 'Logoipsum 2', src: '/Light.webp' },
+  { name: 'Logoipsum 3', src: '/Light.webp' },
+  { name: 'Logoipsum 4', src: '/Light.webp' },
+  { name: 'Logoipsum 5', src: '/Light.webp' },
 ]
 
 const TrustedLogos = (props: TrustedLogosProps) => {
@@ -37,22 +37,8 @@ const TrustedLogos = (props: TrustedLogosProps) => {
   // marquee on wide screens (e.g. repeat={4}).
   const repeatCount = Math.max(2, props.repeat ?? 4)
 
-  // FIX: this used to be manually written out as
-  // [...logos, ...logos, ...logos, logos, logos, ...logos] — two of those
-  // entries were missing the "..." spread, which inserts the whole array as
-  // a single broken element instead of individual logos (logo.name /
-  // FIX: this used to be manually written out as
-  // [...logos, ...logos, ...logos, logos, logos, ...logos] — two of those
-  // entries were missing the "..." spread, which inserts the whole array as
-  // a single broken element instead of individual logos (logo.name /
-  // logo.src come back undefined for those). Array.from(...).flat() below
-  // always spreads correctly, no matter how many times you repeat it.
-  const marqueeLogos = Array.from({ length: repeatCount }, () => logos).flat()
+    const marqueeLogos = Array.from({ length: repeatCount }, () => logos).flat()
 
-  // The animation must shift by exactly "one copy's width" to loop
-  // seamlessly — that's 100% / repeatCount, NOT a hardcoded -50%.
-  // -50% is only correct when repeatCount is exactly 2. This CSS variable
-  // keeps the math correct automatically no matter what repeatCount is.
   const marqueeStyle = {
     animationDuration: `${speed}s`,
     ['--marquee-repeat' as string]: repeatCount,
@@ -87,8 +73,8 @@ const TrustedLogos = (props: TrustedLogosProps) => {
                 <Image
                 src={logo.src}
                 alt={`${logo.name} logo`}
-                width={144}
-                height={56}
+                fill
+                sizes='(max-width: 640px) 112px, 144px'
                 className={`${logoHeight} w-auto object-contain max-w-24`}
               />
                 </div>
@@ -96,15 +82,15 @@ const TrustedLogos = (props: TrustedLogosProps) => {
                 // PLAIN MODE — no card, just the logo (original style)
                 <div
                   key={`${logo.name}-${index}`}
-                  className='relative shrink-0 flex items-center justify-center grayscale opacity-70 hover:opacity-100 dark:invert transition-all duration-300'
-                >
-                  <Image
-                src={logo.src}
-                alt={`${logo.name} logo`}
-                width={144}
-                height={56}
-                className={`${logoHeight} w-auto object-contain max-w-24`}
-              />
+                 className={`relative shrink-0 flex items-center justify-center w-24 ${logoHeight} grayscale opacity-70 hover:opacity-100 dark:invert transition-all duration-300`}>
+                    <Image
+                    src={logo.src}
+                    alt={`${logo.name} logo`}
+                     fill
+                    sizes='96px'
+                    className='object-contain'
+                  
+                  />
                 </div>
               )
             )}
