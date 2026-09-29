@@ -8,6 +8,7 @@ import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
 import Image from 'next/image'
 import { SERVICES_DATA,ServiceItem } from '@/components/sections/services/Service'
+import useDialogFocus from '@/components/hooks/useDialogFocus'
 
 type ContactSectionProps = {
   eyebrow?: string
@@ -26,6 +27,7 @@ const ContactSection = (props:ContactSectionProps) => {
   const [need, setNeed] = useState('')
   const [description, setDescription] = useState('')
   const [isOpen, setIsOpen] = useState(false)
+  const dialogRef = useDialogFocus<HTMLDivElement>(isOpen, () => setIsOpen(false))
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = { name, email, need, description }
@@ -168,6 +170,7 @@ const ContactSection = (props:ContactSectionProps) => {
       </Container>
     {isOpen && (
   <div
+        ref={dialogRef}
     className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6'
     role='dialog'
     aria-modal='true'

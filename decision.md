@@ -16,6 +16,16 @@ During the current audit, implementation edits were made before that approval. T
 
 The edits targeted the apparent owner of each issue: responsive form layout in the footer, the unused import in its component, and page-specific titles where metadata is declared. That was the implementation rationale, not a substitute for the owner's decision. The audit did not establish that these fixes are the only acceptable approaches.
 
+### Approved accessibility changes - 2026-09-29
+
+The owner explicitly approved the dialog, gallery keyboard-control, and mobile-menu Escape fixes after reviewing the UX findings. These changes are implemented and locally checked; cross-browser and assistive-technology verification remains pending. Details and results are recorded in `testing.md`.
+
+| Change | Files | Status |
+| --- | --- | --- |
+| Add shared dialog focus placement, Tab containment, Escape dismissal, and focus restoration; apply it to contact, newsletter, event-registration, and gallery dialogs | `src/components/hooks/useDialogFocus.ts`, `src/components/navigation/Footer.tsx`, `src/components/sections/contact/ContactSection.tsx`, `src/components/sections/events/EventsSection.tsx`, `src/components/sections/gallery/BentoGallery.tsx` | Owner-approved; implemented; local browser checks passed |
+| Make gallery tiles and thumbnails labeled native buttons, include the thumbnail dock within dialog semantics/focus handling, and close cleanly | `src/components/sections/gallery/BentoGallery.tsx` | Owner-approved; implemented; local browser checks passed |
+| Close the mobile navigation on Escape and return focus to its toggle | `src/components/navigation/Navbar.tsx` | Owner-approved; implemented; local browser check passed |
+
 For the rest of this project, report each finding with evidence, user impact, and a proposed change; separate implementation blockers from recommendations; and wait for explicit approval before editing code. Documentation changes explicitly requested by the owner, such as updating this decision record or the architecture guide, may be made within that request. Keep frontend completion and backend integration as separate phases.
 
 ## Current decisions

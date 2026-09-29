@@ -477,7 +477,7 @@
 /* Tablet (≥ 1024px) — Responsive/Tablet */
 @media (min-width: 1024px) {
   :root {
-    --space-sect-ion: 96px;
+    --space-section: 96px;
     --space-container: 64px;
     --space-content: 20px;
     --space-tight: 8px;

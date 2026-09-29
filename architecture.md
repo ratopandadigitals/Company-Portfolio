@@ -58,10 +58,13 @@ There is no global client state store. State is local to the component that owns
 
 ## Current risks and technical debt
 
-- Current check status (2026-09-27): `npx tsc --noEmit` passes. `npm run lint` fails with one `react-hooks/set-state-in-effect` error in `src/components/navigation/Navbar.tsx` at the theme-hydration effect. The production build passed during the prior audit, but should be rerun for final sign-off.
+- Current check status (2026-09-29): `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass. This confirms code quality and production compilation, not full visual, accessibility, or owner sign-off.
 - The contact form currently logs submitted values in the browser and shows a local success state; it is not connected to a delivery service. The newsletter form is also frontend-only. Until backend integration, the UI must not imply that a message or subscription was actually delivered.
 - Some displayed portfolio, event, and service content is still sample or placeholder content and needs owner review for accuracy and rights to use.
-- Frontend implementation edits from the current audit are unapproved and awaiting owner review. Their rationale and review status are recorded in `decision.md`; do not treat them as accepted fixes until reviewed.
+- Event records marked `upcoming` include March and April 2026 dates, which are in the past as of 2026-09-29. Confirm event dates and statuses before public launch.
+- UX audit dated 2026-09-29: nested `<main>` landmark on `/events`; contact name label is not associated with its input; founder selectors and some team/social profile data need review. Dialog keyboard/focus behavior, gallery controls, and mobile-menu Escape handling were addressed and locally checked on 2026-09-29. Cross-browser and assistive-technology review remains pending. See [testing.md](testing.md) for findings and test status.
+- Privacy and terms copy contains operational and data-handling statements that need owner/legal review for accuracy before launch. This is a content review flag, not legal advice.
+- The earlier frontend edits listed in `decision.md` remain unapproved and awaiting review. The separately documented dialog, gallery, and mobile-menu changes were approved on 2026-09-29; do not conflate their review status.
 - Several components use raw `<img>` elements instead of `next/image`; remote image domains and asset ownership should be standardized.
 - Work/article data is split between `src/data/works.ts`, `src/data/content.ts`, and local service data; `src/data/content.ts` is sample data and should not become a second source of truth without an explicit decision.
 - Some animation components and hooks appear unused and should be confirmed before removal.
@@ -90,3 +93,9 @@ Once the frontend gate above is accepted, move into backend delivery in this ord
 3. Define privacy and consent behavior before adding analytics or monitoring.
 4. Complete production SEO and deployment work, including Open Graph, sitemap, robots rules, and structured data.
 5. Verify all routes and integrations in a deployed preview.
+
+## Public launch, admin, and backend sequence
+
+The agreed delivery sequence is to finish and deploy the public frontend first, build the admin experience alongside or after that public release, and connect persistent backend services after the frontend and admin requirements are approved. A static/mock-data admin prototype is not a production content-management system; publishing changes requires authenticated backend persistence and authorization.
+
+Use [testing.md](testing.md) as the launch test plan and record. A passing build does not replace route/content approval, viewport and interaction checks, accessibility review, a deployed-preview smoke test, or owner sign-off.
