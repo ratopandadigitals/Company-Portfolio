@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useEffect,useMemo, useState } from 'react'
+import React, {useMemo, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import Section from '@/components/atoms/Section'
 import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
 import { EVENTS_DATA, EventItem } from '@/data/events'
+import { useRouter } from 'next/navigation'
 
 import { useStickyStack } from '@/components/hooks/useStickyStack'
 
@@ -17,17 +18,17 @@ type EventsSectionProps = {
   heading?: string
   events?: EventItem[]
 }
-const FILTERS: { label: string; value: EventFilter }[] = [
-  { label: 'All', value: 'all' },
-  { label: 'Upcoming', value: 'upcoming' },
-  { label: 'Past Events', value: 'past' },
-]
+// const FILTERS: { label: string; value: EventFilter }[] = [
+//   { label: 'All', value: 'all' },
+//   { label: 'Upcoming', value: 'upcoming' },
+//   { label: 'Past Events', value: 'past' },
+// ]
 
 const EventsSection = (props: EventsSectionProps) => {
   const eyebrow = props.eyebrow || '(Events)'
   const heading = props.heading || 'Where We Show Up'
   const events = props.events || EVENTS_DATA
-
+  const router = useRouter()
   const [filter, setFilter] = useState<EventFilter>('all')
 
   // FIX 1: stable reference. Before, `.filter()` ran fresh on every render
@@ -184,7 +185,7 @@ const handleRegistrationSubmit = (
         setRegistrationStatus('idle')
         setSelectedTicketEvent(event)
       } else {
-        window.location.href = `/events/${event.slug}`
+        router.push(`/events/${event.slug}`)
       }
     }}
   >

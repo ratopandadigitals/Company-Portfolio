@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import localFont from "next/font/local"
 import Footer from "@/components/navigation/Footer"
 import Navbar from "@/components/navigation/Navbar"
+import ThemeProvider from "@/components/providers/ThemeProvider"
 
 import "./globals.css"
 
@@ -61,16 +62,22 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-   <html lang="en" data-theme="dark" data-scroll-behavior="smooth">
-  <body
-    className={`${inter.variable} ${roboto.variable} ${jetbrainsMono.variable} font-secondary bg-surface-page text-body antialiased`}
-    suppressHydrationWarning
-  >
-        <div className="flex min-h-screen flex-col">
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
+   <html lang="en" data-scroll-behavior="smooth">
+   <body
+        className={`${inter.variable} ${roboto.variable} ${jetbrainsMono.variable} font-secondary bg-surface-page text-body antialiased`}
+      >
+        <ThemeProvider
+          attribute="data-theme"
+          defaultTheme="dark"
+          enableSystem={false}
+          storageKey="theme"
+        >
+          <div className="flex min-h-screen flex-col">
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   )

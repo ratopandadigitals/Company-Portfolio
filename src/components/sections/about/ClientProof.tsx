@@ -25,23 +25,23 @@ type ClientProofSectionProps = {
 }
 
 const STATS: StatItem[] = [
-  { value: '26+', label: 'Finalized Projects' },
+  { value: '4+', label: 'Finalized Projects' },
   { value: '98%', label: 'Client satisfaction rate' },
-  { value: '10M', label: 'Gross Revenue' },
+  { value: '1k', label: 'Gross Revenue' },
 ]
 
 const TESTIMONIALS: TestimonialItem[] = [
   {
     id: '01',
     quote: '"Franklin turned our ideas into a sharp, clean brand. Fast, easy, and right on point."',
-    name: 'Ethan Moore',
+    name: 'Dipesh Basnet',
     role: 'Co-founder, NovaTech',
     bgImage: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1200&auto=format&fit=crop',
   },
   {
     id: '02',
     quote: '"Exceeded expectations in every single sprint. The attention to detail is unmatched."',
-    name: 'Sarah Jenkins',
+    name: 'Nischit Shrestha',
     role: 'Product Lead, Apex',
     bgImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop',
   },

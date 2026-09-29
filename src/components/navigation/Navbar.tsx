@@ -1,7 +1,9 @@
+
 'use client'
 
-import React, { useEffect, useState} from 'react'
+import React, { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useTheme } from 'next-themes'
 import { Sun, Moon, Menu, X } from 'lucide-react'
 import Logo from '@/components/atoms/Logo'
 import Badge from '@/components/atoms/Badge'
@@ -33,7 +35,6 @@ const NAV_ITEMS_DEFAULT: NavItem[] = [
 ]
 
 const Navbar = (props: NavbarProps) => {
-
   const navItems = props.navItems || NAV_ITEMS_DEFAULT
   const ctaLabel = props.ctaLabel || 'Contact'
   const ctaHref = props.ctaHref || '/contact'
@@ -43,23 +44,15 @@ const Navbar = (props: NavbarProps) => {
 
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(true)
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme')
-    const shouldUseDarkMode = savedTheme !== 'light'
+  const { resolvedTheme, setTheme } = useTheme()
 
-    setIsDarkMode(shouldUseDarkMode)
-    document.documentElement.setAttribute('data-theme', shouldUseDarkMode ? 'dark' : 'light')
-  }, [])
+  const isDarkMode = resolvedTheme === 'dark'
+  const isThemeReady = resolvedTheme !== undefined
 
   const toggleTheme = () => {
-    const next = !isDarkMode
-    setIsDarkMode(next)
-    document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
-    localStorage.setItem('theme', next ? 'dark' : 'light')
+    setTheme(isDarkMode ? 'light' : 'dark')
   }
-  
 
   return (
     <header className='w-full bg-surface-page/90 backdrop-blur-md sticky top-0 z-50 transition-colors'>
@@ -73,7 +66,11 @@ const Navbar = (props: NavbarProps) => {
 
           <nav className='hidden lg:flex items-center gap-8'>
             {navItems.map((item) => (
-              <NavLink key={item.href} href={item.href} active={pathname === item.href}>
+              <NavLink
+                key={item.href}
+                href={item.href}
+                active={pathname === item.href}
+              >
                 {item.label}
               </NavLink>
             ))}
@@ -85,8 +82,13 @@ const Navbar = (props: NavbarProps) => {
               aria-label='Toggle theme'
               className='p-2.5 rounded-md bg-surface-default border border-border-subtle text-heading transition-colors'
             >
-              {isDarkMode ? <Sun className='w-5 h-5' /> : <Moon className='w-5 h-5' />}
+              {isThemeReady && isDarkMode ? (
+                <Sun className='w-5 h-5' />
+              ) : (
+                <Moon className='w-5 h-5' />
+              )}
             </button>
+
             <Button href={ctaHref}>{ctaLabel}</Button>
           </div>
 
@@ -96,22 +98,22 @@ const Navbar = (props: NavbarProps) => {
             aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMobileMenuOpen}
             aria-controls='mobile-navigation'
-              >
-              {isMobileMenuOpen ? (
-      <X aria-hidden='true' className='w-6 h-6' />
-    ) : (
-      <Menu aria-hidden='true' className='w-6 h-6' />
-    )}
-              </button>
+          >
+            {isMobileMenuOpen ? (
+              <X aria-hidden='true' className='w-6 h-6' />
+            ) : (
+              <Menu aria-hidden='true' className='w-6 h-6' />
+            )}
+          </button>
         </div>
       </Container>
 
       {isMobileMenuOpen && (
-      <div
-        id='mobile-navigation'
-        className='lg:hidden flex flex-col gap-3 border-t border-border-subtle bg-surface-page px-4 pt-2 pb-6 space-y-3'
-      >
-        {navItems.map((item) => (
+        <div
+          id='mobile-navigation'
+          className='lg:hidden flex flex-col gap-3 border-t border-border-subtle bg-surface-page px-4 pt-2 pb-6 space-y-3'
+        >
+          {navItems.map((item) => (
             <NavLink
               key={item.href}
               href={item.href}
@@ -121,6 +123,7 @@ const Navbar = (props: NavbarProps) => {
               {item.label}
             </NavLink>
           ))}
+
           <Button href={ctaHref} fullWidth>
             {ctaLabel}
           </Button>
