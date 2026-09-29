@@ -2,7 +2,7 @@
 
 import React, {useMemo, useState } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Section from '@/components/atoms/Section'
 import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
@@ -10,6 +10,7 @@ import { EVENTS_DATA, EventItem } from '@/data/events'
 import { useRouter } from 'next/navigation'
 
 import { useStickyStack } from '@/components/hooks/useStickyStack'
+import useDialogFocus from '@/components/hooks/useDialogFocus'
 
 type EventFilter = 'all' | 'upcoming' | 'past'
 
@@ -48,6 +49,11 @@ const [phone, setPhone] = useState('')
 
 const [registrationStatus, setRegistrationStatus] =
   useState<'idle' | 'success'>('idle')
+  const closeRegistration = () => {
+    setSelectedTicketEvent(null)
+    setRegistrationStatus('idle')
+  }
+  const dialogRef = useDialogFocus<HTMLDivElement>(Boolean(selectedTicketEvent), closeRegistration)
   const { containerRef, cardClassName } = useStickyStack(filteredEvents)
 
   const handleFilterChange = (newFilter: EventFilter) => {
@@ -199,12 +205,11 @@ const handleRegistrationSubmit = (
 
        
 
-<AnimatePresence>
   {selectedTicketEvent && (
     <motion.div
+      ref={dialogRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-heading/70 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
@@ -221,10 +226,7 @@ const handleRegistrationSubmit = (
   relative z-10">
         <button
           type="button"
-          onClick={() => {
-            setSelectedTicketEvent(null)
-            setRegistrationStatus('idle')
-          }}
+          onClick={closeRegistration}
           className="absolute top-4 right-4 text-caption hover:text-heading"
           aria-label="Close registration"
         >
@@ -249,10 +251,7 @@ const handleRegistrationSubmit = (
 
             <div className="mt-6">
               <Button
-                onClick={() => {
-                  setSelectedTicketEvent(null)
-                  setRegistrationStatus('idle')
-                }}
+                onClick={closeRegistration}
                 icon={false}
               >
                 Close
@@ -290,6 +289,7 @@ const handleRegistrationSubmit = (
                 <input
                   id="registration-name"
                   type="text"
+                  data-dialog-initial-focus
                   placeholder="Enter your full name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -341,24 +341,24 @@ const handleRegistrationSubmit = (
                   placeholder="Enter your phone number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-xl border border-border-subtle
-              bg-surface-page px-4 py-3.5 text-heading
-              placeholder:text-caption/70
-              focus:outline-none focus:border-primary
-              focus:ring-2 focus:ring-primary/20
-              transition-colors"
-                            />
+                  className="w-full rounded-xl border border-border-subtle
+                  bg-surface-page px-4 py-3.5 text-heading
+                  placeholder:text-caption/70
+                  focus:outline-none focus:border-primary
+                  focus:ring-2 focus:ring-primary/20
+                  transition-colors"
+                />
               </div>
-                <button
-              type="submit"
-              className="w-full rounded-full bg-heading px-6 py-3.5
+              <button
+                type="submit"
+                className="w-full rounded-full bg-heading px-6 py-3.5
                 font-secondary font-medium text-surface-page
                 transition-opacity hover:opacity-90
                 focus-visible:outline-2 focus-visible:outline-offset-4
                 focus-visible:outline-primary"
-            >
+              >
               Submit Registration
-             </button>
+              </button>
               
             </form>
           </>
@@ -366,7 +366,6 @@ const handleRegistrationSubmit = (
       </motion.div>
     </motion.div>
   )}
-</AnimatePresence>
       </Container>
     </Section>
   )

@@ -1,7 +1,7 @@
 
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { Sun, Moon, Menu, X } from 'lucide-react'
@@ -44,6 +44,20 @@ const Navbar = (props: NavbarProps) => {
 
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setIsMobileMenuOpen(false)
+      mobileMenuButtonRef.current?.focus()
+    }
+
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [isMobileMenuOpen])
 
   const { resolvedTheme, setTheme } = useTheme()
 
@@ -93,6 +107,7 @@ const Navbar = (props: NavbarProps) => {
           </div>
 
           <button
+            ref={mobileMenuButtonRef}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className='lg:hidden p-2 text-caption rounded-sm hover:bg-surface-default'
             aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}

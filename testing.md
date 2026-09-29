@@ -23,9 +23,9 @@ Severity scale: 4 = users cannot complete a task or may suffer serious harm; 3 =
 
 ### Severity 2 - Minor
 
-3. **Dialogs do not provide complete keyboard/focus management.** Principles: user control and freedom; accessibility; error recovery. The contact, newsletter, event-registration, and gallery lightbox overlays do not show Escape dismissal, focus trapping, or focus restoration in the reviewed implementation; the gallery lightbox also lacks dialog semantics. Keyboard and screen-reader users may become disoriented or tab behind an overlay. Add appropriate dialog semantics, initial focus, Escape handling, focus containment, and restoration, or use a tested accessible dialog primitive.
+3. **Dialogs do not provide complete keyboard/focus management.** Principles: user control and freedom; accessibility; error recovery. The contact, newsletter, event-registration, and gallery lightbox overlays did not show Escape dismissal, focus trapping, or focus restoration in the initial review; the gallery lightbox also lacked dialog semantics. Keyboard and screen-reader users may become disoriented or tab behind an overlay. **Status 2026-09-29:** implemented shared focus placement, Tab containment, Escape dismissal, and focus restoration for these dialogs; the gallery dialog now has a name and its thumbnail controls are inside the dialog boundary. Local browser checks passed for the exercised open/close/focus paths. Cross-browser and assistive-technology verification remains pending.
 
-4. **Gallery tiles and founder selectors are not keyboard-operable controls.** Principles: flexibility and efficiency; affordances and signifiers; accessibility. `src/components/sections/gallery/BentoGallery.tsx` opens items from clickable `motion.div` elements, and `src/components/sections/about/FounderSection.tsx` changes the active founder from clickable `div` elements, without button semantics or keyboard handling. Keyboard-only visitors cannot reliably reach or activate these controls. Use native buttons (or equivalent complete keyboard semantics) with visible focus and selected state.
+4. **Gallery tiles and founder selectors are not keyboard-operable controls.** Principles: flexibility and efficiency; affordances and signifiers; accessibility. In the initial review, `src/components/sections/gallery/BentoGallery.tsx` opened items from clickable `motion.div` elements, and `src/components/sections/about/FounderSection.tsx` changed the active founder from clickable `div` elements, without button semantics or keyboard handling. Keyboard-only visitors could not reliably reach or activate these controls. **Status 2026-09-29:** gallery tiles and thumbnails now use labeled native buttons with a pressed state; local checks verified dialog focus and thumbnail selection. Native buttons provide standard Enter/Space activation. Founder selectors remain unmodified and need a separate approved change.
 
 5. **The contact name label is not associated with its field.** Principles: recognition over recall; accessibility. In `src/components/sections/contact/ContactSection.tsx`, “Your Name” has no `htmlFor`, and its input has no matching `id`; clicking the label does not focus the field and assistive technology may not announce the label. Add a stable matching `id`/`htmlFor` pair.
 
@@ -45,24 +45,24 @@ Severity scale: 4 = users cannot complete a task or may suffer serious harm; 3 =
 | --- | --- |
 | 1. Visibility of System Status | Finding 2: demo submission feedback can be mistaken for delivery; no real pending/success/failure lifecycle exists. |
 | 2. Match Between System and Real World | Findings 1, 7, 8, 9: stale event dates, unverified profiles, generic social destinations, and unverified policy claims. |
-| 3. User Control and Freedom | Finding 3: dialogs lack Escape dismissal and complete focus handling. Mobile menu does close when a navigation link is selected. |
+| 3. User Control and Freedom | Dialogs and the mobile menu now support Escape dismissal; dialog focus is contained and restored. Mobile-menu dismissal on route selection still needs runtime verification. |
 | 4. Consistency and Standards | Findings 9 and 10: policy claims need validation; active navigation may disappear on detail routes. |
 | 5. Error Prevention | Findings 1, 2, 7, 9: prevent booking past events, avoid false form completion, and verify public claims. Browser-native required/email validation exists on form fields that declare it. |
 | 6. Recognition Over Recall | Finding 5: contact name label is not associated with its field; route context may be missing on detail pages. |
-| 7. Flexibility and Efficiency | Findings 3 and 4: keyboard access is incomplete for overlays, gallery items, and founder selection. |
+| 7. Flexibility and Efficiency | Gallery tiles and thumbnails are keyboard-operable; founder selectors still need keyboard semantics. Cross-browser interaction checks remain pending. |
 | 8. Aesthetic and Minimalist Design | Homepage hierarchy and restrained red/neutral palette were visually inspected at two sizes; remaining routes and design coherence were not visually audited. No verified finding recorded from this limited sample. |
 | 9. Error Recovery | Finding 2: no real submission failure/retry lifecycle and contact values are cleared after local demo submit. |
 | 10. Help and Documentation | FAQ section supplies grouped answers and visible questions; no additional contextual help finding was verified. |
-| 11. Affordances and Signifiers | Finding 4: clickable gallery/founder elements lack native control affordances and keyboard focus. |
+| 11. Affordances and Signifiers | Gallery tiles/thumbnails now use native buttons; founder selectors remain non-native clickable elements. |
 | 12. Structure | Finding 6: nested main landmark on events. Shared header, main content, footer, and legal article structure are present. |
-| 13. Accessibility | Findings 3-6: dialog handling, keyboard operability, label association, and nested landmark issues. Contrast and screen-reader output still need measured/manual testing. |
+| 13. Accessibility | Dialog semantics and keyboard focus handling were improved; remaining source findings include the contact label, nested landmark, and founder selectors. Contrast and screen-reader output still need measured/manual testing. |
 | 14. Perceptibility | Interactive filters and accordion buttons have visible state styling; mobile/desktop visual-state combinations and contrast were not fully validated. |
-| 15. Tolerance and Forgiveness | Findings 2 and 3: form data is cleared after demo submission and overlay escape/recovery behavior is incomplete. |
+| 15. Tolerance and Forgiveness | Finding 2 remains: contact data is cleared after demo submission. Dialog Escape dismissal and focus restoration are implemented; broader recovery states remain pending. |
 
 ## Strengths
 
 - Shared layout provides a consistent navigation, main-content region, footer, document language, local fonts, and global title/description metadata (`src/app/layout.tsx`).
-- Navigation exposes its mobile menu state with `aria-expanded` and `aria-controls`, and selecting a mobile navigation link closes the menu (`src/components/navigation/Navbar.tsx`).
+- Navigation exposes mobile menu state with `aria-expanded` and `aria-controls`; Escape closes it and returns focus to the toggle (`src/components/navigation/Navbar.tsx`).
 - FAQ items use native buttons with `aria-expanded`/`aria-controls` and visible focus styling (`src/components/sections/Faq/FaqSection.tsx`).
 - Work and event detail routes handle unknown slugs with `notFound()`, and the custom not-found page gives a clear route back home.
 - Reduced-motion CSS support exists in `src/app/globals.css`; validate its coverage against every animation during the dedicated motion test phase.
@@ -89,11 +89,13 @@ Completed 2026-09-29 against the local Next.js development server: all 11 routes
 
 Purpose: verify layout, content fit, images, hierarchy, and interactions at representative phone/tablet/desktop sizes.
 
-Partially completed: homepage inspected at 390 x 844 and 1440 x 900; no horizontal overflow was measured at those viewports. All other routes, tablet widths, long-content edge cases, light theme, and responsive interaction states remain untested. Review every public route at agreed phone, tablet, and desktop widths and record any exceptions before sign-off.
+Partially completed: homepage inspected at 390 x 844 and 1440 x 900; no horizontal overflow was measured at those viewports. The gallery was also visually opened at the phone viewport. Other routes, tablet widths, long-content edge cases, light theme, and responsive interaction states remain untested. Review every public route at agreed phone, tablet, and desktop widths and record any exceptions before sign-off.
 
 ### Phase 3 - Interaction, accessibility, and motion
 
-Not completed. Test mobile and desktop navigation; theme switch; work/event filters and detail navigation; contact/newsletter forms; event registration; gallery lightbox and drag interactions; FAQ; team controls; keyboard-only navigation; focus visibility/order/restoration; Escape behavior; screen-reader labels/status; image alternatives; contrast; reduced motion; and input/error states. Re-test the findings above after approved fixes.
+Partially completed: after the approved fixes, the mobile menu opened, exposed its links, and closed on Escape with focus returned to its toggle. The contact dialog opened with focus inside, kept focus in the dialog on Tab, closed on Escape, and returned focus to the previously focused field. The newsletter dialog opened with focus on Close, closed on Escape, and returned focus to Subscribe Us. The event dialog focused its name field, contained Tab, and closed on Escape with focus returned to its trigger. The gallery dialog exposed its title and named close control, contained focus across the close button and thumbnail buttons, updated the selected thumbnail state, closed on Escape, and returned focus to its opening tile. Contact-name label association was checked and remains missing. These checks used the local development preview and browser-dispatched key events; they do not replace real-device, cross-browser, or assistive-technology testing.
+
+Still pending: verify mobile-menu dismissal after route navigation, theme switch, work/event filters and detail navigation, FAQ keyboard activation, founder controls, full keyboard-only navigation, screen-reader output, contrast, reduced motion, and all remaining input/error states. Re-test findings after approved fixes. Browser automation did not reliably verify FAQ activation or menu closure after route selection, so those checks are not marked passed or failed.
 
 ### Phase 4 - Production preview and owner acceptance
 

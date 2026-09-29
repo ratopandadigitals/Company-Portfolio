@@ -7,6 +7,7 @@ import Container from '@/components/atoms/Container'
 import Section from '../atoms/Section'
 import Input from '@/components/atoms/Input'
 import { SERVICES_DATA } from '@/components/sections/services/Service'
+import useDialogFocus from '@/components/hooks/useDialogFocus'
 
 import Link from 'next/link'
 
@@ -78,6 +79,7 @@ const Footer = ({
 
 const [email, setEmail] = useState('')
 const [isOpen, setIsOpen] = useState(false)
+const dialogRef = useDialogFocus<HTMLDivElement>(isOpen, () => setIsOpen(false))
 
 const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault()
@@ -153,6 +155,7 @@ const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
 
 {isOpen && (
   <div
+    ref={dialogRef}
     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
     role="dialog"
     aria-modal="true"

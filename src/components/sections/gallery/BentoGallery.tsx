@@ -6,6 +6,7 @@ import Section from '@/components/atoms/Section'
 import Container from '@/components/atoms/Container'
 import { mediaItems as initialMediaItems } from './MediaData'
 import Image from 'next/image'
+import useDialogFocus from '@/components/hooks/useDialogFocus'
 
 export interface MediaItemType {
   id: number;
@@ -128,11 +129,18 @@ const GalleryModal = ({
   mediaItems: MediaItemType[];
 }) => {
   const [dockPosition, setDockPosition] = useState({ x: 0, y: 0 });
+  const dialogRef = useDialogFocus<HTMLDivElement>(isOpen, onClose)
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      ref={dialogRef}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="gallery-dialog-title"
+    >
       {/* Background Overlay over Bento */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -163,9 +171,9 @@ const GalleryModal = ({
               <MediaItem item={selectedItem} className="w-full h-full" />
               {(selectedItem.title || selectedItem.desc) && (
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                  {selectedItem.title && (
-                    <h3 className="text-white text-lg font-semibold">{selectedItem.title}</h3>
-                  )}
+                  <h3 id="gallery-dialog-title" className="text-white text-lg font-semibold">
+                    {selectedItem.title || 'Gallery preview'}
+                  </h3>
                   {selectedItem.desc && (
                     <p className="text-white/80 text-sm mt-1">{selectedItem.desc}</p>
                   )}
@@ -177,6 +185,8 @@ const GalleryModal = ({
 
         {/* Close Button */}
         <motion.button
+          type="button"
+          aria-label="Close gallery preview"
           className="absolute top-4 right-4 p-2.5 rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors z-50 border border-white/10"
           onClick={onClose}
           whileHover={{ scale: 1.1 }}
@@ -202,21 +212,24 @@ const GalleryModal = ({
       >
         <div className="rounded-2xl bg-black/50 backdrop-blur-xl border border-white/10 shadow-2xl p-2 flex items-center gap-2">
           {mediaItems.map((item) => (
-            <motion.div
+            <motion.button
               key={item.id}
+              type="button"
+              aria-label={`Show ${item.title || 'gallery item'}`}
+              aria-pressed={selectedItem.id === item.id}
               onClick={(e) => {
                 e.stopPropagation();
                 setSelectedItem(item);
               }}
               className={`
-                relative w-10 h-10 rounded-lg overflow-hidden cursor-pointer group flex-shrink-0
+                relative w-10 h-10 rounded-lg border-0 p-0 text-left overflow-hidden cursor-pointer group shrink-0
                 ${selectedItem.id === item.id ? 'ring-2 ring-white shadow-lg' : 'opacity-60 hover:opacity-100'}
               `}
               whileHover={{ scale: 1.15, y: -4 }}
               whileTap={{ scale: 0.95 }}
             >
               <MediaItem item={item} className="w-full h-full" />
-            </motion.div>
+            </motion.button>
           ))}
         </div>
       </motion.div>
@@ -246,10 +259,13 @@ export default function BentoGallery() {
           }}
         >
           {items.map((item, index) => (
-            <motion.div
+            <motion.button
               key={item.id}
+              type="button"
+              aria-haspopup="dialog"
+              aria-label={`Open ${item.title || 'gallery item'}`}
               layoutId={`media-${item.id}`}
-              className={`group relative overflow-hidden rounded-xl bg-neutral-900 cursor-pointer ${item.span}`}
+              className={`group relative overflow-hidden rounded-xl border-0 p-0 text-left bg-neutral-900 cursor-pointer ${item.span}`}
               onClick={() => !isDragging && setSelectedItem(item)}
               variants={{
                 hidden: { y: 20, opacity: 0 },
@@ -292,22 +308,20 @@ export default function BentoGallery() {
                   )}
                 </div>
               )}
-            </motion.div>
+            </motion.button>
           ))}
         </motion.div>
 
         {/* Modal Lightbox Popup */}
-        <AnimatePresence>
-          {selectedItem && (
-            <GalleryModal
-              selectedItem={selectedItem}
-              isOpen={!!selectedItem}
-              onClose={() => setSelectedItem(null)}
-              setSelectedItem={setSelectedItem}
-              mediaItems={items}
-            />
-          )}
-        </AnimatePresence>
+        {selectedItem && (
+          <GalleryModal
+            selectedItem={selectedItem}
+            isOpen={!!selectedItem}
+            onClose={() => setSelectedItem(null)}
+            setSelectedItem={setSelectedItem}
+            mediaItems={items}
+          />
+        )}
       </Container>
     </Section>
   )
