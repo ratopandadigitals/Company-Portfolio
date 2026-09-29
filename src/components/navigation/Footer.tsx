@@ -97,7 +97,7 @@ const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
           </p>
           <form
                 onSubmit={handleSubscribe}
-                className="flex items-center gap-4 border border-border-subtle rounded-md p-2"
+                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 border border-border-subtle rounded-md p-2"
               >
                 <Input
                   type="email"
@@ -106,9 +106,14 @@ const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
                   value={email}
                   required
                   onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-md border border-border-subtle
+                bg-surface-page px-4 py-3.5 text-heading
+                focus:outline-none focus:border-primary
+                focus:ring-2 focus:ring-primary/20
+                transition-colors appearance-none cursor-pointer"
                 />
 
-              <Button type="submit" icon={false}>
+              <Button type="submit" icon={false} fullWidth className="sm:w-auto">
                 Subscribe Us
               </Button>
             </form>
@@ -162,7 +167,7 @@ const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
       </h3>
 
       <p className="mt-2 text-caption font-secondary leading-relaxed">
-        You have successfully subscribed to our newsletter.
+       No actual booking or email confirmation has been created yet
       </p>
 
       <div className="mt-6">

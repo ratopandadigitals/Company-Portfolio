@@ -18,8 +18,7 @@ const ABOUT_DETAILS = [
   
 const AboutSection = (props: AboutSectionProps) => {
 const aboutSectionSrcs = props.aboutSectionSrcs || [
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop',
-  ]
+'/about/abouthome.webp'  ]
   return (
     <Section className='w-full bg-surface-page'>
       {/* Container handles the 80px margin naturally — no py-16 needed */}
@@ -27,7 +26,7 @@ const aboutSectionSrcs = props.aboutSectionSrcs || [
         
         {/* Eyebrow Header */}
         <div className='flex flex-col items-center w-full text-center'>
-          <span className='text-caption text-xs md:text-sm font-mono tracking-wider'>
+          <span className='text-caption text-size-cta md:text-size-h2 font-mono tracking-wider'>
             (About Rato Panda)
           </span>
         </div>

@@ -21,7 +21,7 @@ const containerVariants: Variants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.15,
+      staggerChildren: 0.08,
     },
   },
 }
@@ -32,7 +32,7 @@ const itemVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: 'easeOut' },
+    transition: { duration: 0.3, ease: 'easeOut' },
   },
 }
 
@@ -186,6 +186,7 @@ const HeroSection = ({
                     src={workImageSrcs[1]}
                     alt='Project preview'
                     fill
+                    loading='eager'
                     sizes='(max-width: 640px) 40px, 64px'
                     className='object-cover'
                   />

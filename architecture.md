@@ -31,10 +31,11 @@ flowchart TB
 | `/events/[slug]` | `src/app/events/[slug]/page.tsx` | Event detail lookup and `notFound()` fallback |
 | `/gallery` | `src/app/gallery/page.tsx` | Gallery hero, bento gallery, CTA |
 | `/contact` | `src/app/contact/page.tsx` | Contact hero and contact form section |
-| `/blog` and `/blog/[slug]` | `src/app/blog/**` | Blog implementation and data need verification before being treated as a stable feature |
 | `/privacy-policy` and `/terms-and-conditions` | matching `page.tsx` files | Static legal pages |
 
 `src/app/layout.tsx` owns the global fonts, metadata, theme attribute, navbar, footer, and page shell. `src/app/not-found.tsx` is the custom not-found page.
+
+Blog section components exist under `src/components/sections/blog`, but there is no `src/app/blog` route in the current app. Do not present `/blog` as an available page until routes and content are implemented and reviewed.
 
 ## Code organization
 
@@ -57,24 +58,35 @@ There is no global client state store. State is local to the component that owns
 
 ## Current risks and technical debt
 
-- `npm run lint` currently reports 3 errors and 28 warnings. The errors are in `TextType.tsx`, `Navbar.tsx`, and `ContactHero.tsx`.
-- `TeamMember.tsx` contains an unused internal Next.js import: `Span` from `next/dist/trace`.
+- Current check status (2026-09-27): `npx tsc --noEmit` passes. `npm run lint` fails with one `react-hooks/set-state-in-effect` error in `src/components/navigation/Navbar.tsx` at the theme-hydration effect. The production build passed during the prior audit, but should be rerun for final sign-off.
+- The contact form currently logs submitted values in the browser and shows a local success state; it is not connected to a delivery service. The newsletter form is also frontend-only. Until backend integration, the UI must not imply that a message or subscription was actually delivered.
+- Some displayed portfolio, event, and service content is still sample or placeholder content and needs owner review for accuracy and rights to use.
+- Frontend implementation edits from the current audit are unapproved and awaiting owner review. Their rationale and review status are recorded in `decision.md`; do not treat them as accepted fixes until reviewed.
 - Several components use raw `<img>` elements instead of `next/image`; remote image domains and asset ownership should be standardized.
-- `BentoGallery .tsx` has a trailing space in its filename.
-- Work/article data is duplicated between `src/data/works.ts`, `src/data/content.ts`, and local service data.
+- Work/article data is split between `src/data/works.ts`, `src/data/content.ts`, and local service data; `src/data/content.ts` is sample data and should not become a second source of truth without an explicit decision.
 - Some animation components and hooks appear unused and should be confirmed before removal.
-- Some dependencies appear unused, including `class-variance-authority` and `lenis`.
-- The current not-found page is only a placeholder.
+- Some dependencies may be unused, including `class-variance-authority` and `lenis`; confirm with repository-wide usage checks before removing anything.
+- The current not-found page and route fallback behavior need visual and interaction review on desktop and mobile.
 
-## Post-frontend delivery order
+## Frontend completion gate
 
-After the visual frontend is stable, complete the project in this order:
+Frontend completion means the owner has reviewed and accepted the user-facing experience. It does not mean backend integrations are finished. Do not start backend implementation until the following are reviewed and signed off:
 
-1. Resolve lint and TypeScript errors.
-2. Decide the authoritative data model for works, services, events, and articles.
-3. Replace placeholders and broken assets with owned production content.
-4. Connect the contact form to a real validated server endpoint or form provider.
-5. Add SEO metadata, Open Graph images, sitemap, robots rules, and structured data.
-6. Test responsive layouts, keyboard access, reduced motion, image loading, and route fallbacks.
-7. Add analytics and error monitoring only after privacy and consent behavior are defined.
-8. Run a production build, deploy a preview, and verify every route on the deployed environment.
+1. **Routes and content:** Every agreed route exists, navigation and footer links resolve, detail routes handle unknown slugs, and all sample text, project details, images, legal copy, and contact information are approved or replaced.
+2. **Responsive layout:** Each route has been checked at agreed mobile, tablet, and desktop sizes. No unintended horizontal overflow, clipped text, overlapping controls, broken media, or layout shifts remain.
+3. **Interactions and states:** Menus, links, accordions, filters, animations, and forms behave as designed. Forms have reviewed idle, validation, pending, success, and failure states. Until a real endpoint exists, the UI clearly communicates that submission is a prototype and does not claim delivery.
+4. **Accessibility and motion:** Keyboard navigation, visible focus, semantic headings and labels, useful image alternatives, contrast, reduced-motion behavior, and screen-reader status messages have been checked.
+5. **Quality checks:** `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass. Critical route and interaction smoke checks pass on the production build.
+6. **Owner sign-off:** The owner has reviewed the deployed or preview experience and explicitly accepted the content, responsive behavior, visual details, and remaining known limitations.
+
+Record the review date, viewport/browser coverage, known exceptions, and owner approval before declaring the frontend phase complete. A passing build alone is not frontend sign-off.
+
+## Backend phase after frontend sign-off
+
+Once the frontend gate above is accepted, move into backend delivery in this order:
+
+1. Agree the data ownership/model for works, services, and events.
+2. Connect contact and newsletter forms to validated delivery endpoints and real success/failure handling.
+3. Define privacy and consent behavior before adding analytics or monitoring.
+4. Complete production SEO and deployment work, including Open Graph, sitemap, robots rules, and structured data.
+5. Verify all routes and integrations in a deployed preview.

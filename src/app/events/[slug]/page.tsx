@@ -34,50 +34,6 @@ const EventDetailPage = async (props: EventtDetailPageProps) => {
           <ArrowLeft className='w-4 h-4' />
           Back to Events
         </Link>
-
-        {/* 12-Column Responsive Layout */}
-        <div className='grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8'>
-          {/* Left Column (7 cols): Title & Overview */}
-          <div className='lg:col-span-7 flex flex-col gap-4'>
-            <span className='text-caption text-size-small font-secondary tracking-widest'>
-              {event.id}
-            </span>
-            <h1 className='text-h1 sm:text-display font-primary font-bold text-heading tracking-tight'>
-              {event.title}
-            </h1>
-            <p className='text-size-body font-secondary text-caption max-w-2xl leading-relaxed'>
-              {event.description}
-            </p>
-            
-          </div>
-
-          {/* Right Sidebar (5 cols): Metadata + Tools */}
-          <div className='lg:col-span-5 flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-border-subtle pt-6 lg:pt-0 lg:pl-8'>
-            <div className='grid grid-cols-2 gap-6'>
-              <div className='flex flex-col gap-1'>
-                <span className='text-caption uppercase tracking-wider'>Date</span>
-                <span className='text-size-body font-secondary font-bold text-heading'>{event.date}</span>
-              </div>
-              <div className='flex flex-col gap-1'>
-                <span className='text-caption uppercase tracking-wider'>location</span>
-                <span className='text-size-body font-secondary font-bold text-heading'>{event.location}</span>
-              </div>
-            </div>
-             <div className='flex flex-col gap-1'>
-              <span className='text-caption uppercase tracking-wider'>Status</span>
-              <span className='text-size-body font-secondary font-bold text-heading'>
-                {event.status}
-              </span>
-            </div>
-
-            {/* Status */}
-           
-
-          
-          </div>
-        </div>
-      </Container>
-
       {/* Hero Frame: Previous | Hero Image | Next */}
       <Container className='mt-12'>
         <div className='flex items-center gap-3 sm:gap-6 w-full'>
@@ -121,6 +77,50 @@ const EventDetailPage = async (props: EventtDetailPageProps) => {
           </Link>
         </div>
       </Container>
+        {/* 12-Column Responsive Layout */}
+        <div className='grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8'>
+          {/* Left Column (7 cols): Title & Overview */}
+          <div className='lg:col-span-7 flex flex-col gap-4'>
+            <span className='text-caption text-size-small font-secondary tracking-widest'>
+              {event.id}
+            </span>
+            <h1 className='text-h1 sm:text-display font-primary font-bold text-heading tracking-tight'>
+              {event.title}
+            </h1>
+            <p className='text-size-body font-secondary text-caption max-w-2xl leading-relaxed'>
+              {event.description}
+            </p>
+            
+          </div>
+
+          {/* Right Sidebar (5 cols): Metadata + Tools */}
+          <div className='lg:col-span-5 flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-border-subtle pt-6 lg:pt-0 lg:pl-8'>
+            <div className='grid grid-cols-2 gap-6'>
+              <div className='flex flex-col gap-1'>
+                <span className='text-caption uppercase tracking-wider'>Date</span>
+                <span className='text-size-body font-secondary font-bold text-heading'>{event.date}</span>
+              </div>
+              <div className='flex flex-col gap-1'>
+                <span className='text-caption uppercase tracking-wider'>location</span>
+                <span className='text-size-body font-secondary font-bold text-heading'>{event.location}</span>
+              </div>
+            </div>
+             <div className='flex flex-col gap-1'>
+              <span className='text-caption uppercase tracking-wider'>Status</span>
+              <span className='text-size-body font-secondary font-bold text-heading'>
+                {event.status}
+              </span>
+            </div>
+
+            {/* Status */}
+           
+
+          
+          </div>
+        </div>
+      </Container>
+
+      
     </section>
   )
 }

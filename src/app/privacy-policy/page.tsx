@@ -3,7 +3,7 @@ import Container from '@/components/atoms/Container'
 import Section from '@/components/atoms/Section'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Rato Panda Digitals',
+  title: 'Privacy Policy',
   description: 'Privacy Policy and data protection guidelines for Rato Panda Digitals.',
 }
 

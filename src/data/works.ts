@@ -23,12 +23,16 @@ export const WORK_ITEMS: WorkItem[] = [
     role: 'Lead Designer',
     services: [
       'UI Design & Prototyping',
-      'Engineering & Development',
+      'UX Research & Product Planning',
     ],
     tools: ['Figma'],
-    previewImage: '/thrift.png',
-    bgImage: '/thrift.png',
-    gallery: ['/thrift.png'],
+    previewImage: '/projectimg/thriftwork.webp',
+    bgImage: '/projectimg/thriftwork.webp',
+    gallery: ['/projectimg/thriftwork.webp',
+      '/projectimg/thriftwork1.webp',
+      '/projectimg/thriftwork2.webp',
+    
+    ],
   },
 
   {
@@ -36,17 +40,19 @@ export const WORK_ITEMS: WorkItem[] = [
     id: '02/05',
     title: 'Hamrodocs',
     description:
-      "We've partnered with businesses across various industries to help them achieve their goals.",
-    year: '2018',
+      'HamroDocs is a free, browser-based document and payroll platform built specifically for businesses in Nepal, featuring automated tax calculations, Bikram Sambat (B.S.) calendar integration, and IRD-compliant format.',
+    year: '2026',
     role: 'Logo Designer',
     services: [
       'Brand & Design System',
       'Development & Engineering',
     ],
     tools: ['Visual Studio Code', 'Figma'],
-    previewImage: '/hamro.jpeg',
-    bgImage: '/hamro.jpeg',
-    gallery: ['/thrift.png'],
+    previewImage: '/projectimg/hamrowork.webp',
+    bgImage: '/projectimg/hamrowork.webp',
+    gallery: ['/projectimg/hamrowork.webp',
+            '/projectimg/hamrowork1.webp',
+    ],
   },
 
   {
@@ -71,9 +77,9 @@ export const WORK_ITEMS: WorkItem[] = [
   
 
   {
-    slug: 'lumina',
+    slug: 'Freshbite',
     id: '04/05',
-    title: 'Lumina',
+    title: 'Freshbite',
     description:
       'Crafted an intuitive fintech interface and design system to streamline digital transactions.',
     year: '2024',
@@ -85,10 +91,14 @@ export const WORK_ITEMS: WorkItem[] = [
     ],
     tools: ['Figma'],
     previewImage:
-      '/thrift.png',
+      '/projectimg/freshwork.webp',
     bgImage:
-      '/thrift.png',
-      gallery: ['/thrift.png'],
+      '/projectimg/freshwork.webp',
+      gallery: ['/projectimg/freshwork.webp',
+        '/projectimg/freshwork0.webp',
+      '/projectimg/freshwork1.webp',
+      '/projectimg/freshwork2.webp'
+      ],
   },
 
   {

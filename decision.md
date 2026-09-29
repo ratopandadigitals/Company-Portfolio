@@ -1,5 +1,23 @@
 # Folder, Page, And Route Decisions
 
+## Frontend audit and change approval
+
+**Status: Process agreed; implementation edits below are unapproved and awaiting review.**
+
+The frontend-first goal is to audit and finish the user-facing experience before starting backend integration. An audit should report verified findings, explain their impact, and propose a small fix with its tradeoffs. The developer should wait for the project owner's review and approval before changing implementation files. Do not interpret an audit request as permission to fix every issue found.
+
+During the current audit, implementation edits were made before that approval. They remain in the working tree for review and have not been reverted:
+
+| Change | Reason it was made | Review status |
+| --- | --- | --- |
+| Make the footer subscription form stack on narrow screens and let its button fill the available width | The form was identified as a source of horizontal overflow on mobile. | Unapproved; verify at target mobile widths and decide whether to keep. |
+| Remove the unused `framer-motion/m` import from `Container` | Lint reported an unused import. | Unapproved; confirm the lint finding and decide whether to keep. |
+| Remove the brand name from the privacy and terms page titles | The global title template was observed appending the brand, resulting in duplicated branding. | Unapproved; verify the resulting browser tab and search metadata, then decide whether to keep. |
+
+The edits targeted the apparent owner of each issue: responsive form layout in the footer, the unused import in its component, and page-specific titles where metadata is declared. That was the implementation rationale, not a substitute for the owner's decision. The audit did not establish that these fixes are the only acceptable approaches.
+
+For the rest of this project, report each finding with evidence, user impact, and a proposed change; separate implementation blockers from recommendations; and wait for explicit approval before editing code. Documentation changes explicitly requested by the owner, such as updating this decision record or the architecture guide, may be made within that request. Keep frontend completion and backend integration as separate phases.
+
 ## Current decisions
 
 This project uses Next.js App Router. A folder inside `src/app` becomes a URL route when it contains a `page.tsx` file.

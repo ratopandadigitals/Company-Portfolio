@@ -39,7 +39,7 @@ const Cta = (props: CtaProps) => {
           <span className='text-caption text-sm font-medium tracking-wide text-center'>
             {eyebrow}
           </span>
-          <h2 className='w-full text-center gap-2 text-6xl sm:text-8xl lg:text-[100px] font-bold tracking-tight text-heading/10 leading-none select-none'>
+          <h2 className='w-full text-center gap-2 text-6xl sm:text-8xl lg:text-[100px] font-bold tracking-tight text-heading/30 leading-none select-none'>
             {title}
           </h2>
         </div>

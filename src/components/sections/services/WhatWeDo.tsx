@@ -19,12 +19,11 @@ const WhatWeDo = (props: WhatWeDoProps) => {
   const eyebrow = props.eyebrow || 'Services'
   const heading = props.heading || 'What We Can Do'
   const services = props.services || SERVICES_DATA
-
   const [active, setActive] = useState(0)
 
   return (
     <Section className='w-full bg-surface-page overflow-hidden'>
-      <Container className='max-w-7xl mx-auto flex flex-col gap-10'>
+      <Container className='max-w-7xl mx-auto mb-10 flex flex-col gap-10'>
 
         {/* Header */}
         <div className='flex flex-col gap-2  items-center text-heading'>
@@ -59,8 +58,8 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                 transition={{ duration: 1.05, ease: [0.25, 1, 0.5, 1] }}
                 className={`relative overflow-hidden rounded-2xl border cursor-pointer select-none transition-colors duration-500 min-h-30 lg:min-h-0 ${
                   isActive
-                    ? 'bg-surface-card border-border-subtle shadow-2xl'
-                    : 'bg-surface-card border-transparent hover:bg-surface-divider/20'
+                    ? 'bg-surface-card border-border-subtle shadow-lg'
+                    : 'bg-surface-card border-transparent hover:bg-surface-divider/20 lg:shadow-[0_2px_8px_rgba(0,0,0,0.12)]'
                 }`}
               >
                 {/* Background Image Layer with Zoom on Active & Blur on Inactive */}
@@ -70,22 +69,22 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                     alt={service.title}
                     animate={{
                       scale: isActive ? 1.05 : 1.0,
-                      filter: isActive ? 'blur(0px)' : 'blur(2px)',
+                      filter: isActive ? 'blur(2.5px)' : 'blur(4px)',
                       opacity: isActive ? 0.55 : 0.35,
                     }}
                     transition={{ duration: 0.5, ease: 'easeOut' }}
                     className='w-full h-full object-cover'
                   />
 
-                  {/* Gradient & Darkening Overlay */}
-                  <div
-                    className={`absolute inset-0 transition-all duration-500 ${
-                      isActive
-                        ? 'bg-linear-to-t from-surface-card via-surface-card/80 to-transparent'
-                        : 'bg-surface-card/80'
-                    }`}
-                  />
-                </div>
+                    {/* Gradient & Darkening Overlay */}
+                      <div
+                          className={`absolute inset-0 transition-all duration-500 ${
+                            isActive
+                              ? 'bg-linear-to-t from-surface-card via-surface-card/0 to-transparent'
+                              : 'bg-surface-card/90'
+                          }`}
+                        />
+                      </div>
 
                 {/* Collapsed State Layout */}
                 {!isActive && (
@@ -96,7 +95,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                         {formattedNum}
                       </span>
                       <div className='-rotate-90 origin-center  whitespace-nowrap mb-16'>
-                        <h3 className='text-white font-primary shadow-sky-500 font-bold text-small tracking-tight'>
+                        <h3 className='text-caption font-primary shadow-sky-500 font-bold text-small tracking-tight'>
                           {service.title}
                         </h3>
                       </div>
@@ -135,7 +134,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                           exit={{ opacity: 0, y: -6, filter: 'blur(2px)' }}
                           transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-                          className='inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-surface-card/10 border border-primary/25 text-primary text-caption font-mono font-bold tracking-wider uppercase w-fit backdrop-blur-md shadow-xs'
+                          className='inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-surface-card/10 border border-primary/25 text-heading font-mono font-bold tracking-wider uppercase w-fit backdrop-blur-md shadow-xs'
                         >
                           <motion.span
                             animate={{ scale: [1, 1.35, 1], opacity: [0.7, 1, 0.7] }}
@@ -156,7 +155,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                           fontSize='clamp(1.35rem, 2.2vw, 1.85rem)'
                           fontWeight={800}
                         />
-                        <p className='text-caption font-secondary shadow-2xl leading-relaxed max-w-xl'>
+                        <p className='text-heading/90 font-secondary leading-relaxed max-w-xl'>
                           {service.description}
                         </p>
                       </div>
@@ -166,7 +165,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                         {service.tags?.map((tag, tagIndex) => (
                           <div
                             key={tagIndex}
-                            className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-card font-secondary text-heading text-small font-semibold border border-border-subtle/40'
+                            className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-card font-secondary text-caption text-small font-semibold border border-border-subtle/40'
                           >
                             <span className='flex items-center justify-center w-4 h-4 rounded-full bg-success text-white shrink-0'>
                               <Check className='w-2.5 h-2.5 stroke-3' />

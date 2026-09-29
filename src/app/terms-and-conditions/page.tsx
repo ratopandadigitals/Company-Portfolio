@@ -3,7 +3,7 @@ import Container from '@/components/atoms/Container'
 import Section from '@/components/atoms/Section'
 
 export const metadata: Metadata = {
-  title: 'Terms & Conditions | Rato Panda Digitals',
+  title: 'Terms & Conditions',
   description: 'Terms and Conditions governing the use of Rato Panda Digitals website, platform, and services.',
 }
 

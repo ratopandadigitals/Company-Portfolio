@@ -67,7 +67,7 @@ export const SERVICE_PROCESS: ServicePhase[] = [
     description:
       'We start with low-fidelity wireframes to work out the structure and user flow. Once the foundation is right, we create the final interface in Figma with your brand, responsive layouts, and a reusable design system.',
     icon: 'LayoutGrid',
-    image: '/Service/process/Visual.webp',
+    image: '/Service/process/uiuxprocess.webp',
     bullets: [
       'Low-fidelity wireframes and page layouts',
       'High-fidelity UI design in Figma',
@@ -90,7 +90,7 @@ export const SERVICE_PROCESS: ServicePhase[] = [
     description:
       'We connect the approved screens into an interactive prototype so you can experience the main user flows before development starts. This gives us a chance to review the experience and make changes while they are still easy to make.',
     icon: 'MousePointerClick',
-    image: '/Service/process/prototype.webp',
+    image: '/Service/process/interactiveprototype.webp',
     bullets: [
       'Interactive desktop and mobile flows',
       'Pre-development flow validation',

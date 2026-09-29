@@ -57,7 +57,7 @@ type ButtonProps = {
     : 'px-2.5 py-2.5 sm:px-3.5 sm:py-3.5 rounded-md bg-surface-primary hover:bg-surface-primary-hover text-white'
 
   const classes = [
-    'group relative inline-flex items-center gap-1.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 whitespace-nowrap shrink-0 overflow-hidden',
+   'group relative inline-flex items-center gap-1.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 whitespace-nowrap shrink-0 overflow-hidden',
     variantClasses,
     'text-size-cta font-medium font-secondary transition-colors',
     fullWidth ? 'w-full justify-center' : '',

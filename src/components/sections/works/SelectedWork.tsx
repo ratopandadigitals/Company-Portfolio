@@ -48,7 +48,7 @@ const SelectedWork = (props: SelectedWorkProps) => {
           <span className="text-caption text-size-cta font-secondary font-semibold tracking-wide text-center">
             {eyebrow}
           </span>
-          <h2 className="w-full text-center text-6xl sm:text-8xl lg:text-[100px] font-primary font-bold tracking-tight text-heading/10 leading-none select-none">
+          <h2 className="w-full text-center text-6xl sm:text-8xl lg:text-[100px] font-primary font-bold tracking-tight text-heading/30 leading-none select-none">
             {title}
           </h2>
         </div>
@@ -60,9 +60,9 @@ const SelectedWork = (props: SelectedWorkProps) => {
               key={cat}
               type="button"
               onClick={() => setFilter(cat)}
-              className={`px-5 py-2 rounded-full text-size-caption font-semibold font-secondary transition-colors duration-200 cursor-pointer${
+              className={`px-5 py-2 rounded-full text-size-caption font-semibold font-secondary transition-colors duration-500 ease-out cursor-pointer${
                 filter === cat
-                  ? 'bg-primary text-white'
+                  ? 'bg-primary border border-border-subtle hover:bg-primary/90 transition '
                   : 'bg-surface-section text-caption border border-border-subtle hover:text-heading transition  '
               }`}
             >
@@ -74,7 +74,7 @@ const SelectedWork = (props: SelectedWorkProps) => {
         {/* Animated Sticky Card Stack - LINES 58 to 123 */}
         <StickyCard 
           key={filter}
-  items={filteredItems}
+           items={filteredItems}
           renderCard={(item) => (
              <Link
                 href={`/works/${item.slug}`}
@@ -88,8 +88,7 @@ const SelectedWork = (props: SelectedWorkProps) => {
 
               <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full h-full">
                 {/* Left column */}
-{/* REPLACE Line 94 */}
-<div className="lg:col-span-4 flex flex-col justify-between h-full py-2 gap-16 font-secondary text-size-cta">                  <p className="font-secondary text-body leading-relaxed max-w-xs">
+                <div className="lg:col-span-4 flex flex-col justify-between h-full py-2 gap-16 font-secondary text-size-cta">                  <p className="font-secondary text-body leading-relaxed max-w-xs">
                     {item.description}
                   </p>
                   <div className="flex flex-col gap-2">
@@ -129,6 +128,8 @@ const SelectedWork = (props: SelectedWorkProps) => {
                       src={item.previewImage}
                       alt={item.title}
                       fill
+                      loading="eager"
+                      sizes='(max-width: 640px) 280px, 320px'
                       className="w-full h-full object-contain"
                     />
                   </div>

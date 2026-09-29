@@ -45,7 +45,7 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
 
       {/* Header + CTA Button — unchanged */}
       <Container className='w-full z-10 flex flex-col sm:flex-row items-center sm:items-center justify-between gap-6'>
-        <div>
+        <div className=''>
           <span className='text-xs md:text-small tracking-tight text-caption block mb-2 font-mono'>
             {eyebrow}
           </span>

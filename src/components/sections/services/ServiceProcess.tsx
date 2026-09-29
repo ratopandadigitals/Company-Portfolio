@@ -108,6 +108,7 @@ const ServiceProcess = (props: ServiceProcessProps) => {
                           src={service.image}
                           alt={service.title}
                           fill
+                          loading='eager'
                           sizes='(max-width: 1024px) 100vw, 42vw'
                           className='object-cover'
                         />

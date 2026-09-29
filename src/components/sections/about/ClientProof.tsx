@@ -136,7 +136,7 @@ const handleNext = useCallback(() => {
           <span className='text-caption text-size-cta font-secondary font-medium tracking-wide text-center'>
             {eyebrow}
           </span>
-          <h2 className='w-full text-center text-6xl sm:text-8xl lg:text-[100px] font-primary font-bold tracking-tight text-heading/10 leading-none select-none'>
+          <h2 className='w-full text-center text-6xl sm:text-8xl lg:text-[100px] font-primary font-bold tracking-tight text-heading/30 leading-none select-none'>
             {title}
           </h2>
         </div>

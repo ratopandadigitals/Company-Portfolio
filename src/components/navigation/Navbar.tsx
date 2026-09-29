@@ -109,7 +109,7 @@ const Navbar = (props: NavbarProps) => {
       {isMobileMenuOpen && (
       <div
         id='mobile-navigation'
-        className='lg:hidden border-t border-border-subtle bg-surface-page px-4 pt-2 pb-6 space-y-3'
+        className='lg:hidden flex flex-col gap-3 border-t border-border-subtle bg-surface-page px-4 pt-2 pb-6 space-y-3'
       >
         {navItems.map((item) => (
             <NavLink

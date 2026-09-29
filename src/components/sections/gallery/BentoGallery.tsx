@@ -106,7 +106,7 @@ const MediaItem = ({
       fill
       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
       onClick={onClick}
-      loading="lazy"
+      loading="eager"
       decoding="async"
       className={`object-cover transition-transform duration-500 ease-out group-hover:scale-110 ${className}`}
     />

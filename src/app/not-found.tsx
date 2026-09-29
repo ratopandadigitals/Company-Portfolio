@@ -9,13 +9,13 @@ const NotFound = () => {
     <Section className='relative w-full min-h-[80vh] flex items-center justify-center overflow-hidden bg-surface-page'>
       <Container className='relative flex flex-col items-center text-center gap-6 py-16 sm:py-24'>
 
-        {/* Huge "404" watermark — same text-heading/10 technique already
+        {/* Huge "404" watermark — same  technique already
             used for the "Client Proof." watermark, so this stays visually
             consistent with the rest of the site instead of introducing a
             new pattern. */}
         <span
           aria-hidden='true'
-          className='absolute inset-0 flex items-center justify-center text-[38vw] sm:text-[26vw] font-primary font-bold text-heading/10 leading-none select-none pointer-events-none'
+          className='absolute inset-0 flex items-center justify-center text-[38vw] sm:text-[26vw] font-primary font-bold text-heading/30 leading-none select-none pointer-events-none'
         >
           404
         </span>

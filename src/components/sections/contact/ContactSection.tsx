@@ -1,5 +1,5 @@
 'use client'
-
+import { ChevronDown } from 'lucide-react'
 import Section from '@/components/atoms/Section'
 import Container from '@/components/atoms/Container'
 import FoldText from '@/components/Animation/FoldText'
@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
 import Image from 'next/image'
+import { SERVICES_DATA,ServiceItem } from '@/components/sections/services/Service'
 
 type ContactSectionProps = {
   eyebrow?: string
@@ -18,8 +19,7 @@ const ContactSection = (props:ContactSectionProps) => {
   const eyebrow = props.eyebrow || 'CONTACT'
   const heading = props.heading || 'Get In Touch'
   const ContactImageSrcs = props.contactImageSrcs || [
-    'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1000&q=80'
-  ]
+'/map.webp'  ]
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -76,8 +76,12 @@ const ContactSection = (props:ContactSectionProps) => {
               value={name}
               required
               onChange={(e)=>setName(e.target.value)}
-              className="w-full bg-transparent border-b border-border-subtle py-2 text-caption focus:outline-none focus:border-primary"
-            />
+                 className="w-full rounded-xl border border-border-subtle
+                  bg-surface-page px-4 py-3.5 text-heading
+                  placeholder:text-caption/70
+                  focus:outline-none focus:border-primary
+                  focus:ring-2 focus:ring-primary/20
+                  transition-colors"            />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -89,23 +93,45 @@ const ContactSection = (props:ContactSectionProps) => {
               value={email}
               required
               onChange={(e)=>setEmail(e.target.value)}
-              className="w-full bg-transparent border-b border-border-subtle py-2 text-caption focus:outline-none focus:border-primary"
-            />
+                  className="w-full rounded-xl border border-border-subtle
+                  bg-surface-page px-4 py-3.5 text-heading
+                  placeholder:text-caption/70
+                  focus:outline-none focus:border-primary
+                  focus:ring-2 focus:ring-primary/20
+                  transition-colors"            />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label htmlFor="need" className="text-sm font-medium">What you need from us?</label>
-            <Input
-              type="text"
-              id="need"
-              placeholder="e.g. UI/UX Design"
-              value={need}
-              onChange={(e)=>setNeed(e.target.value)}
-              className="w-full bg-transparent border-b border-border-subtle py-2 text-caption focus:outline-none focus:border-primary"
-            />
-          </div>
+          
 
-          <div className="flex flex-col gap-2">
+
+
+
+
+<div className="flex flex-col gap-2">
+  <label htmlFor="need" className="text-sm font-medium">What you need from us?</label>
+  <div className="relative">
+    <select
+      id="need"
+      value={need}
+      onChange={(e) => setNeed(e.target.value)}
+      required
+      className="w-full rounded-xl border border-border-subtle
+                bg-surface-page px-4 py-3.5 text-heading
+                focus:outline-none focus:border-primary
+                focus:ring-2 focus:ring-primary/20
+                transition-colors appearance-none cursor-pointer"
+    >
+      <option value="" disabled>Select a service</option>
+        {SERVICES_DATA.map((service: ServiceItem) => (
+          <option key={service.id} value={service.id}>
+          {service.label}
+        </option>
+      ))}
+    </select>
+    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-caption" />
+  </div>
+</div>
+    <div className="flex flex-col gap-2">
             <label htmlFor="description" className="text-sm font-medium">Project Description</label>
             <textarea
               id="description"
@@ -113,8 +139,12 @@ const ContactSection = (props:ContactSectionProps) => {
               placeholder="Type Here..."
               value={description}
               onChange={(e)=>setDescription(e.target.value)}
-              className="w-full bg-transparent border-b border-border-subtle py-2 text-caption focus:outline-none focus:border-primary resize-none"
-            />
+                  className="w-full rounded-xl border border-border-subtle
+                  bg-surface-page px-4 py-3.5 text-heading
+                  placeholder:text-caption/70
+                  focus:outline-none focus:border-primary
+                  focus:ring-2 focus:ring-primary/20
+                  transition-colors"            />
           </div>
 
           <button
@@ -152,7 +182,7 @@ const ContactSection = (props:ContactSectionProps) => {
       </h3>
 
       <p className='mt-2 text-caption font-secondary leading-relaxed'>
-        We have received your details and will get back to you shortly.
+       No actual booking or email confirmation has been created yet
       </p>
 
       <div className='mt-6'>
