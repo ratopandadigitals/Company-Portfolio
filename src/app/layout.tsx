@@ -16,6 +16,8 @@ const inter = localFont({
   ],
   variable: "--font-primary",
   display: "swap",
+  preload: false,
+
 })
 
 const roboto = localFont({
@@ -27,6 +29,8 @@ const roboto = localFont({
   ],
   variable: "--font-secondary",
   display: "swap",
+  preload: false,
+
 })
 
 const jetbrainsMono = localFont({
@@ -50,6 +54,8 @@ const jetbrainsMono = localFont({
   ],
   variable: "--font-mono",
   display: "swap",
+  preload: false,
+
 })
 export const metadata: Metadata = {
   title: { default: "Rato Panda Digitals", template: "%s | Rato Panda Digitals" },
@@ -62,7 +68,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-   <html lang="en" data-scroll-behavior="smooth">
+  <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
    <body
         className={`${inter.variable} ${roboto.variable} ${jetbrainsMono.variable} font-secondary bg-surface-page text-body antialiased`}
       >
