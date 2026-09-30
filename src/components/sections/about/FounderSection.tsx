@@ -34,8 +34,7 @@ const FOUNDERS: Founder[] = [
     id: 'dipesh',
     name: 'Dipesh Basnet',
     title: 'Co-Founder & CTO',
-    bio: 'Frontend Developer(React) & UI/UX Designer with a passion for creating intuitive and engaging user experiences.',
-    photo: '/Team1.jpeg', // update path
+    bio: 'UI/UX designer and frontend developer with an IT background. Dipesh designs in Figma and also builds the frontend, so the finished site matches the design instead of just looking good in a mockup. He works with design systems, reusable components and responsive layouts, and turns Figma files into working sites and web apps using React, Next.js and Tailwind CSS. Self-taught through building things and fixing what broke. AI tools are used for research and to speed up routine tasks.',    photo: '/Team1.jpeg', // update path
     linkedinHref: 'https://www.linkedin.com/in/dipesh-basnet98',
     githubHref: 'https://github.com/dipeshbasnt',
     badgeText: "Dipesh's latest build →",
@@ -89,10 +88,10 @@ const FounderSection = () => {
                   />
                 </div>
                 <div className='flex flex-col justify-center'>
-                  <h3 className='text-size-body font-primary font-bold text-heading'>
+                  <h3 className='text-size-cta font-primary font-bold text-heading'>
                     {founder.name}
                   </h3>
-                  <p className='text-size-caption font-secondary text-primary'>
+                  <p className='text-size-body font-secondary text-primary'>
                     {founder.title}
                   </p>
                 </div>
@@ -101,12 +100,12 @@ const FounderSection = () => {
           })}
         </div>
 
+     
         {/* RIGHT COLUMN: Premium Dynamic Spotlight Panel */}
-        {/* RIGHT COLUMN: Premium Dynamic Spotlight Panel */}
-<div className='lg:col-span-7 bg-surface-default border border-border-subtle rounded-3xl p-6 md:p-8 min-h-[380px] relative overflow-hidden shadow-2xl'>
+    <div className='lg:col-span-7 bg-surface-default border border-border-subtle rounded-3xl p-4  md:p-6 min-h-[380px] relative overflow-hidden shadow-2xl'>
 
-  {/* 1. ADD THIS: Blurred Image Background */}
-  <div 
+      {/* 1. ADD THIS: Blurred Image Background */}
+      <div 
     className='absolute inset-0 bg-cover bg-center filter blur-3xl opacity-25 scale-125 pointer-events-none transition-all duration-700' 
     style={{ backgroundImage: `url(${activeFounder.photo})` }} 
   />
@@ -128,7 +127,7 @@ const FounderSection = () => {
               {/* Top Badge & Socials */}
               <div className='flex items-center justify-between gap-4 flex-wrap'>
                 {activeFounder.badgeText && (
-                  <span className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-secondary font-medium'>
+                  <span className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-card/10 border border-primary/30 text-heading text-size-caption font-secondary font-medium'>
                     {activeFounder.badgeText}
                     <ArrowUpRight className='w-3.5 h-3.5' />
                   </span>

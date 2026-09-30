@@ -70,7 +70,7 @@ const FoldText = (props: FoldTextProps) => {
     <div
       ref={containerRef}
       aria-label={props.text}
-      className='inline-flex flex-wrap overflow-hidden'
+      className='inline-flex flex-wrap overflow-visible leading-[1.2]'
       style={{
         perspective: `${perspective}px`,
         fontSize,
