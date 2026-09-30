@@ -15,26 +15,26 @@ type MemberSectionProps = {
 // FounderSection.tsx. To add 2 new people, just add 2 more objects to this
 // array below. No other file needs to change.
 const MEMBERS: Member[] = [
-  {
-    id: 'ram',
-    name: 'Ram Thapa',
-    title: 'UI Designer',
-    bio: 'Designs clean, usable interfaces across every project.',
-    photo: '/Team1.jpeg', // replace with this person's real photo path
-    linkedinHref: '#',
-    githubHref: '#',
-    badgeText: 'New hire',
-  },
-  {
-    id: 'sita',
-    name: 'Sita Gurung',
-    title: 'Frontend Developer',
-    bio: 'Builds and ships the React/Next.js front-end features.',
-    photo: '/Team2.jpeg', // replace with this person's real photo path
-    linkedinHref: '#',
-    githubHref: '',
+  // {
+  //   id: 'ram',
+  //   name: 'Ram Thapa',
+  //   title: 'UI Designer',
+  //   bio: 'Designs clean, usable interfaces across every project.',
+  //   photo: '/Team1.jpeg', // replace with this person's real photo path
+  //   linkedinHref: '#',
+  //   githubHref: '#',
+  //   badgeText: 'New hire',
+  // },
+  // {
+  //   id: 'sita',
+  //   name: 'Sita Gurung',
+  //   title: 'Frontend Developer',
+  //   bio: 'Builds and ships the React/Next.js front-end features.',
+  //   photo: '/Team2.jpeg', // replace with this person's real photo path
+  //   linkedinHref: '#',
+  //   githubHref: '',
   
-  },
+  // },
 ]
 
 const MemberSection = (props: MemberSectionProps) => {
@@ -46,6 +46,8 @@ const MemberSection = (props: MemberSectionProps) => {
   const members = props.members || MEMBERS
 
   const [activeId, setActiveId] = useState<string | null>(null)
+  // // if no team is there than it wont show
+  // if (members.length === 0) return null
 
   const handleActivate = (id: string) => {
     setActiveId(activeId === id ? null : id)

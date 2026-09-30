@@ -88,10 +88,9 @@ const SelectedWork = (props: SelectedWorkProps) => {
 
               <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full h-full">
                 {/* Left column */}
-                <div className="lg:col-span-4 flex flex-col justify-between h-full py-2 gap-16 font-secondary text-size-cta">                  <p className="font-secondary text-body leading-relaxed max-w-xs">
-                    {item.description}
+                  <div className="lg:col-span-4 flex flex-col justify-start lg:justify-between lg:h-full py-2 gap-3 lg:gap-16 font-secondary text-size-cta lg:text-body">                  <p className="order-2 lg:order-none line-clamp-3 lg:line-clamp-none font-secondary text-body leading-relaxed max-w-xs">                    {item.description}
                   </p>
-                  <div className="flex flex-col gap-2">
+                    <div className="hidden lg:flex flex-col gap-2">
                     <span className="text-size-body text-heading font-bold uppercase tracking-wider">
                       tools
                     </span>
@@ -101,8 +100,8 @@ const SelectedWork = (props: SelectedWorkProps) => {
                       ))}
                     </ul>
                   </div>
-                  <div className="flex flex-col gap-2 mt-auto text-heading">
-                    <span className="text-caption font-secondary tracking-widest">
+                      <div className="order-1 lg:order-none flex flex-col gap-2 lg:mt-auto text-heading">
+                      <span className="text-caption font-secondary tracking-widest">
                       {item.id}
                     </span>
                    
@@ -122,22 +121,22 @@ const SelectedWork = (props: SelectedWorkProps) => {
                 </div>
 
                 {/* Center column: mockup image */}
-                <div className="lg:col-span-4 flex justify-center items-center">
-                  <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-                    <Image
+                      <div className="order-first lg:order-none lg:col-span-4 flex justify-center items-center">
+                        <div className="relative w-full h-44 sm:h-auto max-w-[280px] sm:max-w-[320px] sm:aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
+                      <Image
                       src={item.previewImage}
                       alt={item.title}
                       fill
                       loading="eager"
-                      sizes='(max-width: 640px) 280px, 320px'
+                      sizes='(max-width: 640px) 200px, 320px'
                       className="w-full h-full object-contain"
                     />
                   </div>
                 </div>
 
                 {/* Right column: metadata */}
-                <div className="lg:col-span-4 flex flex-col justify-between h-full gap-stack-content font-secondary text-small lg:pl-16">
-                  <div className="flex flex-col gap-1">
+                          <div className="hidden lg:flex lg:col-span-4 flex-col justify-between h-full gap-stack-content font-secondary text-small lg:pl-16">
+                        <div className="flex flex-col gap-1">
                     <span className="text-caption uppercase tracking-wider">
                       Year
                     </span>

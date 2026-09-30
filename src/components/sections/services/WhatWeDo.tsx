@@ -17,7 +17,7 @@ type WhatWeDoProps = {
 const WhatWeDo = (props: WhatWeDoProps) => {
 
   const eyebrow = props.eyebrow || 'Services'
-  const heading = props.heading || 'What We Can Do'
+  const heading = props.heading || 'What We  Do'
   const services = props.services || SERVICES_DATA
   const [active, setActive] = useState(0)
 
@@ -44,7 +44,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
         </div>
 
         {/* Responsive Container: Vertical stack on mobile, horizontal accordion on desktop */}
-      <div className='w-full flex flex-col lg:flex-row gap-4 h-auto lg:h-115'>
+      <div className='w-full flex flex-col lg:flex-row gap-4 h-auto lg:h-100'>
           {services.map((service: ServiceItem, i: number) => {
             const isActive = i === active
             const formattedNum = String(i + 1).padStart(2, '0')
@@ -54,7 +54,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                 key={service.id || i}
                 onMouseEnter={() => setActive(i)}
                 onClick={() => setActive(i)}
-                animate={{ flex: isActive ? 5 : 1 }}
+                animate={{ flex: isActive ? 4 : 1 }}
                 transition={{ duration: 1.05, ease: [0.25, 1, 0.5, 1] }}
                 className={`relative overflow-hidden rounded-2xl border cursor-pointer select-none transition-colors duration-500 min-h-30 lg:min-h-0 ${
                   isActive
@@ -69,8 +69,8 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                     alt={service.title}
                     animate={{
                       scale: isActive ? 1.05 : 1.0,
-                      filter: isActive ? 'blur(2.5px)' : 'blur(4px)',
-                      opacity: isActive ? 0.55 : 0.35,
+                      filter: isActive ? 'blur(5px)' : 'blur(4px)',
+                      opacity: isActive ? 0.30 : 0.45,
                     }}
                     transition={{ duration: 0.5, ease: 'easeOut' }}
                     className='w-full h-full object-cover'
@@ -94,12 +94,11 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                       <span className='text-caption font-mono font-bold tracking-widest'>
                         {formattedNum}
                       </span>
-                      <div className='-rotate-90 origin-center  whitespace-nowrap mb-16'>
-                        <h3 className='text-caption font-primary shadow-sky-500 font-bold text-small tracking-tight'>
+                      <div className='[writing-mode:vertical-rl] rotate-180 whitespace-nowrap'>                        <h3 className='text-caption font-primary shadow-sky-500 font-bold text-small tracking-tight'>
                           {service.title}
                         </h3>
                       </div>
-                      <div className='w-2 h-2' />
+                      <div className='w-2 h-3' />
                     </div>
 
                     {/* Mobile Collapsed Bar View */}
@@ -125,8 +124,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
                       transition={{ duration: 0.65, ease: 'easeOut' }}
-                      className='relative z-20 w-full h-full p-6 sm:p-8 flex flex-col justify-end gap-4'
-                    >
+                      className='relative z-20 w-full h-full p-6 sm:p-8 flex flex-col justify-start gap-4 overflow-y-auto'                    >
                       <div className='flex flex-col gap-3 max-w-2xl text-heading'>
                         {/* Animated Service Eyebrow Badge */}
                         <motion.div
@@ -155,7 +153,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                           fontSize='clamp(1.35rem, 2.2vw, 1.85rem)'
                           fontWeight={800}
                         />
-                        <p className='text-heading/90 font-secondary leading-relaxed max-w-xl'>
+                        <p className='text-heading text-size-body font-secondary leading-relaxed max-w-xl'>
                           {service.description}
                         </p>
                       </div>
