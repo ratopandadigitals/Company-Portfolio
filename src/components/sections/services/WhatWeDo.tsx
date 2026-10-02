@@ -7,6 +7,7 @@ import Section from '@/components/atoms/Section'
 import Container from '@/components/atoms/Container'
 import FoldText from '@/components/Animation/FoldText'
 import { SERVICES_DATA, ServiceItem} from './Service'
+import Image from 'next/image'
 
 type WhatWeDoProps = {
   eyebrow?: string
@@ -26,8 +27,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
       <Container className='max-w-7xl mx-auto mb-10 flex flex-col gap-10'>
 
         {/* Header */}
-        <div className='flex flex-col gap-2  items-center text-heading'>
-          <span className='text-caption text-size-body font-secondary tracking-wider uppercase block'>
+        <div id='what-we-do' className='flex flex-col gap-2  items-center text-heading scroll-mt-28'>          <span className='text-caption text-size-body font-secondary tracking-wider uppercase block'>
             {eyebrow}
           </span>
           <FoldText
@@ -44,7 +44,7 @@ const WhatWeDo = (props: WhatWeDoProps) => {
         </div>
 
         {/* Responsive Container: Vertical stack on mobile, horizontal accordion on desktop */}
-      <div className='w-full flex flex-col lg:flex-row gap-4 h-auto lg:h-100'>
+        <div className='w-full flex flex-col lg:flex-row gap-4 h-auto lg:h-120'>
           {services.map((service: ServiceItem, i: number) => {
             const isActive = i === active
             const formattedNum = String(i + 1).padStart(2, '0')
@@ -54,47 +54,38 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                 key={service.id || i}
                 onMouseEnter={() => setActive(i)}
                 onClick={() => setActive(i)}
-                animate={{ flex: isActive ? 4 : 1 }}
-                transition={{ duration: 1.05, ease: [0.25, 1, 0.5, 1] }}
+                animate={{ flex: isActive ? 5 : 1 }}
+                transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] }}
                 className={`relative overflow-hidden rounded-2xl border cursor-pointer select-none transition-colors duration-500 min-h-30 lg:min-h-0 ${
                   isActive
                     ? 'bg-surface-card border-border-subtle shadow-lg'
                     : 'bg-surface-card border-transparent hover:bg-surface-divider/20 lg:shadow-[0_2px_8px_rgba(0,0,0,0.12)]'
                 }`}
               >
-                {/* Background Image Layer with Zoom on Active & Blur on Inactive */}
-                <div className='absolute inset-0 w-full h-full overflow-hidden '>
-                  <motion.img
+                {/* Collapsed State: dim blurred backdrop */}
+                {!isActive && (
+                  <div className='absolute inset-0 overflow-hidden'>
+                    <Image
                     src={service.image}
-                    alt={service.title}
-                    animate={{
-                      scale: isActive ? 1.05 : 1.0,
-                      filter: isActive ? 'blur(5px)' : 'blur(4px)',
-                      opacity: isActive ? 0.30 : 0.45,
-                    }}
-                    transition={{ duration: 0.5, ease: 'easeOut' }}
-                    className='w-full h-full object-cover'
+                    alt=''
+                    fill
+                    sizes='(min-width: 1024px) 20vw, 100vw'
+                    className='object-cover blur-[3px] opacity-85'
                   />
-
-                    {/* Gradient & Darkening Overlay */}
-                      <div
-                          className={`absolute inset-0 transition-all duration-500 ${
-                            isActive
-                              ? 'bg-linear-to-t from-surface-card via-surface-card/0 to-transparent'
-                              : 'bg-surface-card/90'
-                          }`}
-                        />
-                      </div>
+                    <div className='absolute inset-0 bg-surface-card/90' />
+                  </div>
+                )}
 
                 {/* Collapsed State Layout */}
                 {!isActive && (
                   <>
                     {/* Desktop Vertical View */}
-                    <div className='hidden lg:flex absolute inset-0 p-8 sh flex-col justify-between items-center z-10 pointer-events-none'>
+                    <div className='hidden lg:flex absolute inset-0 p-8 flex-col justify-between items-center z-10 pointer-events-none'>
                       <span className='text-caption font-mono font-bold tracking-widest'>
                         {formattedNum}
                       </span>
-                      <div className='[writing-mode:vertical-rl] rotate-180 whitespace-nowrap'>                        <h3 className='text-caption font-primary shadow-sky-500 font-bold text-small tracking-tight'>
+                      <div className='[writing-mode:vertical-rl] rotate-180 whitespace-nowrap'>
+                        <h3 className='text-caption/90 font-primary font-bold text-size-body tracking-tight'>
                           {service.title}
                         </h3>
                       </div>
@@ -116,62 +107,85 @@ const WhatWeDo = (props: WhatWeDoProps) => {
                   </>
                 )}
 
-                {/* Expanded State: Content Layered Above Active Image */}
+                {/* Expanded State: sharp image on top, text panel below */}
                 <AnimatePresence mode='wait'>
                   {isActive && (
                     <motion.div
-                      initial={{ opacity: 0, y: 14 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className='relative z-20 w-full h-full flex flex-col'
+                    >
+                  
+                     {/* Image zone */}
+                <div className='relative h-52 lg:h-auto lg:flex-1 lg:min-h-0 px-5 pt-5'>
+                  <div className='relative w-full h-full overflow-hidden rounded-xl'>
+                    <motion.img
+                      src={service.image}
+                      alt={service.title}
+                      initial={{ scale: 1.12 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
+                      className='w-full h-full object-cover'
+                    />
+                    <div className='absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-surface-card/60 to-transparent' />
+
+                    {/* Eyebrow badge over image */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.65, ease: 'easeOut' }}
-                      className='relative z-20 w-full h-full p-6 sm:p-8 flex flex-col justify-start gap-4 overflow-y-auto'                    >
-                      <div className='flex flex-col gap-3 max-w-2xl text-heading'>
-                        {/* Animated Service Eyebrow Badge */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
-                          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                          exit={{ opacity: 0, y: -6, filter: 'blur(2px)' }}
-                          transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-                          className='inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-surface-card/10 border border-primary/25 text-heading font-mono font-bold tracking-wider uppercase w-fit backdrop-blur-md shadow-xs'
-                        >
-                          <motion.span
-                            animate={{ scale: [1, 1.35, 1], opacity: [0.7, 1, 0.7] }}
-                            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-                            className='w-1.5 h-1.5 rounded-full bg-primary shrink-0'
+                      transition={{ duration: 0.4, delay: 0.2, ease: [0.25, 1, 0.5, 1] }}
+                      className='absolute top-3 left-3 z-10 inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-surface-card/70 border border-primary/25 text-heading font-mono font-bold tracking-wider uppercase w-fit backdrop-blur-md shadow-xs'
+                    >
+                      <motion.span
+                        animate={{ scale: [1, 1.35, 1], opacity: [0.7, 1, 0.7] }}
+                        transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+                        className='w-1.5 h-1.5 rounded-full bg-success shrink-0'
+                      />
+                      {/* <span>{formattedNum} Our Services</span> */}
+                    </motion.div>
+                  </div>
+                </div>
+
+                      {/* Text zone */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.35, ease: 'easeOut' }}
+              className='px-6 pt-5 pb-6 flex flex-col gap-3'                      >
+                        <div className='flex flex-col gap-3 max-w-2xl text-heading'>
+                          <FoldText
+                            text={service.title}
+                            splitBy='char'
+                            hinge='top'
+                            duration={0.65}
+                            stagger={0.045}
+                            ease='power3.out'
+                            perspective={700}
+                            fontSize='clamp(1.35rem, 2.2vw, 1.85rem)'
+                            fontWeight={700}
                           />
-                          <span>{formattedNum} Our Services</span>
-                        </motion.div>
+                          <p className='text-heading text-size-body font-secondary leading-relaxed max-w-xl'>
+                            {service.description}
+                          </p>
+                        </div>
 
-                        <FoldText
-                          text={service.title}
-                          splitBy='char'
-                          hinge='top'
-                          duration={0.65}
-                          stagger={0.045}
-                          ease='power3.out'
-                          perspective={700}
-                          fontSize='clamp(1.35rem, 2.2vw, 1.85rem)'
-                          fontWeight={800}
-                        />
-                        <p className='text-heading text-size-body font-secondary leading-relaxed max-w-xl'>
-                          {service.description}
-                        </p>
-                      </div>
-
-                      {/* Tag Pills */}
-                      <div className='flex flex-wrap gap-2.5 pt-1'>
-                        {service.tags?.map((tag, tagIndex) => (
-                          <div
-                            key={tagIndex}
-                            className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-card font-secondary text-caption text-small font-semibold border border-border-subtle/40'
-                          >
-                            <span className='flex items-center justify-center w-4 h-4 rounded-full bg-success text-white shrink-0'>
-                              <Check className='w-2.5 h-2.5 stroke-3' />
-                            </span>
-                            <span>{tag}</span>
-                          </div>
-                        ))}
-                      </div>
+                        {/* Tag Pills */}
+                        <div className='flex flex-wrap gap-2.5 pt-1'>
+                          {service.tags?.map((tag, tagIndex) => (
+                            <div
+                              key={tagIndex}
+                              className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-card font-secondary text-caption text-size-caption font-semibold border border-border-subtle/40'
+                            >
+                              <span className='flex items-center justify-center w-4 h-4 rounded-full bg-success text-white shrink-0'>
+                                <Check className='w-2.5 h-2.5 stroke-3' />
+                              </span>
+                              <span>{tag}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
                     </motion.div>
                   )}
                 </AnimatePresence>

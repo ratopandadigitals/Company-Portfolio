@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { motion, Variants } from 'framer-motion'
 import Container from '@/components/atoms/Container'
 import Button from '@/components/atoms/Button'
@@ -77,8 +77,8 @@ const pillEntranceVariants: Variants = {
 const HeroSection = ({
   eyebrow = 'Creative Technology · Est. 2026',
   description = 'From strategy and UI/UX to development, we create purposeful digital experiences built around your brand and your users.',
-  ctaLabel = 'Start a Project',
-  ctaHref = '/contact',
+  ctaLabel = 'View Our Work',
+  ctaHref = '/works/#selected-work',
   avatarSrcs = ['/Team1.jpeg', '/Team2.jpeg'],
   workImageSrcs = [
     '/design.jpg',
@@ -88,6 +88,56 @@ const HeroSection = ({
 
   ],
 }: HeroSectionProps) => {
+  const floatingImagesRef = useRef<(HTMLDivElement | null)[]>([])
+
+  useEffect(() => {
+    const animations = [
+      {
+        keyframes: [
+          { transform: 'translate3d(0, 0, 0) rotate(0deg)' },
+          { transform: 'translate3d(5px, -10px, 0) rotate(-3deg)' },
+          { transform: 'translate3d(-5px, 4px, 0) rotate(3deg)' },
+          { transform: 'translate3d(0, 0, 0) rotate(0deg)' },
+        ],
+        duration: 5000,
+        delay: 0,
+      },
+      {
+        keyframes: [
+          { transform: 'translate3d(0, 0, 0) rotate(0deg)' },
+          { transform: 'translate3d(-6px, -8px, 0) rotate(4deg)' },
+          { transform: 'translate3d(4px, 6px, 0) rotate(-2deg)' },
+          { transform: 'translate3d(0, 0, 0) rotate(0deg)' },
+        ],
+        duration: 5500,
+        delay: 300,
+      },
+      {
+        keyframes: [
+          { transform: 'translate3d(0, 0, 0) rotate(0deg)' },
+          { transform: 'translate3d(4px, -12px, 0) rotate(-2deg)' },
+          { transform: 'translate3d(-4px, 3px, 0) rotate(3deg)' },
+          { transform: 'translate3d(0, 0, 0) rotate(0deg)' },
+        ],
+        duration: 4800,
+        delay: 600,
+      },
+    ]
+
+    const runningAnimations = floatingImagesRef.current.map((element, index) => {
+      if (!element) return null
+
+      return element.animate(animations[index].keyframes, {
+        duration: animations[index].duration,
+        delay: animations[index].delay,
+        iterations: Infinity,
+        direction: 'alternate',
+        easing: 'ease-in-out',
+      })
+    })
+
+    return () => runningAnimations.forEach((animation) => animation?.cancel())
+  }, [])
 
   return (
     <Section className='bg-surface-page'>
@@ -136,18 +186,8 @@ const HeroSection = ({
             <motion.div variants={itemVariants} className='flex items-center gap-2 sm:gap-3'>
               <span className='text-heading'>WE DESIGN</span>
               <motion.div variants={pillEntranceVariants}>
-                <motion.div
-                  animate={{
-                    y: [0, -10, 4, 0],
-                    x: [0, 5, -5, 0],
-                    rotate: [0, -3, 3, 0],
-                  }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    repeatType: 'mirror',
-                    ease: 'easeInOut',
-                  }}
+                <div
+                  ref={(element) => { floatingImagesRef.current[0] = element }}
                   className='relative h-10 sm:h-16 aspect-81/64 rounded-full bg-primary overflow-hidden shrink-0'
 
                 >
@@ -158,7 +198,7 @@ const HeroSection = ({
                     sizes='(max-width: 640px) 40px, 64px'
                     className='object-cover'
                   />
-                </motion.div>
+                </div>
               </motion.div>
               <span className='text-primary'>/</span>
             </motion.div>
@@ -167,19 +207,8 @@ const HeroSection = ({
             <motion.div variants={itemVariants} className='flex items-center gap-2 sm:gap-3 mt-0 sm:mt-1'>
               <span className='text-caption'>CRAFT</span>
               <motion.div variants={pillEntranceVariants}>
-                <motion.div
-                  animate={{
-                    y: [0, -8, 6, 0],
-                    x: [0, -6, 4, 0],
-                    rotate: [0, 4, -2, 0],
-                  }}
-                  transition={{
-                    duration: 5.5,
-                    repeat: Infinity,
-                    repeatType: 'mirror',
-                    ease: 'easeInOut',
-                    delay: 0.3,
-                  }}
+                <div
+                  ref={(element) => { floatingImagesRef.current[1] = element }}
                   className=' relative h-10 sm:h-16 aspect-81/64 rounded-full overflow-hidden shrink-0'
                 >
                   <Image
@@ -190,7 +219,7 @@ const HeroSection = ({
                     sizes='(max-width: 640px) 40px, 64px'
                     className='object-cover'
                   />
-                </motion.div>
+                </div>
               </motion.div>
               <span className='text-heading'>/</span>
             </motion.div>
@@ -199,19 +228,8 @@ const HeroSection = ({
             <motion.div variants={itemVariants} className='flex items-center gap-2 sm:gap-3 mt-0 sm:mt-1'>
               <span className='text-caption'>BUILD</span>
               <motion.div variants={pillEntranceVariants}>
-                <motion.div
-                  animate={{
-                    y: [0, -12, 3, 0],
-                    x: [0, 4, -4, 0],
-                    rotate: [0, -2, 3, 0],
-                  }}
-                  transition={{
-                    duration: 4.8,
-                    repeat: Infinity,
-                    repeatType: 'mirror',
-                    ease: 'easeInOut',
-                    delay: 0.6,
-                  }}
+                <div
+                  ref={(element) => { floatingImagesRef.current[2] = element }}
                   className=' relative h-10 sm:h-16 aspect-81/64 rounded-full overflow-hidden shrink-0'
                 >
                   <Image
@@ -221,7 +239,7 @@ const HeroSection = ({
                     sizes='(max-width: 640px) 40px, 64px'
                     className='object-cover'
                   />
-                </motion.div>
+                </div>
               </motion.div>
             </motion.div>
           </div>

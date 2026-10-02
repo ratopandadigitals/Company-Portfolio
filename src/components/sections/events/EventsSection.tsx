@@ -93,8 +93,7 @@ const handleRegistrationSubmit = (
       <Container className='flex flex-col gap-10'>
 
         {/* Section Header */}
-        <div className='flex flex-col items-center text-center gap-4'>
-          <span className='text-caption text-size-small font-secondary tracking-wider uppercase'>
+<div id='events-section' className='flex flex-col items-center text-center gap-4 scroll-mt-28'>          <span className='text-caption text-size-small font-secondary tracking-wider uppercase'>
             {eyebrow}
           </span>
           <h1 className='text-h1 sm:text-display font-primary font-bold text-heading tracking-tight'>
@@ -109,8 +108,8 @@ const handleRegistrationSubmit = (
             onClick={() => handleFilterChange('all')}
             className={`px-5 py-2 rounded-full text-size-small font-secondary font-medium transition-colors ${
               filter === 'all'
-                ? 'bg-primary text-surface-page'
-                : 'bg-surface-default text-caption border border-border-subtle hover:text-heading'
+                ? 'bg-primary'
+                : 'bg-surface-default text-caption border border-border-subtle'
             }`}
           >
             All
@@ -120,8 +119,8 @@ const handleRegistrationSubmit = (
             onClick={() => handleFilterChange('upcoming')}
             className={`px-5 py-2 rounded-full text-size-small font-secondary font-medium transition-colors ${
               filter === 'upcoming'
-                ? 'bg-primary text-surface-page'
-                : 'bg-surface-default text-caption border border-border-subtle hover:text-heading'
+                ? 'bg-primary'
+                : 'bg-surface-default text-caption border border-border-subtle '
             }`}
           >
             Upcoming
@@ -131,8 +130,8 @@ const handleRegistrationSubmit = (
             onClick={() => handleFilterChange('past')}
             className={`px-5 py-2 rounded-full text-size-small font-secondary font-medium transition-colors ${
               filter === 'past'
-                ? 'bg-primary text-surface-page'
-                : 'bg-surface-default text-caption border border-border-subtle hover:text-heading'
+                ? 'bg-primary'
+                : 'bg-surface-default text-caption border border-border-subtle'
             }`}
           >
             Past Events
@@ -140,8 +139,25 @@ const handleRegistrationSubmit = (
         </div>
 
         {/* Desktop Sticky Pinned Stack */}
-        <div ref={containerRef} className='block relative w-full h-[75vh] max-h-150 z-10'>
-          {filteredEvents.map((event) => (
+
+            {/* if it is empty, show a message instead of the stack */}
+        {filteredEvents.length === 0 && (
+  <div className='flex flex-col items-center justify-center text-center gap-4 w-full min-h-80 rounded-2xl border border-border-subtle bg-surface-section px-6 py-12'>
+    <h2 className='text-h3 font-primary font-bold text-heading'>
+      {filter === 'upcoming'
+        ? 'No upcoming events right now'
+        : filter === 'past'
+        ? 'No past events yet'
+        : 'No events yet'}
+    </h2>
+    {filter === 'upcoming' && (
+      <Button icon={false} onClick={() => handleFilterChange('past')}>
+        See past events
+      </Button>
+    )}
+  </div>
+)}
+        <div ref={containerRef} className={`${filteredEvents.length === 0 ? 'hidden' : 'block'} relative w-full h-[75vh] max-h-150 z-10`}>          {filteredEvents.map((event) => (
             <div
               key={event.id}
               className={`${cardClassName} absolute inset-0 w-full h-full rounded-2xl overflow-hidden bg-surface-section border border-border-subtle shadow-lg`}

@@ -3,6 +3,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import Section from '@/components/atoms/Section'
+import { Sparkle } from 'lucide-react'
 
 type FlowerIconProps = {
   colorClassName?: string
@@ -10,29 +11,28 @@ type FlowerIconProps = {
 
 const FlowerIcon = (props: FlowerIconProps) => {
 
-  const colorClassName = props.colorClassName || 'text=heading'
+  const colorClassName = props.colorClassName || 'text-heading'
 
-  return (
-    <svg
-      className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 opacity-90 ${colorClassName}`}
-      viewBox='0 0 18 18'
-      fill='currentColor'
-    >
-      <path d='M9 0C9 4.97056 4.97056 9 0 9C4.97056 9 9 13.0294 9 18C9 13.0294 13.0294 9 18 9C13.0294 4.97056 9 0 9 0Z' />
-    </svg>
-  )
+ return (
+  <Sparkle
+    className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 opacity-90 ${colorClassName}`}
+    fill='currentColor'
+  />
+)
 }
 
 const BLACK_TRACK_DEFAULT = [
-  'Senior Designer',
-  '10 Years of Experience',
-  'Over 100 Customers',
+  'Creative Technology Company',
+  'Based in Biratnagar, Nepal',
+  'Available for New Projects',
 ]
 
 const ORANGE_TRACK_DEFAULT = [
-  'Brand Design',
-  'Logo Design',
-  'Website Design',
+  'Brand & Design System',
+  'UX Research & Product Planning',
+  'UI Design & Prototyping',
+  'Engineering & Development',
+  'Digital Growth',
 ]
 
 type DiagonalBannerProps = {

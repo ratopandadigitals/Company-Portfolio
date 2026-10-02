@@ -1,4 +1,3 @@
-
 'use client'
 
 import React from 'react'
@@ -9,6 +8,7 @@ import Section from '@/components/atoms/Section'
 type Logo = {
   name: string
   src: string
+  srcDark?: string // CHANGED 1: optional dark-theme version of the logo
 }
 
 type TrustedLogosProps = {
@@ -29,17 +29,24 @@ type LogoItemProps = {
 }
 
 // Default data
+// CHANGED 2: real logos with a light and a dark file each
 const DEFAULT_LOGOS: Logo[] = [
-  
-  { name: 'Logoipsum 1', src: '/Light.webp' },
-  { name: 'Logoipsum 2', src: '/olilogo.webp' },
-
+  {
+    name: 'Rato Panda Digitals',
+    src: '/Trusted%20logo/Lighttransparency.webp',
+    srcDark: '/Trusted%20logo/Dark%20transparency.webp',
+  },
+  {
+    name: 'Oli & Associates',
+    src: '/Trusted%20logo/lightoli.webp',
+    srcDark: '/Trusted%20logo/darkoli.webp',
+  },
 ]
 
 // Default settings
-const DEFAULT_SPEED = 20
+const DEFAULT_SPEED = 60
 const DEFAULT_LOGO_HEIGHT = 'h-16 sm:h-20'
-const DEFAULT_REPEAT = 2
+const DEFAULT_REPEAT = 6
 
 // Reusable logo item
 const LogoItem = ({
@@ -54,21 +61,32 @@ const LogoItem = ({
       : `w-24 ${logoHeight}`,
   ].join(' ')
 
+  const sizes = card
+    ? '(max-width: 640px) 112px, 144px'
+    : '96px'
+
+  const fit = `object-contain ${card ? 'max-w-24' : ''}`
+
+  // CHANGED 3: light image hides in dark mode, dark image shows only in dark mode
   return (
     <div className={wrapperClasses}>
       <Image
         src={logo.src}
         alt={`${logo.name} logo`}
         fill
-        sizes={
-          card
-            ? '(max-width: 640px) 112px, 144px'
-            : '96px'
-        }
-        className={`object-contain ${
-          card ? 'max-w-24' : ''
-        }`}
+        sizes={sizes}
+        className={`${fit} ${logo.srcDark ? 'dark:hidden' : ''}`}
       />
+      {logo.srcDark && (
+        <Image
+          src={logo.srcDark}
+          alt=''
+          aria-hidden
+          fill
+          sizes={sizes}
+          className={`${fit} hidden dark:block`}
+        />
+      )}
     </div>
   )
 }

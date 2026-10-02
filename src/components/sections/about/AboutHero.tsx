@@ -11,8 +11,8 @@ const AboutHero = () => (
       '/about/aboutpill1.jpg',
     ]}
     description='Rato Panda Digitals is a creative digital and IT solutions company established in 2026. We combine strategy, design and technology to create brands, websites, digital products and technology solutions.'
-    ctaLabel='Start a Project'
-    ctaHref='/contact'
+    ctaLabel='About Us'
+    ctaHref='#about'
   />
 )
 

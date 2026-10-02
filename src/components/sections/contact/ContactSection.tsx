@@ -49,10 +49,10 @@ const ContactSection = (props:ContactSectionProps) => {
       <Container className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         
         {/* Left Column: Form Inputs */}
-        <form onSubmit={(e)=>{
+        <form id='contact-form' onSubmit={(e)=>{
           handleSubmit(e)
         }}
-         className="flex flex-col gap-6 w-full">
+         className="flex flex-col gap-6 w-full scroll-mt-28">
                   <div className='flex flex-col gap-2 text-heading'>
           <span className='text-caption text-size-body font-mono tracking-wider uppercase block'>
             {eyebrow}

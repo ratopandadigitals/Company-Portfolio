@@ -20,14 +20,13 @@ const AboutSection = (props: AboutSectionProps) => {
 const aboutSectionSrcs = props.aboutSectionSrcs || [
 '/about/abouthome.webp'  ]
   return (
-    <Section className='w-full bg-surface-page'>
+    <Section className='w-full mt-8 bg-surface-page'>
       {/* Container handles the 80px margin naturally — no py-16 needed */}
       <Container className='w-full flex flex-col gap-6'>
         
         {/* Eyebrow Header */}
-        <div className='flex flex-col items-center w-full text-center'>
-          <span className='text-caption text-size-cta md:text-size-h2 font-mono tracking-wider'>
-            (About Rato Panda)
+        <div id='about' className='flex flex-col items-center w-full text-center scroll-mt-28'>          <span className='text-caption text-size-cta md:text-size-h2 font-secondary tracking-wider'>
+            (About RatoPandaDigitals)
           </span>
         </div>
 

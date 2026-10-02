@@ -1,5 +1,5 @@
 import AboutHero from '@/components/sections/about/AboutHero'
-import TrustedLogos from '@/components/sections/home/TrustedLogos'
+// import TrustedLogos from '@/components/sections/home/TrustedLogos'
 import AboutStatement from '@/components/sections/about/AboutStatement'
 import React from 'react'
 import CompanySpecs from '@/components/sections/about/CompanySpecs'
@@ -13,7 +13,7 @@ const About = () => {
   return (
     <div>
     <AboutHero />
-    <TrustedLogos />
+    {/* <TrustedLogos /> */}
     <AboutSection />
     <AboutStatement />
     <CompanySpecs />

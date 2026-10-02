@@ -12,7 +12,7 @@ const ContactHero = () => (
     ]}
     description='Have a project, idea, or challenge? We would love to hear it. Let’s collaborate and bring something meaningful to life.'
     ctaLabel='Contact'
-    ctaHref='/contact'
+    ctaHref='#contact-form'
   />
 )
 

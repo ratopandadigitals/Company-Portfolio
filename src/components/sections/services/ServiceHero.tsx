@@ -11,8 +11,8 @@ const ServiceHero = () => (
       '/Service/servicepill1.jpg',
     ]}
     description='We turn ideas, stories, and strategies from the creative edge covering design development, and the tools that bring bold digital works to life.'
-    ctaLabel='Get Started'
-    ctaHref='/contact'
+    ctaLabel='View Our Services'
+    ctaHref='#what-we-do'
   />
 )
 
