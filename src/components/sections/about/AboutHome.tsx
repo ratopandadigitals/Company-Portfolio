@@ -32,11 +32,12 @@ const aboutSectionSrcs = props.aboutSectionSrcs || [
 
         {/* Hero Image Card */}
         <div className='relative w-full aspect-16/7 min-h-85 sm:min-h-120 rounded-3xl overflow-hidden border border-border-subtle/20'>
-          <Image
+             <Image
             src={aboutSectionSrcs[0]}
             alt="About Rato Panda Digitals"
-            className='w-full h-full object-cover'
+            className="w-full h-full object-cover"
             fill
+            priority
           />
           
           {/* Carousel Dots */}
