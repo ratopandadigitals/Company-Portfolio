@@ -12,7 +12,7 @@ const GalleryHero = () => (
     ]}
     description='Explore selected visual gallery, project details, brand assets, process moments and media created by Rato Panda Digitals.'
     ctaLabel='Explore Our gallery'
-    ctaHref='/gallery'
+    ctaHref='#bento-gallery'
   />
 )
 

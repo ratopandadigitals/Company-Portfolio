@@ -44,8 +44,7 @@ const SelectedWork = (props: SelectedWorkProps) => {
     <Section className="w-full bg-surface-page py-6 px-2 flex flex-col items-center justify-center">
       <Container className="max-w-work-card w-full flex flex-col space-y-10">
         {/* Header */}
-        <div className="flex flex-col items-center w-full gap-2">
-          <span className="text-caption text-size-cta font-secondary font-semibold tracking-wide text-center">
+      <div id="selected-work" className="flex flex-col items-center w-full gap-2 scroll-mt-28">          <span className="text-caption text-size-cta font-secondary font-semibold tracking-wide text-center">
             {eyebrow}
           </span>
           <h2 className="w-full text-center text-6xl sm:text-8xl lg:text-[100px] font-primary font-bold tracking-tight text-heading/30 leading-none select-none">
@@ -60,7 +59,7 @@ const SelectedWork = (props: SelectedWorkProps) => {
               key={cat}
               type="button"
               onClick={() => setFilter(cat)}
-              className={`px-5 py-2 rounded-full text-size-caption font-semibold font-secondary transition-colors duration-500 ease-out cursor-pointer${
+              className={`px-5 py-2 rounded-full text-size-caption font-semibold font-secondary transition-colors duration-500 ease-out cursor-pointer ${
                 filter === cat
                   ? 'bg-primary border border-border-subtle hover:bg-primary/90 transition '
                   : 'bg-surface-section text-caption border border-border-subtle hover:text-heading transition  '

@@ -12,7 +12,7 @@ const WorkHero = () => (
     ]}
     description='We have helped businesses across industries achieve their goals. Here are some of our selected works.'
     ctaLabel='Explore Our Work'
-    ctaHref='/works'
+    ctaHref='#selected-work'
   />
 )
 

@@ -247,8 +247,8 @@ export default function BentoGallery() {
       <Container>
         {/* Bento Grid */}
         <motion.div
-          className="grid grid-cols-4 auto-rows-[160px] gap-3 w-full"
-          initial="hidden"
+       id="bento-gallery"
+        className="grid grid-cols-4 auto-rows-[160px] gap-3 w-full scroll-mt-28"          initial="hidden"
           animate="visible"
           variants={{
             hidden: { opacity: 0 },

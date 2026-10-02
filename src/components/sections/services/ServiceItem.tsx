@@ -73,9 +73,9 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
           <Link
         href={fullServicesHref}
         aria-label='Explore all services'
-        className='group relative inline-flex ml-auto items-center justify-center gap-2 sm:gap-3 px-5 sm:px-6 py-3 min-h-11 rounded-full bg-primary text-white font-medium text-small overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5'
+        className='group relative inline-flex ml-auto items-center justify-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 min-h-11 rounded-full bg-primary text-white font-medium text-small overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5'
       >      
-  <span className='relative z-10 font-semibold text-size-caption tracking-wide whitespace-nowrap'>
+  <span className='relative All Sez-10 font-semibold text-size-caption tracking-wide whitespace-nowrap'>
     <span className='sm:hidden'>All Services</span>
     <span className='hidden sm:inline'>Explore All Services</span>
   </span>

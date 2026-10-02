@@ -18,8 +18,8 @@ export const SERVICES_DATA: ServiceItem[] = [
     title: 'Brand & Design System',
     image: '/Service/Brand&DesignSystem.webp',
     description:
-      'We build the full foundation of your brand\u2019s visual identity \u2014 logo design, visual guidelines, color palettes, typography, and core design assets.',
-    tags: ['Brand Identity'],
+    'We design your logo, color palettes, and typography, and deliver visual guidelines and core design assets with them.',
+    tags: ['Logo Design', 'Brand Guidelines', 'Color & Typography'],
     price: 'RS 1000,',
     width: 400,
     timeline: '2-3 Weeks',
@@ -30,7 +30,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     title: 'UX Research & Product Planning',
     image: '/Service/UXResearch&ProductPlanning.webp',
     description:
-      'We start with target audience analysis, competitor benchmarking, and modern reference mapping, then map user flows and navigation structure, and define technical scope, feature specifications, and project milestones in a full PRD before any design begins.',
+        'Before any design begins, we write a full PRD from audience analysis and competitor benchmarking. It sets the technical scope, feature specifications, and milestones.',
     tags: ['User & Market Research', 'Information Architecture', 'PRD'],
     price: 'RS 1500,',
     width: 380,
@@ -42,8 +42,8 @@ export const SERVICES_DATA: ServiceItem[] = [
     title: 'UI Design & Prototyping',
     image: '/Service/UiDesign&Prototyping.webp',
     description:
-      'From low-fidelity wireframes defining content order and page flow, to high-fidelity Figma UI design built on your PRD and brand system, to fully clickable prototypes you can preview and approve before a single line of code is written.',
-    tags: ['Wireframing', 'Figma UI Design', 'Interactive Prototyping'],
+  'You approve a clickable Figma prototype before we write a single line of code. It\u2019s built on your PRD and brand system.',
+    tags: ['Wireframing', 'High-Fidelity UI Design', 'Interactive Prototyping'],
     price: 'RS 2000,',
     timeline: '4-5 Weeks',
     width: 300
@@ -54,9 +54,9 @@ export const SERVICES_DATA: ServiceItem[] = [
     title: 'Engineering & Development',
     image: '/Service/Development.webp',
     description:
-      'Figma designs become production React and Next.js front-ends, backed by full-stack web applications with backend setup, database management, and API integrations \u2014 plus native iOS and Android app builds when you need them.',
-    tags: ['Front-End Engineering', 'Full-Stack Development', 'Mobile App Development'],
-    price: 'RS 2500,',
+        'We turn the Figma designs into production React and Next.js front-ends, and build the full-stack side too: backend, database, and API integrations.',
+    tags: ['Front-End Engineering', 'Full-Stack Development', 'Native iOS & Android Apps'],
+    price: 'RS 2500.',
     timeline: '5-6 Weeks',
     width: 300
   },
@@ -66,7 +66,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     title: 'Digital Growth',
     image: '/Service/DigitalGrowth.webp',
     description:
-      'Paid advertisement setup and targeted campaign execution, paired with channel management, content deployment, and brand visibility optimization to keep growth compounding after launch.',
+  'We set up your paid ads and run the campaigns, then handle channel management, content deployment, and brand visibility after launch.',
     tags: ['Social Media Boosting', 'Digital Media Strategy'],
     price: 'RS 3000,',
     timeline: '1-2 Weeks',

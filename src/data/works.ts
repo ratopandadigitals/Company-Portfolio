@@ -13,9 +13,30 @@ export type WorkItem = {
 }
 
 export const WORK_ITEMS: WorkItem[] = [
+  
+
   {
-    slug: 'thrift',
+    slug: 'Hamrodocs',
     id: '01/05',
+    title: 'Hamrodocs',
+    description:
+      'HamroDocs is a free, browser-based document and payroll platform built specifically for businesses in Nepal, featuring automated tax calculations, Bikram Sambat (B.S.) calendar integration, and IRD-compliant format.',
+    year: '2026',
+    role: 'Lead Designer & Developer',
+    services: [
+      'Brand & Design System',
+      'Development & Engineering',
+    ],
+    tools: ['Visual Studio Code', 'Figma'],
+    previewImage: '/projectimg/hamrowork.webp',
+    bgImage: '/projectimg/hamrowork.webp',
+    gallery: ['/projectimg/hamrowork.webp',
+            '/projectimg/hamrowork1.webp',
+    ],
+  },
+{
+    slug: 'thrift',
+    id: '02/05',
     title: 'ThriftStore',
     description:
       "We've helped businesses across industries achieve their goals.",
@@ -34,54 +55,36 @@ export const WORK_ITEMS: WorkItem[] = [
     
     ],
   },
-
   {
-    slug: 'Hamrodocs',
-    id: '02/05',
-    title: 'Hamrodocs',
-    description:
-      'HamroDocs is a free, browser-based document and payroll platform built specifically for businesses in Nepal, featuring automated tax calculations, Bikram Sambat (B.S.) calendar integration, and IRD-compliant format.',
-    year: '2026',
-    role: 'Logo Designer',
-    services: [
-      'Brand & Design System',
-      'Development & Engineering',
-    ],
-    tools: ['Visual Studio Code', 'Figma'],
-    previewImage: '/projectimg/hamrowork.webp',
-    bgImage: '/projectimg/hamrowork.webp',
-    gallery: ['/projectimg/hamrowork.webp',
-            '/projectimg/hamrowork1.webp',
-    ],
-  },
-
-  {
-    slug: 'VehicleRental',
+    slug: 'Freshbite',
     id: '03/05',
-    title: 'VehicleRental',
+    title: 'Freshbite',
     description:
       "We've collaborated with companies from diverse sectors to turn their visions into reality.",
     year: '2023',
-    role: 'Website Designer',
+    role: 'Lead Designer',
     services: [
-      'UI Design & Prototyping',
-      'Engineering & Development',
+      'UI Design & Prototyping,',
+      'ux Research & Product Planning',
     ],
-    tools: ['Figma', 'Visual Studio Code'],
+    tools: ['Figma'],
     previewImage:
-      '/thrift.png',
+      '/projectimg/freshbiteapp.webp',
     bgImage:
-      '/thrift.png',
-      gallery: ['/thrift.png'],
+      '/projectimg/freshbiteapp.webp',
+      gallery: ['/projectimg/freshbiteapp.webp',
+        '/projectimg/freshbiteapp1.webp',
+      '/projectimg/freshbiteapp2.webp'
+      ],
   },
   
 
   {
-    slug: 'Freshbite',
+    slug: 'Freshsip',
     id: '04/05',
-    title: 'Freshbite',
+    title: 'Freshsip',
     description:
-      'Crafted an intuitive fintech interface and design system to streamline digital transactions.',
+      'FreshSip is a vibrant, health-focused landing page designed to provide a seamless user experience for a premium juice bar. This project explores high-energy branding, glass-morphism, and advanced Figma prototyping.',
     year: '2024',
     role: 'UI/UX Architect',
     services: [
@@ -101,24 +104,22 @@ export const WORK_ITEMS: WorkItem[] = [
       ],
   },
 
-  {
-    slug: 'kora',
-    id: '05/05',
-    title: 'Kora',
-    description:
-      'Engineered an e-commerce platform and brand identity tailored for modern sustainable fashion.',
-    year: '2025',
-    role: 'Full Stack Engineer',
-    services: [
-      'Brand & Design System',
-      'UI Design & Prototyping',
-      'Engineering & Development',
-    ],
-    tools: [],
-    previewImage:
-      '/visa.jpeg',
-    bgImage:
-       '/visa.jpeg',
-      gallery: ['/thrift.png'],
-  },
+  // {
+  //   slug: 'kora',
+  //   id: '05/05',
+  //   title: 'Kora',
+  //   description:
+  //     'Engineered an e-commerce platform and brand identity tailored for modern sustainable fashion.',
+  //   year: '2025',
+  //   role: 'Full Stack Engineer',
+  //   services: [
+  //     'Growth Marketing',
+  //   ],
+  //   tools: [],
+  //   previewImage:
+  //     '/visa.jpeg',
+  //   bgImage:
+  //      '/visa.jpeg',
+  //     gallery: ['/thrift.png'],
+  // },
 ]

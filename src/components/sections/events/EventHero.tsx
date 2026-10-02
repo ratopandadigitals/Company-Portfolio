@@ -12,7 +12,7 @@ const EventHero = () => (
     ]}
     description='Events, workshops and experiences designed with intention. Real event information and registration details coming soon.'
     ctaLabel='View Upcoming Events'
-    ctaHref='/contact'
+    ctaHref='#events-section'
   />
 )
 

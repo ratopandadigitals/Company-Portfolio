@@ -30,7 +30,7 @@ const Cta = (props: CtaProps) => {
   const headlineAccent = props.headlineAccent || 'Get In Touch'
   const description = props.description || 'Tell us about your project — we\u2019ll bring the tools, vision, and energy to make it real.'
   const ctaLabel = props.ctaLabel || 'Get Started'
-  const ctaHref = props.ctaHref || '/contact'
+  const ctaHref = props.ctaHref || '/contact/#contact-form'
 
   return (
     <Section className='pb-16'>
