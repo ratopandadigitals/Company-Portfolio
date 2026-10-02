@@ -165,6 +165,7 @@ const HeroSection = ({
             src={src}
             alt='Team member'
             fill
+            loading='eager'
             sizes='24px'
             className='rounded-full object-cover ring-2 ring-surface-page'
           />
@@ -195,6 +196,7 @@ const HeroSection = ({
                     src={workImageSrcs[0]}
                     alt='Project preview'
                     fill
+                    priority
                     sizes='(max-width: 640px) 40px, 64px'
                     className='object-cover'
                   />
@@ -215,7 +217,7 @@ const HeroSection = ({
                     src={workImageSrcs[1]}
                     alt='Project preview'
                     fill
-                    loading='eager'
+                    priority
                     sizes='(max-width: 640px) 40px, 64px'
                     className='object-cover'
                   />

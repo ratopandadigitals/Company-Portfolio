@@ -2,7 +2,7 @@
 import ClientProof from "@/components/sections/about/ClientProof";
 import HeroSection  from "@/components/sections/home/HeroSection";
 import Marquee from "@/components/sections/home/Marquee";
-import SectionTwo from "@/components/sections/home/CollageSection";
+// import SectionTwo from "@/components/sections/home/CollageSection";
 // import TrustedLogos from "@/components/sections/home/TrustedLogos";
 import ServiceItem from "@/components/sections/services/ServiceItem";
 import SelectedWork from "@/components/sections/works/SelectedWork";
@@ -18,7 +18,7 @@ const Home = () => {
   return (
     <div >
       <HeroSection />
-      <SectionTwo />
+      {/* <SectionTwo /> */}
       {/* <TrustedLogos /> */}
        <AboutHome />
         <ServiceItem />
