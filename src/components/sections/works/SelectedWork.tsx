@@ -126,7 +126,7 @@ const SelectedWork = (props: SelectedWorkProps) => {
                       src={item.previewImage}
                       alt={item.title}
                       fill
-                      loading="eager"
+                  
                       sizes='(max-width: 640px) 200px, 320px'
                       className="w-full h-full object-contain"
                     />
