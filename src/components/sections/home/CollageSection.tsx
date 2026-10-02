@@ -86,6 +86,7 @@ const CollageSection = (props: CollageSectionProps) => {
                     src={project.src}
                     alt={project.alt || `Project ${index + 1}`}
                     fill
+                    loading='eager'
                     sizes='(max-width: 768px) 50vw, 33vw'
                     className='object-contain object-center select-none transition-transform duration-500 ease-out group-hover:scale-110'
                   />
