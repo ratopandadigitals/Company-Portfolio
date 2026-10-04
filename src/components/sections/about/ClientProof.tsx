@@ -36,22 +36,22 @@ const TESTIMONIALS: TestimonialItem[] = [
     quote: '"Franklin turned our ideas into a sharp, clean brand. Fast, easy, and right on point."',
     name: 'Dipesh Basnet',
     role: 'Co-founder, NovaTech',
-    bgImage: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1200&auto=format&fit=crop',
+    bgImage:'/client/test.jpg'
   },
   {
     id: '02',
     quote: '"Exceeded expectations in every single sprint. The attention to detail is unmatched."',
     name: 'Nischit Shrestha',
     role: 'Product Lead, Apex',
-    bgImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop',
+    bgImage: '/client/test2.jpg',
   },
-  {
-    id: '03',
-    quote: '"A true partner in engineering complex software into simple, elegant digital design."',
-    name: 'David Chen',
-    role: 'CTO, Pulse',
-    bgImage: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop',
-  },
+  // {
+  //   id: '03',
+  //   quote: '"A true partner in engineering complex software into simple, elegant digital design."',
+  //   name: 'David Chen',
+  //   role: 'CTO, Pulse',
+  //   bgImage: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop',
+  // },
 ]
 const CountUp = ({ value }: { value: string }) => {
   const numericTarget = parseInt(value.replace(/\D/g, ''), 10) || 0
@@ -150,7 +150,7 @@ const handleNext = useCallback(() => {
             <div
               className='absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity pointer-events-none'
               style={{
-                backgroundImage: `url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop')`,
+                backgroundImage: `url('/client/testt.jpg')`,
               }}
             />
             <div className='absolute inset-0 bg-linear-to-b from-dark-500/60 via-transparent to-dark-500/80 pointer-events-none' />

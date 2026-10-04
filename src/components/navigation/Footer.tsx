@@ -81,11 +81,21 @@ const [email, setEmail] = useState('')
 const [isOpen, setIsOpen] = useState(false)
 const dialogRef = useDialogFocus<HTMLDivElement>(isOpen, () => setIsOpen(false))
 
-const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
+const handleSubscribe = async(e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault()
 
-  console.log({ email })
-
+  // console.log({ email })
+// ApicallApicall
+try {
+  const res = await fetch(process.env.NEXT_PUBLIC_CONTACT_ENDPOINT!, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ email, type: 'newsletter' }),
+  })
+  if (!res.ok) throw new Error('Failed')
+} catch {
+  return
+}
   setEmail('')
   setIsOpen(true)
 }
@@ -170,8 +180,7 @@ const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
       </h3>
 
       <p className="mt-2 text-caption font-secondary leading-relaxed">
-       No actual booking or email confirmation has been created yet
-      </p>
+      You are subscribed. We will keep you updated.      </p>
 
       <div className="mt-6">
         <Button onClick={() => setIsOpen(false)} icon={false}>
