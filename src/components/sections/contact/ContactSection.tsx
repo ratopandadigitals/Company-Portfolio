@@ -27,11 +27,29 @@ const ContactSection = (props:ContactSectionProps) => {
   const [need, setNeed] = useState('')
   const [description, setDescription] = useState('')
   const [isOpen, setIsOpen] = useState(false)
+  const [sending, setSending] = useState(false)
+const [error, setError] = useState(false)
   const dialogRef = useDialogFocus<HTMLDivElement>(isOpen, () => setIsOpen(false))
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const formData = { name, email, need, description }
-    console.log(formData) // swap this for an actual API call / email send later
+    const formData = { name, email, need, description,type: 'contact' }
+    // console.log(formData) // swap this for an actual API call / email send later
+    if (sending) return
+setSending(true)
+setError(false)
+try {
+  const res = await fetch(process.env.NEXT_PUBLIC_CONTACT_ENDPOINT!, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(formData),
+  })
+  if (!res.ok) throw new Error('Failed')
+} catch {
+  setError(true)
+  setSending(false)
+  return
+}
+setSending(false)
  
     // Same reset-after-submit pattern as your notes app
     setName('')
@@ -148,12 +166,12 @@ const ContactSection = (props:ContactSectionProps) => {
                   focus:ring-2 focus:ring-primary/20
                   transition-colors"            />
           </div>
-
+      {error && <p className="text-sm text-red-600">Something went wrong. Please try again.</p>}
           <button
             type="submit"
             className="w-full py-3.5 rounded-full bg-heading text-surface-page font-medium hover:opacity-90 transition-opacity mt-2 cursor-pointer"
           >
-            Send Now!
+          {sending ? 'Sending...' : 'Send Now!'}
           </button>
         </form>
 
@@ -184,9 +202,11 @@ const ContactSection = (props:ContactSectionProps) => {
         Thanks for reaching out!
       </h3>
 
-      <p className='mt-2 text-caption font-secondary leading-relaxed'>
-       No actual booking or email confirmation has been created yet
-      </p>
+      <p className='mt-2 text       No actual booking or email confirmation has been created yet
+-caption font-secondary leading-relaxed'>
+
+              Your message has been sent. We will get back to you soon.   
+                 </p>
 
       <div className='mt-6'>
         <Button onClick={() => setIsOpen(false)} icon={false}>
