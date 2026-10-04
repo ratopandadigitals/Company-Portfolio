@@ -43,7 +43,7 @@ const TESTIMONIALS: TestimonialItem[] = [
     quote: '"Exceeded expectations in every single sprint. The attention to detail is unmatched."',
     name: 'Nischit Shrestha',
     role: 'Product Lead, Apex',
-    bgImage: '/client/test2.jpg',
+    bgImage: '/client/test1.jpg',
   },
   // {
   //   id: '03',
