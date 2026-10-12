@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import localFont from "next/font/local"
-import Footer from "@/components/navigation/Footer"
-import Navbar from "@/components/navigation/Navbar"
+import PublicSiteChrome from "@/components/navigation/PublicSiteChrome"
 import ThemeProvider from "@/components/providers/ThemeProvider"
 
 import "./globals.css"
@@ -79,9 +78,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           storageKey="theme"
         >
           <div className="flex min-h-screen flex-col">
-            <Navbar />
+            <PublicSiteChrome position="header" />
             <main className="flex-1">{children}</main>
-            <Footer />
+            <PublicSiteChrome position="footer" />
           </div>
         </ThemeProvider>
       </body>

@@ -32,8 +32,13 @@ flowchart TB
 | `/gallery` | `src/app/gallery/page.tsx` | Gallery hero, bento gallery, CTA |
 | `/contact` | `src/app/contact/page.tsx` | Contact hero and contact form section |
 | `/privacy-policy` and `/terms-and-conditions` | matching `page.tsx` files | Static legal pages |
+| `/admin` | `src/app/admin/page.tsx` | Admin overview and links to content areas |
+| `/admin/services`, `/admin/works`, `/admin/events`, `/admin/gallery`, `/admin/enquiries` | matching `src/app/admin/**/page.tsx` files | Admin content lists; currently empty states without persistent data |
+| `/admin/login`, `/admin/{services,works,events}/{new,[id]}` | matching admin route files | Placeholder screens; authentication and create/edit flows are not connected |
 
 `src/app/layout.tsx` owns the global fonts, metadata, theme attribute, navbar, footer, and page shell. `src/app/not-found.tsx` is the custom not-found page.
+
+The admin routes share `src/app/admin/layout.tsx`. `PublicSiteChrome` suppresses the public navbar and footer on `/admin` routes so the admin shell has its own navigation and header.
 
 Blog section components exist under `src/components/sections/blog`, but there is no `src/app/blog` route in the current app. Do not present `/blog` as an available page until routes and content are implemented and reviewed.
 
@@ -41,6 +46,7 @@ Blog section components exist under `src/components/sections/blog`, but there is
 
 - `src/components/atoms`: reusable primitives such as `Button`, `Container`, `Heading`, `Input`, `Logo`, `NavLink`, and `Section`.
 - `src/components/navigation`: global `Navbar` and `Footer`.
+- `src/components/admin`: admin-only navigation, headers, tables, forms, and confirmation UI shared by admin routes.
 - `src/components/sections`: page-level presentation grouped by domain: home, about, services, works, events, gallery, contact, FAQ, and blog.
 - `src/components/Animation`: reusable visual effects and animation wrappers using Framer Motion, GSAP, OGL, and shader components.
 - `src/components/hooks`: reusable hooks, currently including sticky-stack and scroll-trigger behavior.
@@ -49,6 +55,35 @@ Blog section components exist under `src/components/sections/blog`, but there is
 - `src/data/content.ts`: separate sample work/article model; this currently overlaps with the primary data model and needs an ownership decision.
 - `src/components/sections/services/Service.ts` and `ServicePhase.ts`: service and process data stored beside their presentation components.
 - `src/lib/utils.ts`: shared utility functions, including `cn`.
+
+## Admin panel structure
+
+```text
+src/
+  app/admin/                 Routes and shared admin layout
+    layout.tsx               Admin sidebar, header, and content frame
+    page.tsx                 /admin overview
+    services/page.tsx        /admin/services
+    works/page.tsx           /admin/works
+    events/page.tsx          /admin/events
+    gallery/page.tsx         /admin/gallery
+    enquiries/page.tsx       /admin/enquiries
+  components/admin/          Reusable admin interface
+    AdminSidebar.tsx
+    AdminHeader.tsx
+    AdminPageHeader.tsx
+    DataTable.tsx
+    ServiceForm.tsx
+    WorkForm.tsx
+    EventForm.tsx
+    ConfirmDeleteDialog.tsx
+```
+
+This follows the App Router boundary: route files select and compose page content, while reusable admin UI lives outside `app` so it is not coupled to a URL. A shared admin layout provides consistent navigation and spacing; shared headers, tables, forms, and confirmation UI reduce duplication and make later changes consistent across content areas. The admin-specific component folder also keeps management UI separate from public-facing sections and navigation.
+
+The current pages are a frontend scaffold. The list views intentionally show empty states, and form components only define the interface; create/update/delete operations, authentication, authorization, and persistent storage are not implemented. Do not treat this scaffold as a production CMS until those boundaries are connected and reviewed.
+
+`/admin/dashboard` is retained as a redirect to the canonical `/admin` overview route.
 
 ## Client boundaries and state
 
