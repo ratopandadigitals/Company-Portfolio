@@ -1,21 +1,15 @@
+
 'use client'
 
-import React, { useCallback,useEffect, useState,useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Container from '@/components/atoms/Container'
 import Section from '@/components/atoms/Section'
-type StatItem = {
-  value: string
-  label: string
-}
-
-type TestimonialItem = {
-  id: string
-  quote: string
-  name: string
-  role: string
-  bgImage: string
-}
+import {
+  STATS_ITEMS,
+  TESTIMONIALS_ITEMS,
+} from '@/data/client'
+import type { StatItem, TestimonialItem } from '@/data/client'
 
 type ClientProofSectionProps = {
   eyebrow?: string
@@ -24,58 +18,40 @@ type ClientProofSectionProps = {
   testimonials?: TestimonialItem[]
 }
 
-const STATS: StatItem[] = [
-  { value: '4+', label: 'Finalized Projects' },
-  { value: '98%', label: 'Client satisfaction rate' },
-  { value: '1k', label: 'Gross Revenue' },
-]
-
-const TESTIMONIALS: TestimonialItem[] = [
-  {
-    id: '01',
-    quote: '"Franklin turned our ideas into a sharp, clean brand. Fast, easy, and right on point."',
-    name: 'Dipesh Basnet',
-    role: 'Co-founder, NovaTech',
-    bgImage:'/client/test.jpg'
-  },
-  {
-    id: '02',
-    quote: '"Exceeded expectations in every single sprint. The attention to detail is unmatched."',
-    name: 'Nischit Shrestha',
-    role: 'Product Lead, Apex',
-    bgImage: '/client/test1.jpg',
-  },
-  // {
-  //   id: '03',
-  //   quote: '"A true partner in engineering complex software into simple, elegant digital design."',
-  //   name: 'David Chen',
-  //   role: 'CTO, Pulse',
-  //   bgImage: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop',
-  // },
-]
 const CountUp = ({ value }: { value: string }) => {
   const numericTarget = parseInt(value.replace(/\D/g, ''), 10) || 0
   const suffix = value.replace(/[0-9]/g, '')
+
   const [count, setCount] = useState(0)
   const [hasTriggered, setHasTriggered] = useState(false)
   const ref = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
+    const element = ref.current
+
+    if (!element) return
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setHasTriggered(true)
+          observer.disconnect()
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     )
 
-    if (ref.current) observer.observe(ref.current)
+    observer.observe(element)
+
     return () => observer.disconnect()
   }, [])
 
   useEffect(() => {
     if (!hasTriggered) return
+
+    if (numericTarget === 0) {
+  return
+}
 
     let current = 0
     const duration = 1500
@@ -84,6 +60,7 @@ const CountUp = ({ value }: { value: string }) => {
 
     const timer = setInterval(() => {
       current += increment
+
       if (current >= numericTarget) {
         setCount(numericTarget)
         clearInterval(timer)
@@ -95,134 +72,170 @@ const CountUp = ({ value }: { value: string }) => {
     return () => clearInterval(timer)
   }, [hasTriggered, numericTarget])
 
-  return <span ref={ref}>{count}{suffix}</span>
+  return (
+    <span ref={ref}>
+      {count}
+      {suffix}
+    </span>
+  )
 }
-  const ClientProofSection = (props: ClientProofSectionProps) => {
 
+const ClientProofSection = ({
+  eyebrow = 'Testimonials',
+  title = 'Client Proof.',
+  stats = STATS_ITEMS,
+  testimonials = TESTIMONIALS_ITEMS,
+}: ClientProofSectionProps) => {
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  // Guess/placeholder — the original file had a broken empty label here
-  // (just a stray ")" character, no real text). Confirm the real copy.
-  const eyebrow = props.eyebrow || 'Testimonials'
-  const title = props.title || 'Client Proof.'
-  const stats = props.stats || STATS
-  const testimonials = props.testimonials || TESTIMONIALS
+const testimonialCount = testimonials.length
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))
-  }
+const safeIndex =
+  testimonialCount > 0 && currentIndex < testimonialCount
+    ? currentIndex
+    : 0
 
-const handleNext = useCallback(() => {
-  setCurrentIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))
-}, [testimonials.length])
+  const handlePrev = useCallback(() => {
+    if (testimonialCount === 0) return
 
- useEffect(() => {
-  const timer = setInterval(() => {
-    handleNext()
-  }, 5000)
+    setCurrentIndex((previous) =>
+      previous === 0 ? testimonialCount - 1 : previous - 1,
+    )
+  }, [testimonialCount])
 
-  return () => clearInterval(timer)
-}, [handleNext])
+  const handleNext = useCallback(() => {
+    if (testimonialCount === 0) return
 
-  const current = testimonials[currentIndex]
+    setCurrentIndex((previous) =>
+      previous === testimonialCount - 1 ? 0 : previous + 1,
+    )
+  }, [testimonialCount])
+
+  useEffect(() => {
+    if (testimonialCount <= 1) return
+
+    const timer = setInterval(handleNext, 5000)
+
+    return () => clearInterval(timer)
+  }, [handleNext, testimonialCount])
+
+  const current = testimonials[safeIndex]
 
   return (
-    <Section className='w-full bg-surface-page py-16 flex flex-col items-center'>
-      <Container className='max-w-360 w-full flex flex-col gap-6'>
-
-        {/* Header — watermark uses text-heading/10, which already switches
-            light/dark on its own, instead of two hardcoded values */}
-        <div className='flex flex-col items-center w-full gap-2'>
-          <span className='text-caption text-size-cta font-secondary font-medium tracking-wide text-center'>
+    <Section className="flex w-full flex-col items-center bg-surface-page py-16">
+      <Container className="flex w-full max-w-360 flex-col gap-6">
+        {/* Section heading */}
+        <div className="flex w-full flex-col items-center gap-2">
+          <span className="text-center text-size-cta font-secondary font-medium tracking-wide text-caption">
             {eyebrow}
           </span>
-          <h2 className='w-full text-center text-6xl sm:text-8xl lg:text-[100px] font-primary font-bold tracking-tight text-heading/30 leading-none select-none'>
+
+          <h2 className="w-full select-none text-center text-6xl font-primary font-bold leading-none tracking-tight text-heading/30 sm:text-8xl lg:text-[100px]">
             {title}
           </h2>
         </div>
 
-        {/* Main grid — stats card + testimonial card, both permanently
-            dark (confirmed), matching Footer/CollageSection reasoning */}
-        <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-h-115'>
-
-          {/* Left: stats card */}
-          <div className='group lg:col-span-4 relative rounded-3xl overflow-hidden bg-dark-500 border border-white/10 p-8 sm:p-10 flex flex-col justify-between min-h-115'>
+        {/* Stats and testimonial cards */}
+        <div className="grid min-h-115 w-full grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* Stats card */}
+          <div className="group relative flex min-h-115 flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-dark-500 p-8 sm:p-10 lg:col-span-4">
             <div
-              className='absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity pointer-events-none'
+              className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity"
               style={{
-                backgroundImage: `url('/client/testt.jpg')`,
+                backgroundImage: "url('/client/testt.jpg')",
               }}
             />
-            <div className='absolute inset-0 bg-linear-to-b from-dark-500/60 via-transparent to-dark-500/80 pointer-events-none' />
 
-            <div className='relative z-10 flex flex-col justify-between h-full gap-8'>
-              {stats.map((stat, index) => (
-                <div key={index} className='flex flex-col'>
-                  <span className='text-5xl sm:text-6xl font-primary font-extrabold text-white tracking-tight leading-none'>
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-dark-500/60 via-transparent to-dark-500/80" />
+
+            <div className="relative z-10 flex h-full flex-col justify-between gap-8">
+              {stats.map((stat) => (
+                <div key={stat.id} className="flex flex-col">
+                  <span className="text-5xl font-primary font-extrabold leading-none tracking-tight text-white sm:text-6xl">
                     <CountUp value={stat.value} />
                   </span>
-                  <span className='text-size-cta font-secondary font-medium text-white/70 mt-1'>
-                   {stat.label} 
+
+                  <span className="mt-1 text-size-cta font-secondary font-medium text-white/70">
+                    {stat.label}
                   </span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right: testimonial card */}
-          <div className=' group lg:col-span-8 relative rounded-3xl overflow-hidden bg-dark-500 border border-white/10 min-h-115 flex flex-col justify-between p-8 sm:p-10'>
-
-            {/* 3 stacked background layers, crossfading */}
+          {/* Testimonial card */}
+          <div className="group relative flex min-h-115 flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-dark-500 p-8 sm:p-10 lg:col-span-8">
             {testimonials.map((item, index) => (
               <div
                 key={item.id}
-                className={`absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-all duration-700 ease-in-out pointer-events-none ${
-                  currentIndex === index ? 'opacity-100 z-0' : 'opacity-0 z-0'
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 bg-cover bg-center transition-all duration-700 ease-in-out group-hover:scale-105 ${
+                  safeIndex === index
+                    ? 'z-0 opacity-100'
+                    : 'z-0 opacity-0'
                 }`}
-                style={{ backgroundImage: `url(${item.bgImage})` }}
+                style={{
+                  backgroundImage: `url(${item.bgImage})`,
+                }}
               />
             ))}
 
-            <div className='absolute inset-0 bg-dark-500/40 backdrop-brightness-90 pointer-events-none z-1' />
-            <div className='absolute inset-0 bg-linear-to-t from-dark-500/95 via-dark-500/40 to-transparent pointer-events-none z-1' />
+            <div className="pointer-events-none absolute inset-0 z-[1] bg-dark-500/40 backdrop-brightness-90" />
+            <div className="pointer-events-none absolute inset-0 z-[1] bg-linear-to-t from-dark-500/95 via-dark-500/40 to-transparent" />
 
-            <div className='relative z-10 text-size-caption font-secondary font-semibold tracking-widest text-white/70'>
-              {current.id} / {String(testimonials.length).padStart(2, '0')}
-            </div>
-
-            <div className='relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-16'>
-              <div className='max-w-xl flex flex-col gap-4'>
-                <p className='text-cta sm:text-h3 font-secondary font-medium leading-snug tracking-tight text-white transition-all duration-300'>
-                  {current.quote}
-                </p>
-                <div className='flex flex-col'>
-                  <span className='text-size
-                  body font-secondary font-semibold text-white'>
-                    {current.name}
-                  </span>
-                  <span className='text-size-cta font-secondary text-white/70'>
-                    {current.role}
-                  </span>
+            {current ? (
+              <>
+                <div className="relative z-10 text-size-caption font-secondary font-semibold tracking-widest text-white/70">
+                  {current.id} / {String(testimonialCount).padStart(2, '0')}
                 </div>
-              </div>
 
-              <div className='flex items-center gap-3 shrink-0'>
-                <button
-                  onClick={handlePrev}
-                  className='w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all active:scale-95 cursor-pointer'
-                  aria-label='Previous slide'
-                >
-                  <ChevronLeft className='w-5 h-5' />
-                </button>
-                <button
-                  onClick={handleNext}
-                  className='w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all active:scale-95 cursor-pointer'
-                  aria-label='Next slide'
-                >
-                  <ChevronRight className='w-5 h-5' />
-                </button>
+                <div className="relative z-10 flex flex-col justify-between gap-6 pt-16 sm:flex-row sm:items-end">
+                  <div className="flex max-w-xl flex-col gap-4">
+                    <p className="text-cta font-secondary font-medium leading-snug tracking-tight text-white transition-all duration-300 sm:text-h3">
+                      {current.quote}
+                    </p>
+
+                    <div className="flex flex-col">
+                      <span className="text-size-body font-secondary font-semibold text-white">
+                        {current.name}
+                      </span>
+
+                      <span className="text-size-cta font-secondary text-white/70">
+                        {current.role}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handlePrev}
+                      disabled={testimonialCount <= 1}
+                      className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition-all hover:bg-white/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                      aria-label="Previous testimonial"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      disabled={testimonialCount <= 1}
+                      className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition-all hover:bg-white/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                      aria-label="Next testimonial"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="relative z-10 flex flex-1 items-center justify-center">
+                <p className="text-size-body text-white/70">
+                  No testimonials available yet.
+                </p>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </Container>

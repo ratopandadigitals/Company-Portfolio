@@ -13,7 +13,7 @@ export type ServiceItem = {
 export const SERVICES_DATA: ServiceItem[] = [
 
   {
-    id: 'brand-design-system',
+    id: '1',
     label: 'Brand & Design System',
     title: 'Brand & Design System',
     image: '/Service/Brand&DesignSystem.webp',
@@ -25,7 +25,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     timeline: '2-3 Weeks',
   },
   {
-    id: 'ux-research-planning',
+    id: '2',
     label: 'UX Research & Product Planning',
     title: 'UX Research & Product Planning',
     image: '/Service/UXResearch&ProductPlanning.webp',
@@ -37,7 +37,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     timeline: '3-4 Weeks',
   },
   {
-    id: 'ui-design-prototyping',
+    id: '3',
     label: 'UI Design & Prototyping',
     title: 'UI Design & Prototyping',
     image: '/Service/UiDesign&Prototyping.webp',
@@ -49,7 +49,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     width: 300
   },
   {
-    id: 'engineering-development',
+    id: '4',
     label: 'Engineering & Development',
     title: 'Engineering & Development',
     image: '/Service/Development.webp',
@@ -61,7 +61,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     width: 300
   },
   {
-    id: 'digital-growth',
+    id: '5',
     label: 'Digital Growth',
     title: 'Digital Growth',
     image: '/Service/DigitalGrowth.webp',

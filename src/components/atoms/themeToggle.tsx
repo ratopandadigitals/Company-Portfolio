@@ -10,7 +10,9 @@ const [mounted, setMounted] = useState(false)
 
 
 useEffect(() => {
-	setMounted(true)
+  // Wait until the component has mounted before reading the resolved theme.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  setMounted(true)
 }, [])
 
 const isDarkMode = resolvedTheme === 'dark'

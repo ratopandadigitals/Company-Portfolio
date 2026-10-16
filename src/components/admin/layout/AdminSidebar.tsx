@@ -2,6 +2,7 @@
 'use client'
 
 import Link from 'next/link'
+import Logo from '@/components/atoms/Logo'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -32,26 +33,9 @@ export default function AdminSidebar() {
   return (
     <aside className="flex h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-border-subtle bg-surface-card">
       {/* Brand */}
-      <div className="flex h-[76px] shrink-0 items-center border-b border-border-divider px-5">
-        <Link
-          href="/admin"
-          aria-label="Rato Panda Digitals admin home"
-          className="flex min-w-0 items-center gap-3"
-        >
-          {/* Replace with the official brand logo */}
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border-divider bg-surface-section">
-            <span className="text-sm font-semibold text-heading">RP</span>
-          </div>
-
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold leading-5 text-heading">
-              Rato Panda Digitals
-            </p>
-            
-            
-          </div>
-        </Link>
-      </div>
+     <div className="flex h-[76px] flex flex-nowrap items-center border-b border-border-divider px-5">
+  <Logo href="/admin" compact />
+</div>
 
       {/* Navigation */}
       <nav
