@@ -377,8 +377,7 @@ const WorkForm = ({
       <div className="flex justify-end border-t border-border-subtle pt-5">
         <button
           type="submit"
-          className="inline-flex min-h-11 items-center justify-center rounded-md bg-surface-primary px-5 py-3 text-size-small font-semibold text-[var(--text-primary-on-color)] transition-colors duration-150 hover:bg-surface-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--border-primary)]"
-        >
+className="inline-flex min-h-11 items-center justify-center rounded-md bg-surface-primary px-5 py-3 text-size-small font-semibold text-text-primary-on-color transition-colors duration-150 hover:bg-surface-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-primary"        >
           {submitLabel}
         </button>
       </div>

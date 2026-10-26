@@ -6,11 +6,7 @@ import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Mail, Trash2,CheckCircle2 } from 'lucide-react'
 import type { EnquiryItem } from '@/data/enquiryStorage'
-import {
-  deleteEnquiry,
-  getEnquiryById,
-  markEnquiryAsRead,
-} from '@/data/enquiryStorage'
+import type { EnquiryDocument } from '@/types/database'
 
 const EnquiryDetailsPage = () => {
   const params = useParams<{ id: string }>()
@@ -20,30 +16,117 @@ const EnquiryDetailsPage = () => {
   const [enquiry, setEnquiry] = useState<EnquiryItem | undefined>()
   const [isLoaded, setIsLoaded] = useState(false)
 
-  useEffect(() => {
-    const updatedEnquiry =
-      markEnquiryAsRead(id) ?? getEnquiryById(id)
+ 
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setEnquiry(updatedEnquiry)
-    setIsLoaded(true)
-  }, [id])
+useEffect(() => {
+  const controller = new AbortController()
 
-  const handleDelete = () => {
-    if (!enquiry) return
+  const loadEnquiry = async () => {
+    try {
+      const response = await fetch(
+        `/api/enquiries/${encodeURIComponent(id)}`,
+        {
+          cache: 'no-store',
+          signal: controller.signal,
+        },
+      )
 
-    const confirmed = window.confirm(
-      `Delete the enquiry from "${enquiry.name}"?`,
-    )
+      const result = await response.json()
 
-    if (!confirmed) return
+      if (!response.ok || !result.success || !result.data) {
+        setEnquiry(undefined)
+        return
+      }
 
-    if (deleteEnquiry(enquiry.id)) {
-      router.push('/admin/enquiries')
-    } else {
-      window.alert('Could not delete this enquiry.')
+      let currentEnquiry = result.data as EnquiryDocument
+
+      if (currentEnquiry.status !== 'read') {
+        const updateResponse = await fetch(
+          `/api/enquiries/${encodeURIComponent(id)}`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: 'read' }),
+            signal: controller.signal,
+          },
+        )
+
+        if (updateResponse.ok) {
+          currentEnquiry = {
+            ...currentEnquiry,
+            status: 'read',
+          }
+        }
+      }
+
+      setEnquiry(currentEnquiry)
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return
+      }
+
+      console.error('Failed to load enquiry:', error)
+      setEnquiry(undefined)
+    } finally {
+      if (!controller.signal.aborted) {
+        setIsLoaded(true)
+      }
     }
   }
+
+  void loadEnquiry()
+
+  return () => controller.abort()
+}, [id])
+
+// localStorage
+//   // const handleDelete = () => {
+//   //   if (!enquiry) return
+
+//   //   const confirmed = window.confirm(
+//   //     `Delete the enquiry from "${enquiry.name}"?`,
+//   //   )
+
+//   //   if (!confirmed) return
+
+//   //   if (deleteEnquiry(enquiry.id)) {
+//   //     router.push('/admin/enquiries')
+//   //   } else {
+//   //     window.alert('Could not delete this enquiry.')
+//   //   }
+//   // }
+
+
+const handleDelete = async () => {
+  if (!enquiry) return
+
+  const confirmed = window.confirm(
+    `Delete the enquiry from "${enquiry.name}"?`,
+  )
+
+  if (!confirmed) return
+
+  try {
+    const response = await fetch(
+      `/api/enquiries/${encodeURIComponent(enquiry.id)}`,
+      { method: 'DELETE' },
+    )
+
+    const result = await response.json()
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Could not delete this enquiry.')
+    }
+
+    router.push('/admin/enquiries')
+  } catch (error) {
+    console.error('Failed to delete enquiry:', error)
+    window.alert('Could not delete this enquiry.')
+  }
+}
+
 
   if (!isLoaded) {
     return (

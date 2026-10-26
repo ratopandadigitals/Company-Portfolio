@@ -2,16 +2,19 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   ArrowUpRight,
   Bell,
   ChevronDown,
+  LogOut,
   UserRound,
 } from 'lucide-react'
 
 import ThemeToggle from '@/components/atoms/themeToggle'
+import { authClient } from '@/lib/auth-client'
 
 const PAGE_NAMES: Record<string, string> = {
   dashboard: 'Dashboard',
@@ -21,6 +24,7 @@ const PAGE_NAMES: Record<string, string> = {
   gallery: 'Gallery',
   enquiries: 'Enquiries',
   testimonials: 'Testimonials',
+  settings: 'Settings',
 }
 
 const SINGULAR_NAMES: Record<string, string> = {
@@ -30,9 +34,18 @@ const SINGULAR_NAMES: Record<string, string> = {
   testimonials: 'Testimonial',
 }
 
-export default function AdminHeader() {
+const AdminHeader = () => {
   const pathname = usePathname()
+  const router = useRouter()
+
   const [profileOpen, setProfileOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [logoutError, setLogoutError] = useState('')
+
+  const { data: session, isPending } = authClient.useSession()
+
+  const user = session?.user
+  const profileImage = user?.image || undefined
 
   const segments = pathname.split('/').filter(Boolean).slice(1)
   const section = segments[0] || 'dashboard'
@@ -44,6 +57,33 @@ export default function AdminHeader() {
     pageTitle = `Add ${SINGULAR_NAMES[section] || pageTitle}`
   } else if (action) {
     pageTitle = `Edit ${SINGULAR_NAMES[section] || pageTitle}`
+  }
+
+  const userName = user?.name || user?.email || 'Admin'
+  const userEmail = user?.email || ''
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return
+
+    setIsLoggingOut(true)
+    setLogoutError('')
+
+    try {
+      const result = await authClient.signOut()
+
+      if (result.error) {
+        setLogoutError('Unable to log out. Please try again.')
+        setIsLoggingOut(false)
+        return
+      }
+
+      setProfileOpen(false)
+      router.replace('/login')
+      router.refresh()
+    } catch {
+      setLogoutError('Unable to log out. Please try again.')
+      setIsLoggingOut(false)
+    }
   }
 
   return (
@@ -63,7 +103,6 @@ export default function AdminHeader() {
 
       {/* Header actions */}
       <div className="flex shrink-0 items-center gap-2 sm:gap-4">
-        {/* Notifications: UI only until notification functionality exists */}
         <button
           type="button"
           aria-label="Notifications"
@@ -73,28 +112,35 @@ export default function AdminHeader() {
           <Bell className="size-5" aria-hidden="true" />
         </button>
 
-        {/* Existing light/dark theme toggle */}
         <ThemeToggle />
 
-        {/* Administrator profile */}
+        {/* Signed-in user profile */}
         <div className="relative">
           <button
             type="button"
-            aria-label="Administrator profile"
+            aria-label="User profile"
             aria-expanded={profileOpen}
             aria-haspopup="true"
             onClick={() => setProfileOpen((open) => !open)}
             className="inline-flex h-10 items-center gap-2 rounded-md border border-border-subtle bg-surface-card px-2 text-heading transition-colors hover:bg-surface-section focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
           >
-            <span className="flex size-7 items-center justify-center rounded-full bg-surface-section">
-              <UserRound
-                className="size-4"
-                aria-hidden="true"
-              />
+            <span className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border-subtle bg-surface-section">
+              {profileImage ? (
+                <Image
+                  src={profileImage}
+                  alt={`${userName}'s profile`}
+                  width={28}
+                  height={28}
+                  unoptimized
+                  className="size-full object-cover"
+                />
+              ) : (
+                <UserRound className="size-4" aria-hidden="true" />
+              )}
             </span>
 
-            <span className="hidden text-sm sm:inline">
-              Administrator
+            <span className="hidden max-w-36 truncate text-sm sm:inline">
+              {isPending ? 'Loading...' : userName}
             </span>
 
             <ChevronDown
@@ -108,14 +154,64 @@ export default function AdminHeader() {
           {profileOpen && (
             <div
               role="menu"
-              className="absolute right-0 top-full mt-2 w-56 rounded-lg border border-border-subtle bg-surface-card p-3 shadow-lg"
+              className="absolute right-0 top-full mt-2 w-64 rounded-lg border border-border-subtle bg-surface-card p-3 shadow-lg"
             >
-              <p className="text-sm font-medium text-heading">
-                Administrator
-              </p>
-              <p className="mt-1 text-xs text-caption">
-                Admin account
-              </p>
+              <div className="flex items-center gap-3">
+                <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border-subtle bg-surface-section">
+                  {profileImage ? (
+                    <Image
+                      src={profileImage}
+                      alt={`${userName}'s profile`}
+                      width={40}
+                      height={40}
+                      unoptimized
+                      className="size-full object-cover"
+                    />
+                  ) : (
+                    <UserRound size={20} aria-hidden="true" />
+                  )}
+                </span>
+
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-heading">
+                    {userName}
+                  </p>
+
+                  {userEmail && (
+                    <p className="mt-1 break-all text-xs text-caption">
+                      {userEmail}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {logoutError && (
+                <p role="alert" className="mt-3 text-sm text-red-600">
+                  {logoutError}
+                </p>
+              )}
+
+              <div className="my-3 border-t border-border-subtle" />
+
+              <Link
+                href="/admin/settings"
+                role="menuitem"
+                onClick={() => setProfileOpen(false)}
+                className="block rounded-md px-2 py-2 text-sm text-heading transition-colors hover:bg-surface-section"
+              >
+                Account settings
+              </Link>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleLogout}
+                disabled={isLoggingOut || isPending || !user}
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-heading transition-colors hover:bg-surface-section disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <LogOut className="size-4" aria-hidden="true" />
+                {isLoggingOut ? 'Logging out...' : 'Log out'}
+              </button>
             </div>
           )}
         </div>
@@ -126,12 +222,11 @@ export default function AdminHeader() {
           className="inline-flex h-10 items-center gap-1.5 rounded-md text-sm text-caption transition-colors hover:text-heading focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
         >
           <span className="hidden md:inline">View website</span>
-          <ArrowUpRight
-            className="size-4"
-            aria-hidden="true"
-          />
+          <ArrowUpRight className="size-4" aria-hidden="true" />
         </Link>
       </div>
     </header>
   )
 }
+
+export default AdminHeader

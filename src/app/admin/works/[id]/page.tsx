@@ -1,85 +1,99 @@
-
 'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
-import type { EventItem } from '@/data/events'
-import { getEventBySlug, updateEvent } from '@/data/eventStorage'
-import EventForm from '@/components/admin/events/EventForm'
+import type { WorkItem } from '@/data/works'
+import {
+  getWorkBySlug,
+  updateWork,
+  getWorks,
+} from '@/data/work'
+import WorkForm from '@/components/admin/works/WorkForm'
 
-const EditEventPage = () => {
+const EditWorkPage = () => {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const slug = params.id
 
-  const [event, setEvent] = useState<EventItem | undefined>(undefined)
+  const [work, setWork] = useState<WorkItem | undefined>(undefined)
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setEvent(getEventBySlug(slug))
+    setWork(getWorkBySlug(slug))
     setIsLoaded(true)
   }, [slug])
 
   const handleSubmit = (formData: FormData) => {
-    if (!event) return
+    if (!work) return
 
-    const updatedEvent: EventItem = {
-      id: event.id,
+    const updatedWork: WorkItem = {
+      id: work.id,
       slug: String(formData.get('slug') ?? '').trim(),
       title: String(formData.get('title') ?? '').trim(),
-      date: String(formData.get('date') ?? '').trim(),
-      location: String(formData.get('location') ?? '').trim(),
       description: String(formData.get('description') ?? '').trim(),
-      image: String(formData.get('image') ?? '').trim(),
-      status: String(formData.get('status') ?? 'upcoming') as EventItem['status'],
-      ctaLabel: String(formData.get('ctaLabel') ?? '').trim(),
+      year: String(formData.get('year') ?? '').trim(),
+      role: String(formData.get('role') ?? '').trim(),
+      services: formData
+        .getAll('services')
+        .map((value) => String(value).trim())
+        .filter(Boolean),
+      tools: formData
+        .getAll('tools')
+        .map((value) => String(value).trim())
+        .filter(Boolean),
+      previewImage: String(formData.get('previewImage') ?? '').trim(),
+      bgImage: String(formData.get('bgImage') ?? '').trim(),
+      gallery: formData
+        .getAll('gallery')
+        .map((value) => String(value).trim())
+        .filter(Boolean),
     }
 
-    const duplicateSlug = getEventBySlug(updatedEvent.slug)
+    const duplicateSlug = getWorkBySlug(updatedWork.slug)
 
-    if (duplicateSlug && updatedEvent.slug !== event.slug) {
-      window.alert('An event with this slug already exists.')
+    if (duplicateSlug && updatedWork.slug !== work.slug) {
+      window.alert('A work with this slug already exists.')
       return
     }
 
-    const savedEvent = updateEvent(event.slug, updatedEvent)
+    const savedWork = updateWork(work.slug, updatedWork)
 
-    if (!savedEvent) {
-      window.alert('Could not update this event.')
+    if (!savedWork) {
+      window.alert('Could not update this work.')
       return
     }
 
-    router.push('/admin/events')
+    router.push('/admin/works')
   }
 
   if (!isLoaded) {
     return (
       <p className="text-size-body text-text-caption">
-        Loading event...
+        Loading work...
       </p>
     )
   }
 
-  if (!event) {
+  if (!work) {
     return (
       <div className="flex w-full flex-col gap-stack-content">
         <h1 className="text-size-h2 font-semibold text-text-heading">
-          Event not found
+          Work not found
         </h1>
 
         <p className="text-size-body text-text-caption">
-          This event could not be found in the current Events data.
+          This work could not be found in the current Works data.
         </p>
 
         <Link
-          href="/admin/events"
+          href="/admin/works"
           className="inline-flex items-center gap-2 text-size-small font-medium text-text-caption transition-colors hover:text-text-primary"
         >
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Events
+          Back to Works
         </Link>
       </div>
     )
@@ -89,26 +103,26 @@ const EditEventPage = () => {
     <div className="w-full space-y-stack-content">
       <div>
         <Link
-          href="/admin/events"
+          href="/admin/works"
           className="inline-flex items-center gap-2 text-size-small font-medium text-text-caption transition-colors hover:text-text-primary"
         >
           <ArrowLeft size={16} aria-hidden="true" />
-          Back to Events
+          Back to Works
         </Link>
 
         <h1 className="mt-stack-content text-size-h2 font-semibold tracking-tight text-text-heading">
-          Edit event
+          Edit work
         </h1>
 
-        <p className="mt-stack-tight text-size-body text-text-caption">
-          Update the details for {event.title}.
+        <p className="mt-stack-tight text-size-body text-caption">
+          Update the details for {work.title}.
         </p>
       </div>
 
-      <div className="w-full rounded-lg border border-border-subtle bg-surface-card p-inset-card shadow-sm">
-        <EventForm
-          key={event.slug}
-          initialEvent={event}
+      <div className="w-full rounded-lg border border-border-subtle text-white bg-surface-card p-inset-card shadow-sm">
+        <WorkForm
+          key={work.slug}
+          initialWork={work}
           onSubmit={handleSubmit}
           submitLabel="Save changes"
         />
@@ -117,4 +131,4 @@ const EditEventPage = () => {
   )
 }
 
-export default EditEventPage
+export default EditWorkPage

@@ -17,6 +17,7 @@ type ButtonProps = {
   fullWidth?: boolean
   type?: 'button' | 'submit'
   variant?: 'primary' | 'dark' | 'outline' | 'liquid'
+  disabled?: boolean
 }
 
   const Button = (props: ButtonProps) => {
@@ -97,7 +98,12 @@ type ButtonProps = {
   }
 
   return (
-    <button type={type} onClick={props.onClick} className={`${classes} ${props.className || ''}`.trim()}>
+    <button
+      type={type}
+      onClick={props.onClick}
+      disabled={props.disabled}
+      className={`${classes} ${props.className || ''} ${props.disabled ? 'opacity-50 cursor-not-allowed' : ''}`.trim()}
+    >
       {content}
     </button>
   )

@@ -4,29 +4,56 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
-	CheckCircle2,
+  CheckCircle2,
   Eye,
   Inbox,
   Trash2,
 } from 'lucide-react'
-import type { EnquiryItem, EnquiryStatus } from '@/data/enquiryStorage'
-import {
-  deleteEnquiry,
-  getEnquiries,
-} from '@/data/enquiryStorage'
+import type { EnquiryDocument } from '@/types/database'
 import DataTable from '@/components/admin/shared/DataTable'
 import AdminSearchInput from '@/components/admin/shared/AdminSearchInput'
 
 const EnquiriesPage = () => {
-  const [enquiries, setEnquiries] = useState<EnquiryItem[]>([])
+  const [enquiries, setEnquiries] = useState<EnquiryDocument[]>([])
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<
-    'all' | EnquiryStatus
+    'all' | EnquiryDocument['status']
   >('all')
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setEnquiries(getEnquiries())
+    const controller = new AbortController()
+
+    const loadEnquiries = async () => {
+      try {
+        const response = await fetch('/api/enquiries', {
+          cache: 'no-store',
+          signal: controller.signal,
+        })
+
+        const result = await response.json()
+
+        if (!response.ok || !result.success) {
+          throw new Error(
+            result.message || 'Failed to load enquiries.',
+          )
+        }
+
+        setEnquiries(result.data as EnquiryDocument[])
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          error.name === 'AbortError'
+        ) {
+          return
+        }
+
+        console.error('Failed to load enquiries:', error)
+      }
+    }
+
+    void loadEnquiries()
+
+    return () => controller.abort()
   }, [])
 
   const filteredEnquiries = useMemo(() => {
@@ -56,22 +83,42 @@ const EnquiriesPage = () => {
     (enquiry) => enquiry.status === 'read',
   ).length
 
-  const handleDelete = (enquiry: EnquiryItem) => {
+  const handleDelete = async (enquiry: EnquiryDocument) => {
     const confirmed = window.confirm(
       `Delete the enquiry from "${enquiry.name}"?`,
     )
 
     if (!confirmed) return
 
-    if (deleteEnquiry(enquiry.id)) {
-      setEnquiries(getEnquiries())
+    try {
+      const response = await fetch(
+        `/api/enquiries/${encodeURIComponent(enquiry.id)}`,
+        { method: 'DELETE' },
+      )
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || 'Failed to delete enquiry.',
+        )
+      }
+
+      setEnquiries((current) =>
+        current.filter((item) => item.id !== enquiry.id),
+      )
+    } catch (error) {
+      console.error('Failed to delete enquiry:', error)
+      window.alert(
+        'Could not delete this enquiry. Please try again.',
+      )
     }
   }
 
   const columns = [
     {
       label: 'Sender',
-      render: (enquiry: EnquiryItem) => (
+      render: (enquiry: EnquiryDocument) => (
         <div className="min-w-0">
           <p className="font-semibold text-text-heading">
             {enquiry.name}
@@ -84,7 +131,7 @@ const EnquiriesPage = () => {
     },
     {
       label: 'Subject',
-      render: (enquiry: EnquiryItem) => (
+      render: (enquiry: EnquiryDocument) => (
         <div className="min-w-0 max-w-sm">
           <p className="font-medium text-text-heading">
             {enquiry.subject}
@@ -97,36 +144,36 @@ const EnquiriesPage = () => {
     },
     {
       label: 'Date received',
-      render: (enquiry: EnquiryItem) =>
+      render: (enquiry: EnquiryDocument) =>
         new Date(enquiry.createdAt).toLocaleDateString(),
     },
     {
-  label: 'Status',
-  render: (enquiry: EnquiryItem) => (
-    <span
-      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-size-caption font-medium ${
-        enquiry.status === 'new'
-          ? 'border-border-primary bg-surface-primary text-white'
-          : 'border-border-success bg-surface-success text-white'
-      }`}
-    >
-      {enquiry.status === 'new' ? (
-        <>
-          <Inbox size={14} aria-hidden="true" />
-          New
-        </>
-      ) : (
-        <>
-          <CheckCircle2 size={14} aria-hidden="true" />
-          Read
-        </>
-      )}
-    </span>
-  ),
-},
+      label: 'Status',
+      render: (enquiry: EnquiryDocument) => (
+        <span
+          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-size-caption font-medium ${
+            enquiry.status === 'new'
+              ? 'border-border-primary bg-surface-primary text-white'
+              : 'border-border-success bg-surface-success text-white'
+          }`}
+        >
+          {enquiry.status === 'new' ? (
+            <>
+              <Inbox size={14} aria-hidden="true" />
+              New
+            </>
+          ) : (
+            <>
+              <CheckCircle2 size={14} aria-hidden="true" />
+              Read
+            </>
+          )}
+        </span>
+      ),
+    },
     {
       label: 'Actions',
-      render: (enquiry: EnquiryItem) => (
+      render: (enquiry: EnquiryDocument) => (
         <div className="flex items-center gap-3">
           <Link
             href={`/admin/enquiries/${enquiry.id}`}
@@ -139,7 +186,7 @@ const EnquiriesPage = () => {
 
           <button
             type="button"
-            onClick={() => handleDelete(enquiry)}
+            onClick={() => void handleDelete(enquiry)}
             title="Delete enquiry"
             aria-label={`Delete enquiry from ${enquiry.name}`}
             className="rounded-md border border-border-error bg-surface-error p-2 text-white transition-colors hover:bg-surface-error-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-error"
@@ -199,17 +246,19 @@ const EnquiriesPage = () => {
 
       <div className="rounded-lg border border-border-subtle bg-surface-card p-inset-compact">
         <div className="mb-stack-content flex flex-col gap-stack-tight sm:flex-row sm:items-center sm:justify-between">
-         <AdminSearchInput
-  value={search}
-  onChange={setSearch}
-  placeholder="Search enquiries..."
-  ariaLabel="Search enquiries"
-/>
+          <AdminSearchInput
+            value={search}
+            onChange={setSearch}
+            placeholder="Search enquiries..."
+            ariaLabel="Search enquiries"
+          />
 
           <select
             value={statusFilter}
             onChange={(event) =>
-              setStatusFilter(event.target.value as typeof statusFilter)
+              setStatusFilter(
+                event.target.value as typeof statusFilter,
+              )
             }
             aria-label="Filter enquiries by status"
             className="rounded-md border border-border-subtle bg-surface-card px-3 py-2 text-size-small text-text-heading outline-none focus:border-border-primary focus:ring-2"

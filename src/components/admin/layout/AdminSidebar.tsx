@@ -1,4 +1,3 @@
-
 'use client'
 
 import Link from 'next/link'
@@ -14,6 +13,7 @@ import {
   UserRound,
   ChevronRight,
   MessageSquareQuote,
+  Settings,
 } from 'lucide-react'
 
 const navigation = [
@@ -23,24 +23,28 @@ const navigation = [
   { label: 'Events', href: '/admin/events', icon: CalendarDays },
   { label: 'Gallery', href: '/admin/gallery', icon: Images },
   { label: 'Enquiries', href: '/admin/enquiries', icon: MessageSquare },
-  { label: 'Testimonials', href: '/admin/testimonials', icon: MessageSquareQuote },
-  
+  {
+    label: 'Testimonials',
+    href: '/admin/testimonials',
+    icon: MessageSquareQuote,
+  },
+  { label: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
-export default function AdminSidebar() {
+const AdminSidebar = () => {
   const pathname = usePathname()
 
   return (
     <aside className="flex h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-border-subtle bg-surface-card">
       {/* Brand */}
-     <div className="flex h-[76px] flex flex-nowrap items-center border-b border-border-divider px-5">
-  <Logo href="/admin" compact />
-</div>
+      <div className="flex h-[76px] shrink-0 items-center border-b border-border-divider px-5">
+        <Logo href="/admin" compact />
+      </div>
 
       {/* Navigation */}
       <nav
         aria-label="Admin navigation"
-        className="min-h-0 flex-1 px-4 mt-2"
+        className="mt-2 min-h-0 flex-1 overflow-y-auto px-4"
       >
         <p className="mb-4 px-3 text-caption font-medium uppercase tracking-wider">
           Workspace
@@ -87,12 +91,15 @@ export default function AdminSidebar() {
         </div>
       </nav>
 
-      {/* Administrator */}
-      <div className=" mb-2 shrink-0 border-t border-border-divider">
-        <button
-          type="button"
-          aria-label="Administrator account"
-          className="flex w-full items-center gap-3 rounded-lg p-1 mb-2 text-left transition-colors hover:bg-surface-section"
+      {/* Administrator account */}
+      <div className="mb-2 shrink-0 border-t border-border-divider px-2 pt-2">
+        <Link
+          href="/admin/settings"
+          aria-label="Administrator account settings"
+          aria-current={
+            pathname === '/admin/settings' ? 'page' : undefined
+          }
+          className="mb-2 flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-surface-section"
         >
           <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border-divider bg-surface-section text-icon-primary">
             <UserRound size={19} strokeWidth={1.8} />
@@ -103,7 +110,7 @@ export default function AdminSidebar() {
               Administrator
             </p>
             <p className="mt-0.5 truncate text-caption">
-              Admin account
+              Account settings
             </p>
           </div>
 
@@ -112,8 +119,10 @@ export default function AdminSidebar() {
             strokeWidth={1.8}
             className="shrink-0 text-icon-secondary"
           />
-        </button>
+        </Link>
       </div>
     </aside>
   )
 }
+
+export default AdminSidebar
