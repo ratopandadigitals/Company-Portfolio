@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 import localFont from "next/font/local"
-import Footer from "@/components/navigation/Footer"
-import Navbar from "@/components/navigation/Navbar"
 import ThemeProvider from "@/components/providers/ThemeProvider"
+import PublicChromeWrapper from "@/components/navigation/PublicChromeWrapper"
 
 import "./globals.css"
 
@@ -17,7 +16,6 @@ const inter = localFont({
   variable: "--font-primary",
   display: "swap",
   preload: false,
-
 })
 
 const roboto = localFont({
@@ -30,7 +28,6 @@ const roboto = localFont({
   variable: "--font-secondary",
   display: "swap",
   preload: false,
-
 })
 
 const jetbrainsMono = localFont({
@@ -55,21 +52,31 @@ const jetbrainsMono = localFont({
   variable: "--font-mono",
   display: "swap",
   preload: false,
-
 })
+
 export const metadata: Metadata = {
-  title: { default: "Rato Panda Digitals", template: "%s | Rato Panda Digitals" },
+  title: {
+    default: "Rato Panda Digitals",
+    template: "%s | Rato Panda Digitals",
+  },
   description: "A digital design and development studio.",
   icons: {
     icon: { url: "/icon.webp", sizes: "180x130" },
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-  <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
-   <body
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
+      <body
         className={`${inter.variable} ${roboto.variable} ${jetbrainsMono.variable} font-secondary bg-surface-page text-body antialiased`}
       >
         <ThemeProvider
@@ -79,9 +86,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           storageKey="theme"
         >
           <div className="flex min-h-screen flex-col">
-            <Navbar />
+            <PublicChromeWrapper position="header" />
+
             <main className="flex-1">{children}</main>
-            <Footer />
+
+            <PublicChromeWrapper position="footer" />
           </div>
         </ThemeProvider>
       </body>

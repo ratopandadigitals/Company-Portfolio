@@ -45,6 +45,14 @@ For example:
 
 The same pattern is used for events, gallery, blog, privacy policy, and terms and conditions.
 
+## Admin storage hydration and lint suppression
+
+**Decision: Keep admin `localStorage` reads after hydration and suppress the specific effect lint rule at those initialization updates.**
+
+Admin data getters read browser `localStorage` and provide deterministic fallback data during server rendering. The admin pages load the saved browser values in an effect after hydration so the initial server and browser output remain consistent. Initializing React state directly from these getters could make those outputs differ and trigger a hydration mismatch.
+
+The `react-hooks/set-state-in-effect` rule flags the synchronous state update used to apply the browser-only value. Suppress that rule only on the relevant admin initialization updates, with an inline explanation; do not disable it globally or for unrelated state changes. Revisit this decision if storage moves to an asynchronous server source or a `useSyncExternalStore` adapter with a defined server snapshot.
+
 ## Why these folders are used
 
 - `src/app/` contains pages and routes only.

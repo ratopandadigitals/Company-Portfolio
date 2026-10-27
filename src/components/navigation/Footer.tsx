@@ -81,24 +81,32 @@ const [email, setEmail] = useState('')
 const [isOpen, setIsOpen] = useState(false)
 const dialogRef = useDialogFocus<HTMLDivElement>(isOpen, () => setIsOpen(false))
 
-const handleSubscribe = async(e: React.FormEvent<HTMLFormElement>) => {
+
+const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault()
 
-  // console.log({ email })
-// ApicallApicall
-try {
-  const res = await fetch(process.env.NEXT_PUBLIC_CONTACT_ENDPOINT!, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ email, type: 'newsletter' }),
-  })
-  if (!res.ok) throw new Error('Failed')
-} catch {
-  return
+  try {
+    const res = await fetch('/api/newsletter', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Failed to subscribe.')
+    }
+
+    setEmail('')
+    setIsOpen(true)
+  } catch (error) {
+    console.error('Newsletter subscription failed:', error)
+  }
 }
-  setEmail('')
-  setIsOpen(true)
-}
+
   return (
     <Section className="bg-surface-page border-t border-border-subtle">
       <Container className="py-12 grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-28">

@@ -30,35 +30,48 @@ const ContactSection = (props:ContactSectionProps) => {
   const [sending, setSending] = useState(false)
 const [error, setError] = useState(false)
   const dialogRef = useDialogFocus<HTMLDivElement>(isOpen, () => setIsOpen(false))
-  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = { name, email, need, description,type: 'contact' }
-    // console.log(formData) // swap this for an actual API call / email send later
-    if (sending) return
-setSending(true)
-setError(false)
-try {
-  const res = await fetch(process.env.NEXT_PUBLIC_CONTACT_ENDPOINT!, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify(formData),
-  })
-  if (!res.ok) throw new Error('Failed')
-} catch {
-  setError(true)
-  setSending(false)
-  return
-}
-setSending(false)
- 
-    // Same reset-after-submit pattern as your notes app
+  
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+
+  if (sending) return
+
+  setSending(true)
+  setError(false)
+
+  try {
+    const res = await fetch('/api/enquiries', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        need,
+        description,
+      }),
+    })
+
+    const result = await res.json()
+
+    if (!res.ok || !result.success) {
+      throw new Error(result.message || 'Failed to submit enquiry.')
+    }
+
     setName('')
     setEmail('')
     setNeed('')
     setDescription('')
     setIsOpen(true)
+  } catch (error) {
+    console.error('Contact form submission failed:', error)
+    setError(true)
+  } finally {
+    setSending(false)
   }
- 
+}
+
   
 
 

@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/components/admin/layout", "src/components/admin/gallery/GalleryForm"  ],
   "exclude": ["node_modules"]
 }

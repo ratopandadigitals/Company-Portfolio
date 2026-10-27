@@ -6,9 +6,10 @@ type LogoProps = {
   lightSrc?: string
   darkSrc?: string
   href?: string
+  compact?: boolean
 }
 
-const Logo = ({ lightSrc = '/Light.webp', darkSrc = '/Dark.webp', href = '/' }: LogoProps) => {
+const Logo = ({ lightSrc = '/Light.webp', darkSrc = '/Dark.webp', href = '/',compact = false, }: LogoProps) => {
   return (
     <Link href={href} className="relative flex items-center gap-2.5 sm:gap-3 shrink-0">
       <Image
@@ -27,10 +28,16 @@ const Logo = ({ lightSrc = '/Light.webp', darkSrc = '/Dark.webp', href = '/' }: 
         priority
         className="w-8 h-8 sm:w-10 sm:h-10 object-contain hidden dark:block"
       />
-      <span className="text-lg sm:text-2xl font-extrabold tracking-widest font-primary">
-        <span className="text-heading">RatoPanda</span>
-        <span className="text-primary">Digitals</span>
-      </span>
+      <span
+  className={`font-extrabold font-primary ${
+    compact
+      ? 'text-size-caption tracking-wide'
+      : 'text-lg sm:text-2xl tracking-widest'
+  }`}
+>
+  <span className="text-heading">RatoPanda</span>
+  <span className="text-primary">Digitals</span>
+</span>
     </Link>
   )
 }

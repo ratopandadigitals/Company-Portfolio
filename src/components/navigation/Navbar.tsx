@@ -1,14 +1,14 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { useTheme } from 'next-themes'
-import { Sun, Moon, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import Logo from '@/components/atoms/Logo'
 import Badge from '@/components/atoms/Badge'
 import Button from '@/components/atoms/Button'
 import NavLink from '@/components/atoms/NavLink'
 import Container from '@/components/atoms/Container'
+import ThemeToggle from '@/components/atoms/themeToggle'
 
 type NavItem = {
   label: string
@@ -70,26 +70,10 @@ const Navbar = (props: NavbarProps) => {
     }
   }, [isMobileMenuOpen])
 
-  const { resolvedTheme, setTheme } = useTheme()
-  const isDarkMode = resolvedTheme === 'dark'
-
-  // Only runs on click, so it cannot cause a hydration mismatch
-  const toggleTheme = () => {
-    setTheme(isDarkMode ? 'light' : 'dark')
-  }
-
+  
   // CHANGE C: both icons are rendered; CSS shows the correct one based on
   // data-theme on <html>. Server and client HTML are identical.
-  const themeToggle = (
-    <button
-      onClick={toggleTheme}
-      aria-label='Toggle theme'
-      className='p-2.5 rounded-md bg-surface-default border border-border-subtle text-heading transition-colors'
-    >
-      <Sun className='w-5 h-5 hidden [[data-theme=dark]_&]:block' />
-      <Moon className='w-5 h-5 block [[data-theme=dark]_&]:hidden' />
-    </button>
-  )
+ 
 
   return (
     <header className='w-full bg-surface-page/90 backdrop-blur-md sticky top-0 z-50 transition-colors'>
@@ -115,13 +99,13 @@ const Navbar = (props: NavbarProps) => {
 
           {/* CHANGE D: tablet and desktop use the shared toggle */}
           <div className='hidden sm:flex items-center gap-4'>
-            {themeToggle}
+            <ThemeToggle />
             <Button href={ctaHref}>{ctaLabel}</Button>
           </div>
 
           {/* CHANGE E: phone gets the toggle next to the hamburger */}
           <div className='flex items-center gap-2 lg:hidden'>
-            <div className='sm:hidden'>{themeToggle}</div>
+            <div className='sm:hidden'><ThemeToggle /></div>
 
             <button
               ref={mobileMenuButtonRef}
