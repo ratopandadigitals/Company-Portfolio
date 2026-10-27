@@ -1,8 +1,8 @@
 
 import { NextResponse } from 'next/server'
 import clientPromise from '@/lib/mongodb'
+import { sendEmail } from '@/lib/mailer'
 import type { NewsletterSubscriber } from '@/types/database'
-
 
 export const POST = async (request: Request) => {
   try {
@@ -55,10 +55,35 @@ export const POST = async (request: Request) => {
       )
     }
 
-    await subscribers.insertOne({
+    const subscriber: NewsletterSubscriber = {
       email,
       subscribedAt: new Date().toISOString(),
-    })
+    }
+
+    await subscribers.insertOne(subscriber)
+
+    // Send a welcome email after saving the subscriber.
+    try {
+      await sendEmail({
+        to: email,
+        subject: 'Welcome to Rato Panda Digitals',
+        text: [
+          'Hello,',
+          '',
+          'Thank you for subscribing to Rato Panda Digitals!',
+          '',
+          'You can look forward to updates about our latest projects, services, and news.',
+          '',
+          'Best regards,',
+          'Rato Panda Digitals',
+        ].join('\n'),
+      })
+    } catch (emailError) {
+      console.error(
+        'Subscriber saved, but welcome email failed:',
+        emailError,
+      )
+    }
 
     return NextResponse.json(
       {

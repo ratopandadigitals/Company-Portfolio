@@ -7,22 +7,52 @@ import {
   BriefcaseBusiness,
   Pencil,
   Plus,
-
   Trash2,
 } from 'lucide-react'
 import Image from 'next/image'
 import type { ServiceItem } from '@/components/sections/services/Service'
-import { deleteService, getServices } from '@/data/serviceStorage'
 import DataTable from '@/components/admin/shared/DataTable'
 import AdminSearchInput from '@/components/admin/shared/AdminSearchInput'
 
 const ServicesPage = () => {
   const [services, setServices] = useState<ServiceItem[]>([])
   const [search, setSearch] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setServices(getServices())
+    let isActive = true
+
+    const loadServices = async () => {
+      try {
+        const response = await fetch('/api/services')
+        const result = await response.json()
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Unable to load services.')
+        }
+
+        if (isActive) {
+          setServices(result.data as ServiceItem[])
+          setError('')
+        }
+      } catch {
+        if (isActive) {
+          setError('Unable to load services. Please try again.')
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    void loadServices()
+
+    return () => {
+      isActive = false
+    }
   }, [])
 
   const filteredServices = useMemo(() => {
@@ -44,15 +74,39 @@ const ServicesPage = () => {
     )
   }, [services, search])
 
-  const handleDelete = (service: ServiceItem) => {
+  const handleDelete = async (service: ServiceItem) => {
     const confirmed = window.confirm(
       `Delete the service "${service.title}"?`,
     )
 
     if (!confirmed) return
 
-    if (deleteService(service.id)) {
-      setServices(getServices())
+    setDeletingId(service.id)
+    setError('')
+
+    try {
+      const response = await fetch(
+        `/api/services/${encodeURIComponent(service.id)}`,
+        { method: 'DELETE' },
+      )
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Unable to delete service.')
+      }
+
+      setServices((currentServices) =>
+        currentServices.filter((item) => item.id !== service.id),
+      )
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to delete service. Please try again.',
+      )
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -62,7 +116,7 @@ const ServicesPage = () => {
       render: (service: ServiceItem) => (
         <div className="flex items-center gap-3">
           <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md bg-surface-page">
-           <Image
+            <Image
               src={service.image}
               alt={`${service.title} preview`}
               width={48}
@@ -111,10 +165,11 @@ const ServicesPage = () => {
 
           <button
             type="button"
-            onClick={() => handleDelete(service)}
+            onClick={() => void handleDelete(service)}
+            disabled={deletingId !== null}
             title="Delete service"
             aria-label={`Delete ${service.title}`}
-            className="rounded-md border border-border-error bg-surface-error p-2 text-white transition-colors hover:bg-surface-error-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-error"
+            className="rounded-md border border-border-error bg-surface-error p-2 text-white transition-colors hover:bg-surface-error-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-error disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Trash2 size={16} />
           </button>
@@ -173,20 +228,33 @@ const ServicesPage = () => {
       </div>
 
       <div className="rounded-lg border border-border-subtle bg-surface-card p-inset-compact">
-         <AdminSearchInput
-  value={search}
-  onChange={setSearch}
-  placeholder="Search services..."
-  ariaLabel="Search services"
-/>
+        <AdminSearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Search services..."
+          ariaLabel="Search services"
+        />
+
+        {error && (
+          <p
+            role="alert"
+            className="mt-3 text-size-small text-text-error"
+          >
+            {error}
+          </p>
+        )}
 
         <DataTable
           columns={columns}
           rows={filteredServices}
           emptyMessage={
-            search
-              ? 'No services match your search.'
-              : 'No services have been added yet.'
+            isLoading
+              ? 'Loading services...'
+              : error
+                ? 'Services could not be loaded.'
+                : search
+                  ? 'No services match your search.'
+                  : 'No services have been added yet.'
           }
         />
       </div>

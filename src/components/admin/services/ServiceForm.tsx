@@ -3,14 +3,31 @@
 
 import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
-import type { ServiceItem } from '@/data/serviceStorage'
+import type { ServiceItem } from '@/components/sections/services/Service'
 import Image from 'next/image'
+import { AlertCircle, LoaderCircle } from 'lucide-react'
 
 type ServiceFormProps = {
   initialService?: ServiceItem
   submitLabel: string
-  onSubmit: (formData: FormData) => void
+  onSubmit: (formData: FormData) => void | Promise<void>
 }
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024
+
+const ALLOWED_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]
+
+const TIMELINE_OPTIONS = [
+  '1-2 Weeks',
+  '2-3 Weeks',
+  '3-4 Weeks',
+  '4-6 Weeks',
+  '6-8 Weeks',
+]
 
 const ServiceForm = ({
   initialService,
@@ -18,49 +35,116 @@ const ServiceForm = ({
   onSubmit,
 }: ServiceFormProps) => {
   const [image, setImage] = useState(initialService?.image ?? '')
-
   const [tags, setTags] = useState<string[]>(
     initialService?.tags ?? [],
   )
+  const [price, setPrice] = useState(
+    (initialService?.price ?? '').replace(/^RS\s*/i, ''),
+  )
+  const [timeline, setTimeline] = useState(
+    initialService?.timeline ?? TIMELINE_OPTIONS[1],
+  )
+  const [isUploading, setIsUploading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleImageChange = (
+  const handleImageChange = async (
     event: ChangeEvent<HTMLInputElement>,
   ) => {
-    const file = event.currentTarget.files?.[0]
+    const input = event.currentTarget
+    const file = input.files?.[0]
+
+    input.value = ''
 
     if (!file) return
 
-    if (!file.type.startsWith('image/')) {
-      window.alert('Please select a valid image file.')
-      event.currentTarget.value = ''
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setError('Only JPEG, PNG, and WebP images are allowed.')
       return
     }
 
-    const reader = new FileReader()
+    if (file.size === 0 || file.size > MAX_FILE_SIZE) {
+      setError('The image must be smaller than 5 MB.')
+      return
+    }
 
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setImage(reader.result)
+    setError('')
+    setIsUploading(true)
+
+    try {
+      const uploadData = new FormData()
+      uploadData.append('file', file)
+      uploadData.append('folder', 'services')
+
+      const response = await fetch('/api/admin/uploads', {
+        method: 'POST',
+        body: uploadData,
+      })
+
+      const result: {
+        success?: boolean
+        url?: string
+        message?: string
+      } = await response.json()
+
+      if (!response.ok || !result.success || !result.url) {
+        throw new Error(
+          result.message ?? 'Unable to upload the image.',
+        )
       }
-    }
 
-    reader.onerror = () => {
-      window.alert('Unable to read this image. Please try again.')
+      setImage(result.url)
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Image upload failed. Please try again.',
+      )
+    } finally {
+      setIsUploading(false)
     }
-
-    reader.readAsDataURL(file)
-    event.currentTarget.value = ''
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault()
 
-    const formData = new FormData(event.currentTarget)
+    if (isUploading || isSubmitting) return
 
-    formData.set('image', image)
-    formData.set('tags', tags.join('\n'))
+    if (!image) {
+      setError('Please upload an image before saving the service.')
+      return
+    }
 
-    onSubmit(formData)
+    const numericPrice = price.trim()
+
+    if (
+      !numericPrice ||
+      !/^\d+(\.\d{1,2})?$/.test(numericPrice) ||
+      Number(numericPrice) <= 0
+    ) {
+      setError('Please enter a valid price greater than zero.')
+      return
+    }
+
+    setError('')
+    setIsSubmitting(true)
+
+    try {
+      const formData = new FormData(event.currentTarget)
+
+      formData.set('image', image)
+      formData.set('price', `RS ${numericPrice}`)
+      formData.set('timeline', timeline)
+      formData.set('tags', tags.join('\n'))
+
+      await onSubmit(formData)
+    } catch {
+      setError('Something went wrong while saving the service.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const labelClass =
@@ -75,27 +159,25 @@ const ServiceForm = ({
   const uploadClass =
     'block w-full cursor-pointer rounded-md border border-border-subtle bg-surface-card px-3 py-2 text-size-small text-body file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-surface-section file:px-3 file:py-2 file:text-size-small file:font-medium file:text-heading'
 
+  const isBusy = isUploading || isSubmitting
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-5 sm:grid-cols-2">
-        <label className="space-y-2">
-          <span className={labelClass}>Service ID</span>
-          <input
-            name="id"
-            defaultValue={initialService?.id ?? ''}
-            required
-            pattern="[A-Za-z0-9-]+"
-            title="Use letters, numbers, and hyphens only."
-            readOnly={Boolean(initialService)}
-            className={`${inputClass} ${
-              initialService ? 'cursor-not-allowed opacity-70' : ''
-            }`}
-            placeholder="brand-design-system"
-          />
-          <span className={helperClass}>
-            Used to identify this service. It cannot be changed when editing.
-          </span>
-        </label>
+        {initialService && (
+          <label className="space-y-2">
+            <span className={labelClass}>Service ID</span>
+            <input
+              name="id"
+              value={initialService.id}
+              readOnly
+              className={`${inputClass} cursor-not-allowed opacity-70`}
+            />
+            <span className={helperClass}>
+              The service ID cannot be changed when editing.
+            </span>
+          </label>
+        )}
 
         <label className="space-y-2">
           <span className={labelClass}>Label</span>
@@ -135,24 +217,46 @@ const ServiceForm = ({
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="space-y-2">
           <span className={labelClass}>Price</span>
-          <input
-            name="price"
-            defaultValue={initialService?.price ?? ''}
-            required
-            className={inputClass}
-            placeholder="RS 1000"
-          />
+          <span className="flex items-center overflow-hidden rounded-md border border-border-subtle bg-surface-card focus-within:border-border-primary focus-within:ring-2 focus-within:ring-[var(--primary-200)]">
+            <span className="border-r border-border-subtle px-4 py-3 text-size-body text-caption">
+              RS
+            </span>
+            <input
+              name="price"
+              type="number"
+              min="0.01"
+              step="0.01"
+              value={price}
+              onChange={(event) => setPrice(event.target.value)}
+              required
+              className="w-full min-w-0 bg-transparent px-4 py-3 text-size-body text-body outline-none"
+              placeholder="1000"
+            />
+          </span>
         </label>
 
         <label className="space-y-2">
           <span className={labelClass}>Timeline</span>
-          <input
+          <select
             name="timeline"
-            defaultValue={initialService?.timeline ?? ''}
+            value={timeline}
+            onChange={(event) => setTimeline(event.target.value)}
             required
             className={inputClass}
-            placeholder="2-3 Weeks"
-          />
+          >
+            {TIMELINE_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+
+            {initialService?.timeline &&
+              !TIMELINE_OPTIONS.includes(initialService.timeline) && (
+                <option value={initialService.timeline}>
+                  {initialService.timeline}
+                </option>
+              )}
+          </select>
         </label>
 
         <label className="space-y-2 sm:col-span-2">
@@ -198,27 +302,46 @@ const ServiceForm = ({
 
         <input
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
           required={!image}
+          disabled={isBusy}
           onChange={handleImageChange}
           className={uploadClass}
         />
 
+        {isUploading && (
+          <p
+            className="flex items-center gap-2 text-size-small text-text-caption"
+            role="status"
+          >
+            <LoaderCircle
+              size={16}
+              className="animate-spin"
+              aria-hidden="true"
+            />
+            Uploading image to Cloudinary...
+          </p>
+        )}
+
         {image && (
           <div className="flex items-center gap-3">
-           <Image
-            src={image}
-            alt="Service preview"
-            width={64}
-            height={64}
-            unoptimized
-            className="size-16 rounded-md border border-border-subtle object-cover"
-          />
+            <Image
+              src={image}
+              alt="Service preview"
+              width={64}
+              height={64}
+              unoptimized
+              className="size-16 rounded-md border border-border-subtle object-cover"
+            />
 
             <button
               type="button"
-              onClick={() => setImage('')}
-              className="text-size-small font-medium text-text-error hover:underline"
+              disabled={isBusy}
+              onClick={() => {
+                setImage('')
+                setError('')
+              }}
+              className="text-size-small font-medium text-text-error hover:underline disabled:cursor-not-allowed disabled:opacity-50"
             >
               Remove image
             </button>
@@ -226,16 +349,42 @@ const ServiceForm = ({
         )}
 
         <span className={helperClass}>
-          Select one image for this service.
+          Select one JPEG, PNG, or WebP image smaller than 5 MB.
         </span>
       </div>
+
+      {error && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-lg border border-border-subtle bg-surface-card p-inset-card text-size-body text-text-primary"
+        >
+          <AlertCircle
+            size={18}
+            className="mt-0.5 shrink-0"
+            aria-hidden="true"
+          />
+          <p>{error}</p>
+        </div>
+      )}
 
       <div className="flex justify-end border-t border-border-subtle pt-5">
         <button
           type="submit"
-className="inline-flex min-h-11 items-center justify-center rounded-md bg-surface-primary px-5 py-3 text-size-small font-semibold text-primary-on-color transition-colors duration-150 hover:bg-surface-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-primary"
->
-          {submitLabel}
+          disabled={isBusy}
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-surface-primary px-5 py-3 text-size-small font-semibold text-primary-on-color transition-colors duration-150 hover:bg-surface-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-primary disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isBusy && (
+            <LoaderCircle
+              size={16}
+              className="animate-spin"
+              aria-hidden="true"
+            />
+          )}
+          {isUploading
+            ? 'Uploading image...'
+            : isSubmitting
+              ? 'Saving...'
+              : submitLabel}
         </button>
       </div>
     </form>

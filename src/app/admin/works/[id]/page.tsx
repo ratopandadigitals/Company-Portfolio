@@ -8,7 +8,7 @@ import type { WorkItem } from '@/data/works'
 import {
   getWorkBySlug,
   updateWork,
-  getWorks,
+
 } from '@/data/work'
 import WorkForm from '@/components/admin/works/WorkForm'
 

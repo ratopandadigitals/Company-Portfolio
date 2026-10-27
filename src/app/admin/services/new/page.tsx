@@ -1,27 +1,28 @@
+ 'use client'
 
-'use client'
-
+import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { ArrowLeft, AlertCircle, LoaderCircle } from 'lucide-react'
 import type { ServiceItem } from '@/components/sections/services/Service'
 import ServiceForm from '@/components/admin/services/ServiceForm'
-import { createService, getServices } from '@/data/serviceStorage'
-import { ArrowLeft } from 'lucide-react'
 
 const NewServicePage = () => {
   const router = useRouter()
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (formData: FormData) => {
-    const label = String(formData.get('label') ?? '').trim()
+  const handleSubmit = async (formData: FormData) => {
+    if (isSubmitting) return
 
-    if (getServices().some((service) => service.label === label)) {
-      window.alert('A service with this label already exists.')
-      return
-    }
+    setError('')
+    setIsSubmitting(true)
 
-    const service: ServiceItem = {
-  id: crypto.randomUUID(),
-  label,
+    try {
+      // const widthValue = String(formData.get('width') ?? '').trim()
+
+     const service: Omit<ServiceItem, 'id'> = {
+  label: String(formData.get('label') ?? '').trim(),
   title: String(formData.get('title') ?? '').trim(),
   image: String(formData.get('image') ?? '').trim(),
   description: String(formData.get('description') ?? '').trim(),
@@ -31,12 +32,42 @@ const NewServicePage = () => {
     .filter(Boolean),
   price: String(formData.get('price') ?? '').trim(),
   timeline: String(formData.get('timeline') ?? '').trim(),
-  width: Number(formData.get('width') ?? 200),
+  ...(String(formData.get('width') ?? '').trim()
+    ? { width: Number(formData.get('width')) }
+    : {}),
 }
 
-    createService(service)
+      const response = await fetch('/api/services', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(service),
+      })
 
-    router.push('/admin/services')
+      const result: {
+        success?: boolean
+        message?: string
+        error?: string
+      } = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message ?? result.error ?? 'Failed to create service.',
+        )
+      }
+
+      router.push('/admin/services')
+      router.refresh()
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong while creating the service.',
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -59,11 +90,33 @@ const NewServicePage = () => {
         </p>
       </div>
 
+      {error && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-lg border border-border-subtle bg-surface-card p-inset-card text-size-body text-text-primary"
+        >
+          <AlertCircle size={18} className="mt-0.5 shrink-0" aria-hidden="true" />
+          <p>{error}</p>
+        </div>
+      )}
+
       <div className="rounded-lg border border-border-subtle bg-surface-card p-inset-card shadow-sm">
         <ServiceForm
           onSubmit={handleSubmit}
-          submitLabel="Create service"
+          submitLabel={
+            isSubmitting ? 'Creating service...' : 'Create service'
+          }
         />
+
+        {isSubmitting && (
+          <p
+            className="mt-stack-content flex items-center gap-2 text-size-small text-text-caption"
+            role="status"
+          >
+            <LoaderCircle size={16} className="animate-spin" aria-hidden="true" />
+            Saving service...
+          </p>
+        )}
       </div>
     </div>
   )

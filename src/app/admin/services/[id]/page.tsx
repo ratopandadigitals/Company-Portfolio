@@ -3,12 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
+import { AlertCircle, ArrowLeft } from 'lucide-react'
 import type { ServiceItem } from '@/components/sections/services/Service'
-import {
-  getServices,
-  updateService,
-} from '@/data/serviceStorage'
 import ServiceForm from '@/components/admin/services/ServiceForm'
 
 const EditServicePage = () => {
@@ -18,52 +14,117 @@ const EditServicePage = () => {
 
   const [service, setService] = useState<ServiceItem | undefined>(undefined)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setService(
-      getServices().find((item) => item.id === serviceId),
-    )
-    setIsLoaded(true)
+    let isActive = true
+
+    const fetchService = async () => {
+      setIsLoaded(false)
+      setService(undefined)
+      setError('')
+
+      try {
+        const response = await fetch(
+          `/api/services/${encodeURIComponent(serviceId)}`,
+        )
+
+        const result: {
+          success?: boolean
+          data?: ServiceItem
+          message?: string
+          error?: string
+        } = await response.json()
+
+        if (!response.ok || !result.success || !result.data) {
+          throw new Error(
+            result.message ?? result.error ?? 'Could not load this service.',
+          )
+        }
+
+        if (isActive) {
+          setService(result.data)
+        }
+      } catch (error) {
+        if (isActive) {
+          setError(
+            error instanceof Error
+              ? error.message
+              : 'Something went wrong while loading the service.',
+          )
+        }
+      } finally {
+        if (isActive) {
+          setIsLoaded(true)
+        }
+      }
+    }
+
+    void fetchService()
+
+    return () => {
+      isActive = false
+    }
   }, [serviceId])
 
-  const handleSubmit = (formData: FormData) => {
-    if (!service) return
+  const handleSubmit = async (formData: FormData) => {
+    if (!service || isSubmitting) return
 
-    const updatedService: ServiceItem = {
-      id: service.id,
-      label: String(formData.get('label') ?? '').trim(),
-      title: String(formData.get('title') ?? '').trim(),
-      image: String(formData.get('image') ?? '').trim(),
-      description: String(formData.get('description') ?? '').trim(),
-      tags: String(formData.get('tags') ?? '')
-        .split('\n')
-        .map((item) => item.trim())
-        .filter(Boolean),
-      price: String(formData.get('price') ?? '').trim(),
-      timeline: String(formData.get('timeline') ?? '').trim(),
-      width: Number(formData.get('width') ?? 200),
+    setError('')
+    setIsSubmitting(true)
+
+    try {
+      const widthValue = String(formData.get('width') ?? '').trim()
+
+      const updatedService: Omit<ServiceItem, 'id'> = {
+        label: String(formData.get('label') ?? '').trim(),
+        title: String(formData.get('title') ?? '').trim(),
+        image: String(formData.get('image') ?? '').trim(),
+        description: String(formData.get('description') ?? '').trim(),
+        tags: String(formData.get('tags') ?? '')
+          .split('\n')
+          .map((item) => item.trim())
+          .filter(Boolean),
+        price: String(formData.get('price') ?? '').trim(),
+        timeline: String(formData.get('timeline') ?? '').trim(),
+        ...(widthValue ? { width: Number(widthValue) } : {}),
+      }
+
+      const response = await fetch(
+        `/api/services/${encodeURIComponent(service.id)}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedService),
+        },
+      )
+
+      const result: {
+        success?: boolean
+        message?: string
+        error?: string
+      } = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message ?? result.error ?? 'Failed to update service.',
+        )
+      }
+
+      router.push('/admin/services')
+      router.refresh()
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong while updating the service.',
+      )
+    } finally {
+      setIsSubmitting(false)
     }
-
-    const duplicateLabel = getServices().find(
-      (item) =>
-        item.id !== service.id &&
-        item.label === updatedService.label,
-    )
-
-    if (duplicateLabel) {
-      window.alert('A service with this label already exists.')
-      return
-    }
-
-    const savedService = updateService(service.id, updatedService)
-
-    if (!savedService) {
-      window.alert('Could not update this service.')
-      return
-    }
-
-    router.push('/admin/services')
   }
 
   if (!isLoaded) {
@@ -82,7 +143,7 @@ const EditServicePage = () => {
         </h1>
 
         <p className="text-size-body text-text-caption">
-          This service could not be found in the current Services data.
+          {error || 'This service could not be found.'}
         </p>
 
         <Link
@@ -116,12 +177,26 @@ const EditServicePage = () => {
         </p>
       </div>
 
+      {error && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-lg border border-border-subtle bg-surface-card p-inset-card text-size-body text-text-primary"
+        >
+          <AlertCircle
+            size={18}
+            className="mt-0.5 shrink-0"
+            aria-hidden="true"
+          />
+          <p>{error}</p>
+        </div>
+      )}
+
       <div className="w-full rounded-lg border border-border-subtle bg-surface-card p-inset-card shadow-sm">
         <ServiceForm
           key={service.id}
           initialService={service}
           onSubmit={handleSubmit}
-          submitLabel="Save changes"
+          submitLabel={isSubmitting ? 'Saving changes...' : 'Save changes'}
         />
       </div>
     </div>
