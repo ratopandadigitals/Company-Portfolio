@@ -15,7 +15,10 @@ const AdminDashboardPage = async () => {
     db.collection('events').countDocuments(),
     db.collection('gallery').countDocuments(),
     db.collection<EnquiryDocument>('enquiries')
-      .find({}, { projection: { id: 1, name: 1, subject: 1, createdAt: 1, status: 1 } })
+      .find(
+        { status: 'new' },
+        { projection: { id: 1, name: 1, subject: 1, createdAt: 1, status: 1 } },
+      )
       .sort({ createdAt: -1 })
       .limit(5)
       .toArray(),
