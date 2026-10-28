@@ -5,19 +5,14 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import type { MediaItem } from '@/components/sections/gallery/MediaData'
 import GalleryForm from '@/components/admin/gallery/GalleryForm'
-import { createMediaItem, getMediaItems } from '@/data/galleryStorage'
+import { createMediaItem } from '@/data/galleryStorage'
 
 const NewGalleryPage = () => {
   const router = useRouter()
 
-  const handleSubmit = (formData: FormData) => {
+  const handleSubmit = async (formData: FormData) => {
     const title = String(formData.get('title') ?? '').trim()
     const url = String(formData.get('url') ?? '').trim()
-
-    if (getMediaItems().some((item) => item.title.toLowerCase() === title.toLowerCase())) {
-      window.alert('A gallery item with this title already exists.')
-      return
-    }
 
     const mediaItem: Omit<MediaItem, 'id'> = {
       title,
@@ -26,9 +21,12 @@ const NewGalleryPage = () => {
       span: String(formData.get('span') ?? 'row-span-1'),
     }
 
-    createMediaItem(mediaItem)
-
-    router.push('/admin/gallery')
+    try {
+      await createMediaItem(mediaItem)
+      router.push('/admin/gallery')
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Unable to add gallery item.')
+    }
   }
 
   return (

@@ -7,7 +7,7 @@ import {
   MessageSquareQuote,
   Pencil,
   Plus,
-
+  RefreshCw,
   Trash2,
   X,
 } from 'lucide-react'
@@ -26,15 +26,51 @@ const TestimonialsPage = () => {
   const [stats, setStats] = useState<StatItem[]>([])
   const [testimonials, setTestimonials] = useState<TestimonialItem[]>([])
   const [search, setSearch] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   const [editingStat, setEditingStat] = useState<StatItem | null>(null)
   const [statValue, setStatValue] = useState('')
   const [statLabel, setStatLabel] = useState('')
 
+  const fetchClientProof = async () => {
+    const [loadedStats, loadedTestimonials] = await Promise.all([
+      getStats(),
+      getTestimonials(),
+    ])
+    return { loadedStats, loadedTestimonials }
+  }
+
+  const loadClientProof = async () => {
+    setIsLoading(true)
+    setLoadError('')
+    try {
+      const { loadedStats, loadedTestimonials } = await fetchClientProof()
+      setStats(loadedStats)
+      setTestimonials(loadedTestimonials)
+    } catch {
+      setLoadError('Unable to load testimonials and statistics. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setStats(getStats())
-    setTestimonials(getTestimonials())
+    let active = true
+    fetchClientProof()
+      .then(({ loadedStats, loadedTestimonials }) => {
+        if (!active) return
+        setStats(loadedStats)
+        setTestimonials(loadedTestimonials)
+      })
+      .catch(() => {
+        if (active) setLoadError('Unable to load testimonials and statistics. Please try again.')
+      })
+      .finally(() => {
+        if (active) setIsLoading(false)
+      })
+
+    return () => { active = false }
   }, [])
 
   const filteredTestimonials = useMemo(() => {
@@ -59,7 +95,7 @@ const TestimonialsPage = () => {
     setStatLabel(stat.label)
   }
 
-  const handleSaveStat = (event: FormEvent<HTMLFormElement>) => {
+  const handleSaveStat = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!editingStat) return
@@ -74,20 +110,27 @@ const TestimonialsPage = () => {
         : stat,
     )
 
-    updateStats(updatedStats)
-    setStats(updatedStats)
-    setEditingStat(null)
+    try {
+      const savedStats = await updateStats(updatedStats)
+      setStats(savedStats)
+      setEditingStat(null)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Unable to save statistics.')
+    }
   }
 
-  const handleDelete = (testimonial: TestimonialItem) => {
+  const handleDelete = async (testimonial: TestimonialItem) => {
     const confirmed = window.confirm(
       `Delete the testimonial from "${testimonial.name}"?`,
     )
 
     if (!confirmed) return
 
-    if (deleteTestimonial(testimonial.id)) {
-      setTestimonials(getTestimonials())
+    try {
+      await deleteTestimonial(testimonial.id)
+      setTestimonials((current) => current.filter((item) => item.id !== testimonial.id))
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Unable to delete testimonial.')
     }
   }
 
@@ -147,7 +190,7 @@ const TestimonialsPage = () => {
 
           <button
             type="button"
-            onClick={() => handleDelete(testimonial)}
+            onClick={() => void handleDelete(testimonial)}
             title="Delete testimonial"
             aria-label={`Delete testimonial from ${testimonial.name}`}
             className="rounded-md border border-border-error bg-surface-error p-2 text-white transition-colors hover:bg-surface-error-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-error"
@@ -207,8 +250,26 @@ const TestimonialsPage = () => {
         </p> */}
       </div>
 
+      {loadError && (
+        <div
+          role="alert"
+          className="flex flex-col gap-3 rounded-lg border border-border-error bg-surface-card p-inset-compact sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p className="text-size-small text-text-error">{loadError}</p>
+          <button
+            type="button"
+            onClick={() => void loadClientProof()}
+            disabled={isLoading}
+            className="inline-flex items-center justify-center gap-2 self-start rounded-md border border-border-subtle bg-surface-card px-3 py-2 text-size-small font-medium text-text-heading transition-colors hover:bg-surface-page disabled:cursor-not-allowed disabled:opacity-60 sm:self-auto"
+          >
+            <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
+            Retry
+          </button>
+        </div>
+      )}
+
       {/* Testimonials — first */}
-      <section className="space-y-stack-content">
+      <section className="space-y-stack-content" aria-busy={isLoading}>
         <div className="flex flex-col gap-content sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-size-h3 font-semibold tracking-tight text-text-heading">
@@ -238,7 +299,7 @@ const TestimonialsPage = () => {
       Total Testimonials
     </p>
     <p className="mt-stack-tight text-size-h3 font-semibold text-text-heading">
-      {testimonials.length}
+      {isLoading ? 'Loading...' : testimonials.length}
     </p>
   </div>
 
@@ -247,7 +308,7 @@ const TestimonialsPage = () => {
       Matching Testimonials
     </p>
     <p className="mt-stack-tight text-size-h3 font-semibold text-text-heading">
-      {filteredTestimonials.length}
+      {isLoading ? 'Loading...' : filteredTestimonials.length}
     </p>
   </div>
 
@@ -256,7 +317,7 @@ const TestimonialsPage = () => {
       Total Statistics
     </p>
     <p className="mt-stack-tight text-size-h3 font-semibold text-text-heading">
-      {stats.length}
+      {isLoading ? 'Loading...' : stats.length}
     </p>
   </div>
 
@@ -282,10 +343,14 @@ const TestimonialsPage = () => {
 
           <DataTable
             columns={testimonialColumns}
-            rows={filteredTestimonials}
+            rows={isLoading || loadError ? [] : filteredTestimonials}
             getRowKey={(testimonial) => testimonial.id}
             emptyMessage={
-              search
+              isLoading
+                ? 'Loading testimonials...'
+                : loadError
+                  ? 'Testimonials could not be loaded.'
+                  : search
                 ? 'No testimonials match your search.'
                 : 'No testimonials have been added yet.'
             }
@@ -294,7 +359,7 @@ const TestimonialsPage = () => {
       </section>
 
       {/* Statistics — below testimonials */}
-      <section className="space-y-stack-content rounded-lg border border-border-subtle bg-surface-card p-inset-compact">
+      <section className="space-y-stack-content rounded-lg border border-border-subtle bg-surface-card p-inset-compact" aria-busy={isLoading}>
         <div>
           <h2 className="text-size-h3 font-semibold tracking-tight text-text-heading">
             Statistics
@@ -307,9 +372,9 @@ const TestimonialsPage = () => {
 
         <DataTable
           columns={statsColumns}
-          rows={stats}
+          rows={isLoading || loadError ? [] : stats}
           getRowKey={(stat) => stat.id}
-          emptyMessage="No statistics found."
+          emptyMessage={isLoading ? 'Loading statistics...' : loadError ? 'Statistics could not be loaded.' : 'No statistics found.'}
         />
       </section>
 

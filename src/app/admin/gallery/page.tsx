@@ -24,10 +24,23 @@ const GalleryPage = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([])
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<'all' | 'image' | 'video'>('all')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setMediaItems(getMediaItems())
+    let active = true
+    getMediaItems()
+      .then((items) => {
+        if (active) setMediaItems(items)
+      })
+      .catch(() => {
+        if (active) setError('Unable to load gallery media. Please try again.')
+      })
+      .finally(() => {
+        if (active) setIsLoading(false)
+      })
+
+    return () => { active = false }
   }, [])
 
   const filteredMedia = useMemo(() => {
@@ -48,15 +61,18 @@ const GalleryPage = () => {
     })
   }, [mediaItems, search, typeFilter])
 
-  const handleDelete = (item: MediaItem) => {
+  const handleDelete = async (item: MediaItem) => {
     const confirmed = window.confirm(
       `Delete the gallery item "${item.title}"?`,
     )
 
     if (!confirmed) return
 
-    if (deleteMediaItem(item.id)) {
-      setMediaItems(getMediaItems())
+    try {
+      await deleteMediaItem(item.id)
+      setMediaItems((current) => current.filter((media) => media.id !== item.id))
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Unable to delete gallery item.')
     }
   }
 
@@ -189,6 +205,7 @@ const GalleryPage = () => {
       </div>
 
       <div className="rounded-lg border border-border-subtle bg-surface-card p-inset-compact">
+        {error && <p role="alert" className="mb-4 text-size-small text-text-error">{error}</p>}
         <div className="mb-stack-content flex flex-col gap-stack-tight sm:flex-row sm:items-center sm:justify-between">
           <AdminSearchInput
             value={search}
@@ -214,12 +231,10 @@ const GalleryPage = () => {
 
         <DataTable
           columns={columns}
-          rows={filteredMedia}
-          emptyMessage={
-            search || typeFilter !== 'all'
+          rows={isLoading ? [] : filteredMedia}
+          emptyMessage={isLoading ? 'Loading gallery media...' : search || typeFilter !== 'all'
               ? 'No media matches your filters.'
-              : 'No gallery media has been added yet.'
-          }
+              : 'No gallery media has been added yet.'}
         />
       </div>
     </div>

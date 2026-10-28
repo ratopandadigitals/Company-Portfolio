@@ -10,11 +10,18 @@ import WhyUs from "@/components/sections/about/WhyUs";
 import FaqSection from "@/components/sections/Faq/FaqSection";
 import Cta from "@/components/sections/contact/Cta";
 import AboutHome from "@/components/sections/about/AboutHome";
-import { WORK_ITEMS } from "@/data/works";
 import Homeprocess from "@/components/sections/services/HomeProcess";
+import clientPromise from '@/lib/mongodb'
+import type { StatDocument, TestimonialDocument } from '@/types/database'
 
-const Home = () => {
-  const featuredProjects = WORK_ITEMS.slice(0, 3)
+const Home = async () => {
+  const client = await clientPromise
+  const db = client.db('rato_panda_portfolio')
+  const [stats, testimonials] = await Promise.all([
+    db.collection<StatDocument>('stats').find({}).sort({ id: 1 }).toArray(),
+    db.collection<TestimonialDocument>('testimonials').find({}).sort({ id: 1 }).toArray(),
+  ])
+
   return (
     <div >
       <HeroSection />
@@ -24,9 +31,18 @@ const Home = () => {
         <ServiceItem />
       <Marquee />
       <WhyUs />
-    <SelectedWork title="Selected Works" items={featuredProjects} showFilter={false} />
+    <SelectedWork title="Selected Works" showFilter={false} limit={3} />
     <Homeprocess />
-    <ClientProof />
+    <ClientProof
+      stats={stats.map(({ id, value, label }) => ({ id, value, label }))}
+      testimonials={testimonials.map(({ id, quote, name, role, bgImage }) => ({
+        id,
+        quote,
+        name,
+        role,
+        bgImage,
+      }))}
+    />
     <FaqSection />
     <Cta />
     </div>

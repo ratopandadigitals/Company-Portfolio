@@ -101,9 +101,13 @@ Still pending: verify mobile-menu dismissal after route navigation, theme switch
 
 Not completed. Deploy a preview to the intended Next.js host, verify environment/domain/HTTPS and all route URLs, inspect browser console and network failures, test real contact behavior selected for launch, review legal/content/assets, and capture owner approval. Do not call the frontend launch-ready solely because the build passes.
 
-### Phase 5 - Admin and backend (later delivery)
+### Phase 5 - Admin and backend
 
-Not started and intentionally separate from public frontend sign-off. First agree whether the admin is a route in this app or a separate app. A mock-data admin can be prototyped independently; before production use, test authentication, authorization, persistence, validation, auditability, failure/retry behavior, and public-site data propagation. Do not treat a frontend-only admin as secure or as a real CMS.
+**Works MongoDB integration - 2026-10-27:** Admin list/create/edit/delete now use MongoDB-backed API routes; public works list, detail, homepage selection, and sitemap read the same collection. Work images use the authenticated Cloudinary upload route. The admin Works page offers an explicit import for legacy `admin-works` browser data and removes that key only after a successful import. The seed migration now uses slug as the Works upsert key.
+
+Static checks completed: `npx tsc --noEmit --pretty false`, targeted ESLint for changed Works files, and `npm run build` all passed. The build confirmed `/works/[slug]` and `/sitemap.xml` are dynamic routes.
+
+Still pending: run `npx tsx scripts/migrate-data.ts` in the configured environment to seed bundled Works into MongoDB; verify database counts; exercise authenticated admin CRUD and legacy browser import against the real MongoDB/Cloudinary configuration; and confirm create/edit/delete changes appear in the public list and detail pages. These database-backed interactions were not executed as part of the local static checks. Continue to migrate other modules one at a time and do not treat their localStorage helpers as removed until their flows have been individually moved and verified.
 
 ## Launch Gate
 

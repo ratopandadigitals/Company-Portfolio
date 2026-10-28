@@ -2,11 +2,16 @@
 import { NextResponse } from 'next/server'
 import clientPromise from '@/lib/mongodb'
 import { getAuthenticatedSession } from '@/lib/api-auth'
+import { enforcePublicRateLimit } from '@/lib/rate-limit'
+import { recordAdminNotification } from '@/lib/admin-notifications'
 import { sendEmail } from '@/lib/mailer'
-import type { EnquiryDocument } from '@/types/database'
+import type { EnquiryDocument, ServiceDocument } from '@/types/database'
 
 export async function POST(request: Request) {
   try {
+    const rateLimitResponse = await enforcePublicRateLimit(request, 'enquiry', 5)
+    if (rateLimitResponse) return rateLimitResponse
+
     const body: unknown = await request.json()
 
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
@@ -33,17 +38,17 @@ export async function POST(request: Request) {
 
     const enquiryName = name.trim()
     const enquiryEmail = email.trim().toLowerCase()
-    const subject = need.trim()
+    const serviceId = need.trim()
     const message = description.trim()
 
     if (
       !enquiryName ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(enquiryEmail) ||
-      !subject ||
+      !serviceId ||
       !message ||
       enquiryName.length > 100 ||
       enquiryEmail.length > 254 ||
-      subject.length > 200 ||
+      serviceId.length > 100 ||
       message.length > 5000
     ) {
       return NextResponse.json(
@@ -52,21 +57,39 @@ export async function POST(request: Request) {
       )
     }
 
+    const client = await clientPromise
+    const db = client.db('rato_panda_portfolio')
+    const service = await db
+      .collection<ServiceDocument>('services')
+      .findOne({ id: serviceId })
+
+    if (!service) {
+      return NextResponse.json(
+        { success: false, message: 'Please select an available service.' },
+        { status: 400 },
+      )
+    }
+
+    const subject = service.label
     const enquiry: EnquiryDocument = {
       id: crypto.randomUUID(),
       name: enquiryName,
       email: enquiryEmail,
       subject,
+      serviceId,
       message,
       createdAt: new Date().toISOString(),
       status: 'new',
     }
 
-    const client = await clientPromise
-    const db = client.db('rato_panda_portfolio')
-
     // Save the enquiry first.
     await db.collection<EnquiryDocument>('enquiries').insertOne(enquiry)
+    await recordAdminNotification({
+      kind: 'enquiry',
+      title: 'New enquiry',
+      message: `${enquiryName}: ${subject}`,
+      href: `/admin/enquiries/${encodeURIComponent(enquiry.id)}`,
+    })
 
     // Send an email notification after the enquiry is saved.
     try {

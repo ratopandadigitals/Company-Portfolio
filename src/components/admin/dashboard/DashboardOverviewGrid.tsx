@@ -8,38 +8,47 @@ import {
 
 import DashboardStatCard from './DashboardStatCard'
 
-const stats = [
+type DashboardOverviewGridProps = {
+  counts: {
+    services: number
+    works: number
+    events: number
+    gallery: number
+  }
+}
+
+const DashboardOverviewGrid = ({ counts }: DashboardOverviewGridProps) => {
+  const stats = [
   {
     label: 'Services',
-    value: 6,
+    value: counts.services,
     description: 'Website service entries',
     href: '/admin/services',
     icon: BriefcaseBusiness,
   },
   {
     label: 'Works',
-    value: 8,
+    value: counts.works,
     description: 'Portfolio projects',
     href: '/admin/works',
     icon: FolderKanban,
   },
   {
     label: 'Events',
-    value: 4,
+    value: counts.events,
     description: 'Total event entries',
     href: '/admin/events',
     icon: CalendarDays,
   },
   {
     label: 'Gallery',
-    value: 24,
+    value: counts.gallery,
     description: 'Gallery items',
     href: '/admin/gallery',
     icon: Images,
   },
-]
+  ]
 
-const DashboardOverviewGrid = () => {
   return (
     <section
       aria-label="Website content overview"

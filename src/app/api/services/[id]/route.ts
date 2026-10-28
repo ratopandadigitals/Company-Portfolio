@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server'
 import clientPromise from '@/lib/mongodb'
 import { getAuthenticatedSession } from '@/lib/api-auth'
+import { recordAdminNotification } from '@/lib/admin-notifications'
 import type { ServiceDocument } from '@/types/database'
 
 type RouteContext = {
@@ -144,7 +145,7 @@ export const PATCH = async (
         $regex: `^${service.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`,
         $options: 'i',
       },
-    })
+    }, { collation: { locale: 'en', strength: 2 } })
 
     if (duplicateLabel) {
       return NextResponse.json(
@@ -154,6 +155,12 @@ export const PATCH = async (
     }
 
     await collection.updateOne({ id }, { $set: service })
+    await recordAdminNotification({
+      kind: 'content',
+      title: 'Service updated',
+      message: service.title,
+      href: `/admin/services/${encodeURIComponent(id)}`,
+    })
 
     return NextResponse.json({
       success: true,
@@ -161,6 +168,18 @@ export const PATCH = async (
       data: { id, ...service },
     })
   } catch (error) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code === 11000
+    ) {
+      return NextResponse.json(
+        { success: false, message: 'Another service already uses this label.' },
+        { status: 409 },
+      )
+    }
+
     console.error('Failed to update service:', error)
 
     return NextResponse.json(
@@ -199,6 +218,13 @@ export const DELETE = async (
         { status: 404 },
       )
     }
+
+    await recordAdminNotification({
+      kind: 'content',
+      title: 'Service deleted',
+      message: `Service ${id}`,
+      href: '/admin/services',
+    })
 
     return NextResponse.json({
       success: true,

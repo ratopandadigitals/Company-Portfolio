@@ -1,11 +1,16 @@
 
 import { NextResponse } from 'next/server'
 import clientPromise from '@/lib/mongodb'
+import { recordAdminNotification } from '@/lib/admin-notifications'
+import { enforcePublicRateLimit } from '@/lib/rate-limit'
 import { sendEmail } from '@/lib/mailer'
 import type { NewsletterSubscriber } from '@/types/database'
 
 export const POST = async (request: Request) => {
   try {
+    const rateLimitResponse = await enforcePublicRateLimit(request, 'newsletter', 3)
+    if (rateLimitResponse) return rateLimitResponse
+
     const body: unknown = await request.json()
 
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
@@ -61,6 +66,12 @@ export const POST = async (request: Request) => {
     }
 
     await subscribers.insertOne(subscriber)
+    await recordAdminNotification({
+      kind: 'newsletter',
+      title: 'New newsletter subscriber',
+      message: email,
+      href: '/admin/dashboard',
+    })
 
     // Send a welcome email after saving the subscriber.
     try {

@@ -13,7 +13,7 @@ import {
   UserRound,
   ChevronRight,
   MessageSquareQuote,
-  Settings,
+
 } from 'lucide-react'
 
 const navigation = [
@@ -28,7 +28,7 @@ const navigation = [
     href: '/admin/testimonials',
     icon: MessageSquareQuote,
   },
-  { label: 'Settings', href: '/admin/settings', icon: Settings },
+  // { label: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
 const AdminSidebar = () => {

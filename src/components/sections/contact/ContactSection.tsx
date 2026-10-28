@@ -3,11 +3,11 @@ import { ChevronDown } from 'lucide-react'
 import Section from '@/components/atoms/Section'
 import Container from '@/components/atoms/Container'
 import FoldText from '@/components/Animation/FoldText'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
 import Image from 'next/image'
-import { SERVICES_DATA,ServiceItem } from '@/components/sections/services/Service'
+import type { ServiceItem } from '@/components/sections/services/Service'
 import useDialogFocus from '@/components/hooks/useDialogFocus'
 
 type ContactSectionProps = {
@@ -26,10 +26,48 @@ const ContactSection = (props:ContactSectionProps) => {
   const [email, setEmail] = useState('')
   const [need, setNeed] = useState('')
   const [description, setDescription] = useState('')
+  const [services, setServices] = useState<ServiceItem[]>([])
+  const [isServicesLoading, setIsServicesLoading] = useState(true)
+  const [servicesError, setServicesError] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [sending, setSending] = useState(false)
 const [error, setError] = useState(false)
   const dialogRef = useDialogFocus<HTMLDivElement>(isOpen, () => setIsOpen(false))
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    const loadServices = async () => {
+      try {
+        const response = await fetch('/api/services', {
+          cache: 'no-store',
+          signal: controller.signal,
+        })
+        const result = await response.json()
+
+        if (!response.ok || !result.success || !Array.isArray(result.data)) {
+          throw new Error(result.message || 'Unable to load services.')
+        }
+
+        setServices(result.data as ServiceItem[])
+        setServicesError('')
+      } catch (loadError) {
+        if (loadError instanceof Error && loadError.name === 'AbortError') {
+          return
+        }
+
+        setServicesError('Unable to load services. Please try again later.')
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsServicesLoading(false)
+        }
+      }
+    }
+
+    void loadServices()
+
+    return () => controller.abort()
+  }, [])
   
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault()
@@ -148,14 +186,23 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       value={need}
       onChange={(e) => setNeed(e.target.value)}
       required
+      disabled={isServicesLoading || Boolean(servicesError) || services.length === 0}
       className="w-full rounded-xl border border-border-subtle
                 bg-surface-page px-4 py-3.5 text-heading
                 focus:outline-none focus:border-primary
-                focus:ring-2 focus:ring-primary/20
+                focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60
                 transition-colors appearance-none cursor-pointer"
     >
-      <option value="" disabled>Select a service</option>
-        {SERVICES_DATA.map((service: ServiceItem) => (
+      {isServicesLoading ? (
+        <option value="">Loading services...</option>
+      ) : servicesError ? (
+        <option value="">Services unavailable</option>
+      ) : services.length === 0 ? (
+        <option value="">No services currently available</option>
+      ) : (
+        <option value="" disabled>Select a service</option>
+      )}
+        {services.map((service) => (
           <option key={service.id} value={service.id}>
           {service.label}
         </option>
@@ -163,6 +210,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     </select>
     <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-caption" />
   </div>
+  {servicesError && <p className="text-sm text-red-600" role="alert">{servicesError}</p>}
+  {!isServicesLoading && !servicesError && services.length === 0 && (
+    <p className="text-sm text-caption">No services are available right now.</p>
+  )}
 </div>
     <div className="flex flex-col gap-2">
             <label htmlFor="description" className="text-sm font-medium">Project Description</label>
@@ -182,6 +233,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       {error && <p className="text-sm text-red-600">Something went wrong. Please try again.</p>}
           <button
             type="submit"
+            disabled={sending || isServicesLoading || Boolean(servicesError) || services.length === 0}
             className="w-full py-3.5 rounded-full bg-heading text-surface-page font-medium hover:opacity-90 transition-opacity mt-2 cursor-pointer"
           >
           {sending ? 'Sending...' : 'Send Now!'}

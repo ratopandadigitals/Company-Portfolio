@@ -7,12 +7,14 @@ import cloudinary from '@/lib/cloudinary'
 export const runtime = 'nodejs'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
+const MAX_VIDEO_SIZE = 25 * 1024 * 1024
 
-const ALLOWED_TYPES = [
+const ALLOWED_IMAGE_TYPES = [
   'image/jpeg',
   'image/png',
   'image/webp',
 ]
+const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm']
 
 const ALLOWED_FOLDERS = [
   'profile',
@@ -39,29 +41,37 @@ export const POST = async (request: Request) => {
     const formData = await request.formData()
     const file = formData.get('file')
     const requestedFolder = formData.get('folder')
+    const isGalleryVideo =
+      requestedFolder === 'gallery' && formData.get('mediaType') === 'video'
 
     if (typeof File === 'undefined' || !(file instanceof File)) {
       return NextResponse.json(
-        { success: false, message: 'Please select an image.' },
+        { success: false, message: `Please select a ${isGalleryVideo ? 'video' : 'image'}.` },
         { status: 400 },
       )
     }
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    const allowedTypes = isGalleryVideo ? ALLOWED_VIDEO_TYPES : ALLOWED_IMAGE_TYPES
+    const maxFileSize = isGalleryVideo ? MAX_VIDEO_SIZE : MAX_FILE_SIZE
+    const mediaLabel = isGalleryVideo ? 'video' : 'image'
+
+    if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Only JPEG, PNG, and WebP images are allowed.',
+          message: isGalleryVideo
+            ? 'Only MP4 and WebM videos are allowed.'
+            : 'Only JPEG, PNG, and WebP images are allowed.',
         },
         { status: 400 },
       )
     }
 
-    if (file.size === 0 || file.size > MAX_FILE_SIZE) {
+    if (file.size === 0 || file.size > maxFileSize) {
       return NextResponse.json(
         {
           success: false,
-          message: 'The image must be smaller than 5 MB.',
+          message: `The ${mediaLabel} must be smaller than ${isGalleryVideo ? '25' : '5'} MB.`,
         },
         { status: 400 },
       )
@@ -81,7 +91,7 @@ export const POST = async (request: Request) => {
           .upload_stream(
             {
               folder: `rato-panda-digitals/${folder}`,
-              resource_type: 'image',
+              resource_type: isGalleryVideo ? 'video' : 'image',
             },
             (error, uploadedFile) => {
               if (error) {
@@ -109,7 +119,7 @@ export const POST = async (request: Request) => {
     return NextResponse.json(
       {
         success: false,
-        message: 'Image upload failed. Please try again.',
+        message: 'Media upload failed. Please try again.',
       },
       { status: 500 },
     )

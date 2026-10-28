@@ -1,83 +1,51 @@
 
-import { mediaItems, type MediaItem } from '@/components/sections/gallery/MediaData'
+import type { MediaItem } from '@/components/sections/gallery/MediaData'
 
-const STORAGE_KEY = 'admin-gallery'
-
-const getInitialMediaItems = (): MediaItem[] => {
-  return mediaItems
+type ApiResponse<T> = {
+  success: boolean
+  message?: string
+  data: T
 }
 
-export const getMediaItems = (): MediaItem[] => {
-  if (typeof window === 'undefined') {
-    return getInitialMediaItems()
+const request = async <T>(url: string, init?: RequestInit): Promise<T> => {
+  const response = await fetch(url, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...init?.headers,
+    },
+  })
+  const result = await response.json() as ApiResponse<T>
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Unable to save gallery data.')
   }
 
-  const storedItems = localStorage.getItem(STORAGE_KEY)
-
-  if (!storedItems) {
-    return getInitialMediaItems()
-  }
-
-  try {
-    return JSON.parse(storedItems) as MediaItem[]
-  } catch {
-    return getInitialMediaItems()
-  }
+  return result.data
 }
 
-const saveMediaItems = (items: MediaItem[]): void => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
-}
+export const getMediaItems = (): Promise<MediaItem[]> =>
+  request<MediaItem[]>('/api/gallery', { cache: 'no-store' })
+
+export const getMediaItemById = (id: number): Promise<MediaItem> =>
+  request<MediaItem>(`/api/gallery/${id}`, { cache: 'no-store' })
 
 export const createMediaItem = (
   item: Omit<MediaItem, 'id'>,
-): MediaItem => {
-  const items = getMediaItems()
-
-  const newItem: MediaItem = {
-    ...item,
-    id: items.reduce((maxId, current) => Math.max(maxId, current.id), 0) + 1,
-  }
-
-  saveMediaItems([...items, newItem])
-
-  return newItem
-}
-
-export const getMediaItemById = (
-  id: number,
-): MediaItem | undefined => {
-  return getMediaItems().find((item) => item.id === id)
-}
+): Promise<MediaItem> =>
+  request<MediaItem>('/api/gallery', {
+    method: 'POST',
+    body: JSON.stringify(item),
+  })
 
 export const updateMediaItem = (
   id: number,
-  updatedItem: MediaItem,
-): MediaItem | undefined => {
-  const items = getMediaItems()
-  const index = items.findIndex((item) => item.id === id)
+  updatedItem: Omit<MediaItem, 'id'>,
+): Promise<MediaItem> =>
+  request<MediaItem>(`/api/gallery/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(updatedItem),
+  })
 
-  if (index === -1) {
-    return undefined
-  }
-
-  const updatedItems = [...items]
-  updatedItems[index] = { ...updatedItem, id }
-
-  saveMediaItems(updatedItems)
-
-  return updatedItems[index]
-}
-
-export const deleteMediaItem = (id: number): boolean => {
-  const items = getMediaItems()
-  const updatedItems = items.filter((item) => item.id !== id)
-
-  if (updatedItems.length === items.length) {
-    return false
-  }
-
-  saveMediaItems(updatedItems)
-
-  return true
-}
+export const deleteMediaItem = (id: number): Promise<void> =>
+  request<void>(`/api/gallery/${id}`, { method: 'DELETE' })

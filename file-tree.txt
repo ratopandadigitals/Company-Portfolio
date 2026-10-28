@@ -1,0 +1,387 @@
+.
+├── architecture.md
+├── Build
+├── CLAUDE.md
+├── decision.md
+├── eslint.config.mjs
+├── file-tree.txt
+├── next
+├── next.config.ts
+├── next-env.d.ts
+├── package.json
+├── package-lock.json
+├── portfolio@0.1.0
+├── postcss.config.mjs
+├── public
+│   ├── about
+│   │   ├── abouthome.webp
+│   │   ├── aboutpill1.jpg
+│   │   └── aboutpill.jpg
+│   ├── app.png
+│   ├── build.jpg
+│   ├── client
+│   │   ├── test1.jpg
+│   │   ├── test.jpg
+│   │   └── testt.jpg
+│   ├── contactimg
+│   │   ├── contactpill1.jpg
+│   │   └── contactpill.jpg
+│   ├── craft.jpg
+│   ├── Dark.png
+│   ├── Dark.webp
+│   ├── Description.png
+│   ├── design.jpg
+│   ├── eventimg
+│   │   ├── aidesign.avif
+│   │   ├── brandclass.avif
+│   │   ├── designworkshop.avif
+│   │   ├── eventpill1.jpg
+│   │   ├── eventpill.jpg
+│   │   └── productlaunch.avif
+│   ├── file.svg
+│   ├── galleryimage
+│   │   ├── eight.jpg
+│   │   ├── eleven.webp
+│   │   ├── five.jpg
+│   │   ├── four.png
+│   │   ├── four.webp
+│   │   ├── gallerypill1.jpg
+│   │   ├── gallerypill.jpg
+│   │   ├── nine.webp
+│   │   ├── one.jpg
+│   │   ├── seven.jpg
+│   │   ├── six.jpg
+│   │   ├── ten.jpg
+│   │   ├── three.jpg
+│   │   ├── twelve.webp
+│   │   ├── two.png
+│   │   └── two.webp
+│   ├── hamro.jpeg
+│   ├── icon.png
+│   ├── icon.webp
+│   ├── Light.png
+│   ├── Light.webp
+│   ├── Logincharacter
+│   │   └── loginc.webp
+│   ├── map.webp
+│   ├── next.svg
+│   ├── projectimg
+│   │   ├── freshbiteapp1.webp
+│   │   ├── freshbiteapp2.webp
+│   │   ├── freshbiteapp.webp
+│   │   ├── freshwork0.webp
+│   │   ├── freshwork1.webp
+│   │   ├── freshwork2.webp
+│   │   ├── freshwork.webp
+│   │   ├── hamrowork1.webp
+│   │   ├── hamrowork.webp
+│   │   ├── thriftwork1.webp
+│   │   ├── thriftwork2.webp
+│   │   └── thriftwork.webp
+│   ├── Service
+│   │   ├── Brand&DesignSystem.webp
+│   │   ├── Development.webp
+│   │   ├── DigitalGrowth.webp
+│   │   ├── process
+│   │   │   ├── interactiveprototype.webp
+│   │   │   ├── Research.webp
+│   │   │   ├── scope.webp
+│   │   │   ├── ser5.webp
+│   │   │   └── uiuxprocess.webp
+│   │   ├── servicepill1.jpg
+│   │   ├── servicepill.jpg
+│   │   ├── UiDesign&Prototyping.webp
+│   │   └── UXResearch&ProductPlanning.webp
+│   ├── Team1.jpeg
+│   ├── Team2.jpeg
+│   ├── thrift.png
+│   ├── Trusted logo
+│   │   ├── darkoli.webp
+│   │   ├── Dark transparency.webp
+│   │   ├── lightoli.webp
+│   │   └── Lighttransparency.webp
+│   ├── vehiclee.jpeg
+│   ├── visa.jpeg
+│   ├── window.svg
+│   └── workimg
+│       ├── workpill1.jpg
+│       └── workpill.jpg
+├── README.md
+├── scripts
+│   ├── check-data.ts
+│   └── migrate-data.ts
+├── src
+│   ├── app
+│   │   ├── about
+│   │   │   └── page.tsx
+│   │   ├── admin
+│   │   │   ├── dashboard
+│   │   │   │   └── page.tsx
+│   │   │   ├── enquiries
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── events
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── new
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── gallery
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── new
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   ├── services
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── new
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── settings
+│   │   │   │   └── page.tsx
+│   │   │   ├── testimonials
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── new
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   └── works
+│   │   │       ├── [id]
+│   │   │       │   └── page.tsx
+│   │   │       ├── new
+│   │   │       │   └── page.tsx
+│   │   │       └── page.tsx
+│   │   ├── api
+│   │   │   ├── admin
+│   │   │   │   └── uploads
+│   │   │   │       └── route.ts
+│   │   │   ├── auth
+│   │   │   │   └── [...all]
+│   │   │   │       └── route.ts
+│   │   │   ├── enquiries
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── event-registrations
+│   │   │   │   └── [id]
+│   │   │   ├── events
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── gallery
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── health
+│   │   │   │   └── db
+│   │   │   │       └── route.ts
+│   │   │   ├── newsletter
+│   │   │   │   └── route.ts
+│   │   │   ├── services
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── stats
+│   │   │   │   └── route.ts
+│   │   │   ├── testimonials
+│   │   │   │   ├── [id]
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   └── works
+│   │   │       ├── [id]
+│   │   │       │   └── route.ts
+│   │   │       ├── import
+│   │   │       │   └── route.ts
+│   │   │       └── route.ts
+│   │   ├── contact
+│   │   │   └── page.tsx
+│   │   ├── events
+│   │   │   ├── page.tsx
+│   │   │   └── [slug]
+│   │   │       └── page.tsx
+│   │   ├── gallery
+│   │   │   └── page.tsx
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── login
+│   │   │   └── page.tsx
+│   │   ├── not-found.tsx
+│   │   ├── page.tsx
+│   │   ├── privacy-policy
+│   │   │   └── page.tsx
+│   │   ├── services
+│   │   │   └── page.tsx
+│   │   ├── sitemap.ts
+│   │   ├── terms-and-conditions
+│   │   │   └── page.tsx
+│   │   └── works
+│   │       ├── page.tsx
+│   │       └── [slug]
+│   │           └── page.tsx
+│   ├── components
+│   │   ├── admin
+│   │   │   ├── AdminPageHeader.tsx
+│   │   │   ├── dashboard
+│   │   │   │   ├── DashboardOverviewGrid.tsx
+│   │   │   │   ├── DashboardStatCard.tsx
+│   │   │   │   ├── QuickActions.tsx
+│   │   │   │   └── RecentActivity.tsx
+│   │   │   ├── enquiries
+│   │   │   │   └── [id]
+│   │   │   ├── events
+│   │   │   │   └── EventForm.tsx
+│   │   │   ├── gallery
+│   │   │   │   └── GalleryForm.tsx
+│   │   │   ├── layout
+│   │   │   │   ├── AdminHeader.tsx
+│   │   │   │   └── AdminSidebar.tsx
+│   │   │   ├── services
+│   │   │   │   └── ServiceForm.tsx
+│   │   │   ├── settings
+│   │   │   │   ├── ProfileSettings.tsx
+│   │   │   │   └── SecuritySettings.tsx
+│   │   │   ├── shared
+│   │   │   │   ├── AdminPlaceholderPage.tsx
+│   │   │   │   ├── AdminSearchInput.tsx
+│   │   │   │   ├── ConfirmDeleteDialog.tsx
+│   │   │   │   └── DataTable.tsx
+│   │   │   ├── testimonials
+│   │   │   │   ├── StasticsForm.tsx
+│   │   │   │   ├── TestimonialsForm.tsx
+│   │   │   │   └── TestimonialsTable.tsx
+│   │   │   └── works
+│   │   │       └── WorkForm.tsx
+│   │   ├── Animation
+│   │   │   ├── AnimatedStepper.tsx
+│   │   │   ├── FoldText.tsx
+│   │   │   ├── HoverText.tsx
+│   │   │   ├── LiquidMetal.tsx
+│   │   │   ├── Morph.tsx
+│   │   │   ├── ScrollReveal.tsx
+│   │   │   ├── ScrollTrigger.tsx
+│   │   │   ├── SimpleDrift.tsx
+│   │   │   ├── StickyCard.tsx
+│   │   │   └── TextType.tsx
+│   │   ├── atoms
+│   │   │   ├── Badge.tsx
+│   │   │   ├── Button.tsx
+│   │   │   ├── Container.tsx
+│   │   │   ├── Heading.tsx
+│   │   │   ├── Input.tsx
+│   │   │   ├── Logo.tsx
+│   │   │   ├── NavLink.tsx
+│   │   │   ├── Section.tsx
+│   │   │   └── themeToggle.tsx
+│   │   ├── hooks
+│   │   │   ├── useDialogFocus.ts
+│   │   │   ├── useScrollTrigger.ts
+│   │   │   └── useStickyStack.ts
+│   │   ├── navigation
+│   │   │   ├── Footer.tsx
+│   │   │   ├── Navbar.tsx
+│   │   │   ├── PublicChromeWrapper.tsx
+│   │   │   └── PublicSiteChrome.tsx
+│   │   ├── organisms
+│   │   │   └── SplitHero.tsx
+│   │   ├── providers
+│   │   │   └── ThemeProvider.tsx
+│   │   └── sections
+│   │       ├── about
+│   │       │   ├── AboutHero.tsx
+│   │       │   ├── AboutHome.tsx
+│   │       │   ├── AboutStatement.tsx
+│   │       │   ├── ClientProof.tsx
+│   │       │   ├── CompanySpecs.tsx
+│   │       │   ├── FounderSection.tsx
+│   │       │   ├── MemberSection.tsx
+│   │       │   ├── TeamMember.tsx
+│   │       │   ├── TeamSection.tsx
+│   │       │   └── WhyUs.tsx
+│   │       ├── blog
+│   │       │   ├── ArticleContentSection.tsx
+│   │       │   └── BlogGridSection.tsx
+│   │       ├── contact
+│   │       │   ├── ContactHero.tsx
+│   │       │   ├── ContactSection.tsx
+│   │       │   └── Cta.tsx
+│   │       ├── events
+│   │       │   ├── EventHero.tsx
+│   │       │   └── EventsSection.tsx
+│   │       ├── Faq
+│   │       │   └── FaqSection.tsx
+│   │       ├── gallery
+│   │       │   ├── BentoGallery.tsx
+│   │       │   ├── GalleryHero.tsx
+│   │       │   └── MediaData.ts
+│   │       ├── home
+│   │       │   ├── CollageSection.tsx
+│   │       │   ├── HeroSection.tsx
+│   │       │   ├── Marquee.tsx
+│   │       │   └── TrustedLogos.tsx
+│   │       ├── services
+│   │       │   ├── HomeProcess.tsx
+│   │       │   ├── PricingSection.tsx
+│   │       │   ├── ServiceHero.tsx
+│   │       │   ├── ServiceItem.tsx
+│   │       │   ├── ServicePhase.ts
+│   │       │   ├── ServiceProcess.tsx
+│   │       │   ├── Service.ts
+│   │       │   └── WhatWeDo.tsx
+│   │       └── works
+│   │           ├── SelectedWork.tsx
+│   │           ├── WorkHero.tsx
+│   │           └── WorksGridSection.tsx
+│   ├── data
+│   │   ├── arrow.json
+│   │   ├── clientStorage.ts
+│   │   ├── client.ts
+│   │   ├── eventStorage.ts
+│   │   ├── events.ts
+│   │   ├── galleryStorage.ts
+│   │   └── works.ts
+│   ├── features
+│   │   ├── enquiries
+│   │   ├── event-registrations
+│   │   └── newsletter
+│   ├── fonts
+│   │   ├── Inter
+│   │   │   ├── Inter-Bold.woff2
+│   │   │   ├── Inter-ExtraBold.woff2
+│   │   │   ├── Inter-Medium.woff2
+│   │   │   ├── Inter-Regular.woff2
+│   │   │   └── Inter-SemiBold.woff2
+│   │   ├── JetBrainsMono
+│   │   │   ├── JetBrainsMono-Bold.woff2
+│   │   │   ├── JetBrainsMono-Medium.woff2
+│   │   │   ├── JetBrainsMono-Regular.woff2
+│   │   │   └── JetBrainsMono-SemiBold.woff2
+│   │   └── Roboto
+│   │       ├── Roboto-Bold.ttf
+│   │       ├── Roboto-Medium.ttf
+│   │       ├── Roboto-Regular.ttf
+│   │       └── Roboto-SemiBold.ttf
+│   ├── lib
+│   │   ├── api-auth.ts
+│   │   ├── auth-client.ts
+│   │   ├── auth.ts
+│   │   ├── client-proof-validation.ts
+│   │   ├── cloudinary.ts
+│   │   ├── event-validation.ts
+│   │   ├── gallery-validation.ts
+│   │   ├── mailer.ts
+│   │   ├── mongodb.ts
+│   │   ├── utils.ts
+│   │   └── work-validation.ts
+│   ├── src.zip
+│   └── types
+│       ├── database.ts
+│       └── enquiry.ts
+├── testing.md
+├── tsconfig.json
+└── tsconfig.tsbuildinfo
+
+111 directories, 274 files

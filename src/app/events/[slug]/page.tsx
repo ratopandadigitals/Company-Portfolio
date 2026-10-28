@@ -2,8 +2,9 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { EVENTS_DATA } from '@/data/events'
 import Container from '@/components/atoms/Container'
+import clientPromise from '@/lib/mongodb'
+import type { EventDocument } from '@/types/database'
 
 type EventDetailPageProps = {
   params: Promise<{ slug: string }>
@@ -11,18 +12,59 @@ type EventDetailPageProps = {
 
 const EventDetailPage = async (props: EventDetailPageProps) => {
   const params = await props.params
-  const eventIndex = EVENTS_DATA.findIndex((item) => item.slug === params.slug)
-  const event = EVENTS_DATA[eventIndex]
+  const client = await clientPromise
+  const collection = client
+    .db('rato_panda_portfolio')
+    .collection<EventDocument>('events')
+  const event = await collection.findOne({ slug: params.slug })
 
   if (!event) {
     notFound()
   }
 
-  // Circular navigation logic
-  const nextEvent = EVENTS_DATA[(eventIndex + 1) % EVENTS_DATA.length]
-  const prevEvent = EVENTS_DATA[(eventIndex - 1 + EVENTS_DATA.length) % EVENTS_DATA.length]
-  const position = eventIndex + 1
-  const total = EVENTS_DATA.length
+  const beforeEvent = {
+    $or: [
+      { date: { $lt: event.date } },
+      { date: event.date, id: { $lt: event.id } },
+    ],
+  }
+  const afterEvent = {
+    $or: [
+      { date: { $gt: event.date } },
+      { date: event.date, id: { $gt: event.id } },
+    ],
+  }
+  const navigationProjection = { id: 1, slug: 1, title: 1 }
+  const [previousEvent, nextEvent, position, total] = await Promise.all([
+    collection
+      .find(beforeEvent, { projection: navigationProjection })
+      .sort({ date: -1, id: -1 })
+      .limit(1)
+      .next(),
+    collection
+      .find(afterEvent, { projection: navigationProjection })
+      .sort({ date: 1, id: 1 })
+      .limit(1)
+      .next(),
+    collection.countDocuments(beforeEvent).then((count) => count + 1),
+    collection.countDocuments(),
+  ])
+
+  const [firstEvent, lastEvent] = await Promise.all([
+    previousEvent
+      ? Promise.resolve(previousEvent)
+      : collection.find({}, { projection: navigationProjection }).sort({ date: 1, id: 1 }).limit(1).next(),
+    nextEvent
+      ? Promise.resolve(nextEvent)
+      : collection.find({}, { projection: navigationProjection }).sort({ date: -1, id: -1 }).limit(1).next(),
+  ])
+
+  if (!firstEvent || !lastEvent) {
+    notFound()
+  }
+
+  const prevEvent = previousEvent ?? lastEvent
+  const nextEventItem = nextEvent ?? firstEvent
 
   return (
     <section className='w-full bg-surface-page pb-12'>
@@ -111,7 +153,7 @@ const EventDetailPage = async (props: EventDetailPageProps) => {
           </span>
 
           <Link
-            href={`/events/${nextEvent.slug}`}
+            href={`/events/${nextEventItem.slug}`}
             className='group flex flex-col gap-1 text-right items-end shrink-0 max-w-[140px] sm:max-w-[200px]'
           >
             <span className='inline-flex items-center gap-1.5 text-caption text-size-small font-secondary uppercase tracking-wider group-hover:text-heading transition-colors'>
@@ -119,7 +161,7 @@ const EventDetailPage = async (props: EventDetailPageProps) => {
               <ArrowRight className='w-3.5 h-3.5 shrink-0' />
             </span>
             <span className='text-small sm:text-size-body font-secondary font-bold text-heading truncate'>
-              {nextEvent.title}
+              {nextEventItem.title}
             </span>
           </Link>
         </div>

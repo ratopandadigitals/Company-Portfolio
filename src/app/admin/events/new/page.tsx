@@ -6,18 +6,13 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import type { EventItem } from '@/data/events'
 import EventForm from '@/components/admin/events/EventForm'
-import { createEvent, getEvents } from '@/data/eventStorage'
+import { createEvent } from '@/data/eventStorage'
 
 const NewEventPage = () => {
   const router = useRouter()
 
-  const handleSubmit = (formData: FormData) => {
+  const handleSubmit = async (formData: FormData) => {
     const slug = String(formData.get('slug') ?? '').trim()
-
-    if (getEvents().some((event) => event.slug === slug)) {
-      window.alert('An event with this slug already exists.')
-      return
-    }
 
     const event: Omit<EventItem, 'id'> = {
       slug,
@@ -30,9 +25,12 @@ const NewEventPage = () => {
       ctaLabel: String(formData.get('ctaLabel') ?? '').trim(),
     }
 
-    createEvent(event)
-
-    router.push('/admin/events')
+    try {
+      await createEvent(event)
+      router.push('/admin/events')
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Unable to create event.')
+    }
   }
 
   return (

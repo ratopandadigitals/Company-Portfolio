@@ -2,13 +2,45 @@
 'use client'
 
 import { useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
 import type { TestimonialItem } from '@/data/client'
 import Image from 'next/image'
+import { AlertCircle, LoaderCircle } from 'lucide-react'
 
 type TestimonialFormProps = {
   initialTestimonial?: TestimonialItem
   submitLabel: string
-  onSubmit: (formData: FormData) => void
+  onSubmit: (formData: FormData) => void | Promise<void>
+}
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+
+const uploadImage = async (file: File): Promise<string> => {
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    throw new Error('Only JPEG, PNG, and WebP images are allowed.')
+  }
+
+  if (file.size === 0 || file.size > MAX_FILE_SIZE) {
+    throw new Error('The image must be smaller than 5 MB.')
+  }
+
+  const uploadData = new FormData()
+  uploadData.append('file', file)
+  uploadData.append('folder', 'testimonials')
+
+  const response = await fetch('/api/admin/uploads', {
+    method: 'POST',
+    body: uploadData,
+  })
+  const result: { success?: boolean; url?: string; message?: string } =
+    await response.json()
+
+  if (!response.ok || !result.success || !result.url) {
+    throw new Error(result.message || 'Unable to upload the image.')
+  }
+
+  return result.url
 }
 
 const labelClass = 'block text-size-small font-medium text-heading'
@@ -27,37 +59,65 @@ const TestimonialForm = ({
   onSubmit,
 }: TestimonialFormProps) => {
   const [bgImage, setBgImage] = useState(initialTestimonial?.bgImage ?? '')
+  const [isUploading, setIsUploading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleImageChange = (file?: File) => {
+  const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget
+    const file = input.files?.[0]
+    input.value = ''
     if (!file) return
 
-    if (!file.type.startsWith('image/')) {
-      window.alert('Please select a valid image file.')
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setError('Only JPEG, PNG, and WebP images are allowed.')
       return
     }
 
-    const reader = new FileReader()
-
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setBgImage(reader.result)
-      }
+    if (file.size === 0 || file.size > MAX_FILE_SIZE) {
+      setError('The image must be smaller than 5 MB.')
+      return
     }
 
-    reader.readAsDataURL(file)
+    setError('')
+    setIsUploading(true)
+    try {
+      setBgImage(await uploadImage(file))
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : 'Unable to upload the image.')
+    } finally {
+      setIsUploading(false)
+    }
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    if (isUploading || isSubmitting) return
 
     const formData = new FormData(event.currentTarget)
     formData.set('bgImage', bgImage)
 
-    onSubmit(formData)
+    setError('')
+    setIsSubmitting(true)
+    try {
+      await onSubmit(formData)
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Unable to save the testimonial.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
+
+  const isBusy = isUploading || isSubmitting
 
   return (
     <form onSubmit={handleSubmit} className="space-y-stack-content">
+      {error && (
+        <div role="alert" className="flex items-start gap-2 rounded-lg border border-border-subtle bg-surface-card p-inset-card text-size-body text-text-primary">
+          <AlertCircle size={18} className="mt-0.5 shrink-0" aria-hidden="true" />
+          <p>{error}</p>
+        </div>
+      )}
       {initialTestimonial && (
         <div className="space-y-2">
           <label className={labelClass}>Testimonial ID</label>
@@ -119,12 +179,13 @@ const TestimonialForm = ({
         <input
           id="bgImage"
           type="file"
-          accept="image/*"
-          onChange={(event) => handleImageChange(event.target.files?.[0])}
+          accept="image/jpeg,image/png,image/webp"
+          disabled={isBusy}
+          onChange={handleImageChange}
           className={uploadClass}
         />
         <span className={helperClass}>
-          Upload an image for the testimonial background.
+          {isUploading ? 'Uploading image to Cloudinary...' : 'Optional. Select one JPEG, PNG, or WebP image smaller than 5 MB.'}
         </span>
 
         {bgImage && (
@@ -142,8 +203,9 @@ const TestimonialForm = ({
 
             <button
               type="button"
+              disabled={isBusy}
               onClick={() => setBgImage('')}
-              className="text-size-small font-medium text-red-500 hover:underline"
+              className="text-size-small font-medium text-red-500 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
             >
               Remove image
             </button>
@@ -153,9 +215,11 @@ const TestimonialForm = ({
 
      <button
   type="submit"
-  className="mt-6 block rounded-md bg-surface-primary px-5 py-3 text-size-small font-semibold text-[var(--text-primary-on-color)] transition-colors hover:bg-surface-primary-hover"
+  disabled={isBusy}
+  className="mt-6 block rounded-md bg-surface-primary px-5 py-3 text-size-small font-semibold text-(--text-primary-on-color) transition-colors hover:bg-surface-primary-hover"
 >
-  {submitLabel}
+  {isBusy && <LoaderCircle size={16} className="mr-2 inline animate-spin" aria-hidden="true" />}
+  {isUploading ? 'Uploading image...' : isSubmitting ? 'Saving...' : submitLabel}
 </button>
     </form>
   )

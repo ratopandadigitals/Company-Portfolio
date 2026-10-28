@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import type { EventItem } from '@/data/eventStorage'
 import {
-  getEvents,
+  getEventBySlug,
   updateEvent,
 } from '@/data/eventStorage'
 import EventForm from '@/components/admin/events/EventForm'
@@ -21,16 +21,25 @@ const EditEventPage = () => {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setEvent(getEvents().find((item) => item.id === eventId))
-    setIsLoaded(true)
+    let active = true
+    getEventBySlug(eventId)
+      .then((loadedEvent) => {
+        if (active) setEvent(loadedEvent)
+      })
+      .catch(() => {
+        if (active) setEvent(undefined)
+      })
+      .finally(() => {
+        if (active) setIsLoaded(true)
+      })
+
+    return () => { active = false }
   }, [eventId])
 
-  const handleSubmit = (formData: FormData) => {
+  const handleSubmit = async (formData: FormData) => {
     if (!event) return
 
-    const updatedEvent: EventItem = {
-      ...event,
+    const updatedEvent: Omit<EventItem, 'id'> = {
       title: String(formData.get('title') ?? '').trim(),
       slug: String(formData.get('slug') ?? '').trim(),
       date: String(formData.get('date') ?? '').trim(),
@@ -41,25 +50,12 @@ const EditEventPage = () => {
       image: String(formData.get('image') ?? '').trim(),
     }
 
-    const duplicateSlug = getEvents().find(
-      (item) =>
-        item.id !== event.id &&
-        item.slug === updatedEvent.slug,
-    )
-
-    if (duplicateSlug) {
-      window.alert('An event with this slug already exists.')
-      return
+    try {
+      await updateEvent(event.slug, updatedEvent)
+      router.push('/admin/events')
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Could not update this event.')
     }
-
-    const savedEvent = updateEvent(event.slug, updatedEvent)
-
-    if (!savedEvent) {
-      window.alert('Could not update this event.')
-      return
-    }
-
-    router.push('/admin/events')
   }
 
   if (!isLoaded) {

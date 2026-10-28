@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { WORK_ITEMS } from '@/data/works'
+import clientPromise from '@/lib/mongodb'
+import type { WorkDocument } from '@/types/database'
 import Container from '@/components/atoms/Container'
 
 type WorkDetailPageProps = {
@@ -11,18 +12,47 @@ type WorkDetailPageProps = {
 
 const WorkDetailPage = async (props: WorkDetailPageProps) => {
   const params = await props.params
-  const projectIndex = WORK_ITEMS.findIndex((item) => item.slug === params.slug)
-  const project = WORK_ITEMS[projectIndex]
+  const client = await clientPromise
+  const collection = client
+    .db('rato_panda_portfolio')
+    .collection<WorkDocument>('works')
+  const project = await collection.findOne({ slug: params.slug })
 
   if (!project) {
     notFound()
   }
 
-  // Circular navigation logic
-  const nextProject = WORK_ITEMS[(projectIndex + 1) % WORK_ITEMS.length]
-  const prevProject = WORK_ITEMS[(projectIndex - 1 + WORK_ITEMS.length) % WORK_ITEMS.length]
-  const position = projectIndex + 1
-  const total = WORK_ITEMS.length
+  const navigationProjection = { id: 1, slug: 1, title: 1 }
+  const [previousProject, nextProject, position, total] = await Promise.all([
+    collection
+      .find({ id: { $lt: project.id } }, { projection: navigationProjection })
+      .sort({ id: -1 })
+      .limit(1)
+      .next(),
+    collection
+      .find({ id: { $gt: project.id } }, { projection: navigationProjection })
+      .sort({ id: 1 })
+      .limit(1)
+      .next(),
+    collection.countDocuments({ id: { $lt: project.id } }).then((count) => count + 1),
+    collection.countDocuments(),
+  ])
+
+  const [firstProject, lastProject] = await Promise.all([
+    previousProject
+      ? Promise.resolve(previousProject)
+      : collection.find({}, { projection: navigationProjection }).sort({ id: 1 }).limit(1).next(),
+    nextProject
+      ? Promise.resolve(nextProject)
+      : collection.find({}, { projection: navigationProjection }).sort({ id: -1 }).limit(1).next(),
+  ])
+
+  if (!firstProject || !lastProject) {
+    notFound()
+  }
+
+  const prevProject = previousProject ?? lastProject
+  const nextProjectItem = nextProject ?? firstProject
 
   return (
     <section className='w-full bg-surface-page pb-12'>
@@ -155,7 +185,7 @@ const WorkDetailPage = async (props: WorkDetailPageProps) => {
           </span>
 
           <Link
-            href={`/works/${nextProject.slug}`}
+            href={`/works/${nextProjectItem.slug}`}
             className='group flex flex-col gap-1 text-right items-end shrink-0 max-w-[140px] sm:max-w-[200px]'
           >
             <span className='inline-flex items-center gap-1.5 text-caption text-size-small font-secondary uppercase tracking-wider group-hover:text-heading transition-colors'>
@@ -163,7 +193,7 @@ const WorkDetailPage = async (props: WorkDetailPageProps) => {
               <ArrowRight className='w-3.5 h-3.5 shrink-0' />
             </span>
             <span className='text-small sm:text-size-body font-secondary font-bold text-heading truncate'>
-              {nextProject.title}
+              {nextProjectItem.title}
             </span>
           </Link>
         </div>

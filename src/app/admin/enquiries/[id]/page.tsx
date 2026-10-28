@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Mail, Trash2,CheckCircle2 } from 'lucide-react'
-import type { EnquiryItem } from '@/data/enquiryStorage'
+import type { EnquiryItem } from '@/types/enquiry'
 import type { EnquiryDocument } from '@/types/database'
 
 const EnquiryDetailsPage = () => {

@@ -237,8 +237,12 @@ const GalleryModal = ({
   );
 };
 
-export default function BentoGallery() {
-  const [items, setItems] = useState<MediaItemType[]>(initialMediaItems);
+export default function BentoGallery({
+  initialItems = initialMediaItems,
+}: {
+  initialItems?: MediaItemType[]
+}) {
+  const [items, setItems] = useState<MediaItemType[]>(initialItems);
   const [selectedItem, setSelectedItem] = useState<MediaItemType | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 

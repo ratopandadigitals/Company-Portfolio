@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server'
 import clientPromise from '@/lib/mongodb'
 import { getAuthenticatedSession } from '@/lib/api-auth'
+import { recordAdminNotification } from '@/lib/admin-notifications'
 import type { ServiceDocument } from '@/types/database'
 
 export const GET = async () => {
@@ -76,36 +77,7 @@ export const POST = async (request: Request) => {
       )
     }
 
-    const client = await clientPromise
-    const db = client.db('rato_panda_portfolio')
-    const collection = db.collection<ServiceDocument>('services')
-
-    const services = await collection.find({}).toArray()
-
-    const normalizedLabel = label.trim().toLowerCase()
-
-    const duplicateLabel = services.some(
-      (service) => service.label.trim().toLowerCase() === normalizedLabel,
-    )
-
-    if (duplicateLabel) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'A service with this label already exists.',
-        },
-        { status: 409 },
-      )
-    }
-
-    const numericIds = services
-      .map((service) => Number(service.id))
-      .filter((id) => Number.isSafeInteger(id) && id > 0)
-
-    const nextId = String(Math.max(0, ...numericIds) + 1)
-
-    const service: ServiceDocument = {
-      id: nextId,
+    const serviceFields = {
       label: label.trim(),
       title: title.trim(),
       image: image.trim(),
@@ -117,20 +89,20 @@ export const POST = async (request: Request) => {
     }
 
     if (
-      !service.label ||
-      !service.title ||
-      !service.image ||
-      !service.description ||
-      !service.tags.length ||
-      !service.price ||
-      !service.timeline ||
-      service.label.length > 200 ||
-      service.title.length > 200 ||
-      service.image.length > 2048 ||
-      service.description.length > 5000 ||
-      service.tags.some((tag) => tag.length > 100) ||
-      service.price.length > 100 ||
-      service.timeline.length > 100
+      !serviceFields.label ||
+      !serviceFields.title ||
+      !serviceFields.image ||
+      !serviceFields.description ||
+      !serviceFields.tags.length ||
+      !serviceFields.price ||
+      !serviceFields.timeline ||
+      serviceFields.label.length > 200 ||
+      serviceFields.title.length > 200 ||
+      serviceFields.image.length > 2048 ||
+      serviceFields.description.length > 5000 ||
+      serviceFields.tags.some((tag) => tag.length > 100) ||
+      serviceFields.price.length > 100 ||
+      serviceFields.timeline.length > 100
     ) {
       return NextResponse.json(
         {
@@ -141,7 +113,45 @@ export const POST = async (request: Request) => {
       )
     }
 
+    const client = await clientPromise
+    const db = client.db('rato_panda_portfolio')
+    const collection = db.collection<ServiceDocument>('services')
+    const duplicateLabel = await collection.findOne(
+      { label: serviceFields.label },
+      { collation: { locale: 'en', strength: 2 } },
+    )
+
+    if (duplicateLabel) {
+      return NextResponse.json(
+        { success: false, message: 'A service with this label already exists.' },
+        { status: 409 },
+      )
+    }
+
+    const counter = await db
+      .collection<{ _id: string; sequence: number }>('counters')
+      .findOneAndUpdate(
+        { _id: 'services' },
+        { $inc: { sequence: 1 } },
+        { returnDocument: 'after' },
+      )
+
+    if (!counter) {
+      throw new Error('The Services counter is not initialized. Run the data migration.')
+    }
+
+    const service: ServiceDocument = {
+      ...serviceFields,
+      id: String(counter.sequence),
+    }
+
     await collection.insertOne(service)
+    await recordAdminNotification({
+      kind: 'content',
+      title: 'Service created',
+      message: service.title,
+      href: `/admin/services/${encodeURIComponent(service.id)}`,
+    })
 
     return NextResponse.json(
       {
@@ -152,6 +162,18 @@ export const POST = async (request: Request) => {
       { status: 201 },
     )
   } catch (error) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code === 11000
+    ) {
+      return NextResponse.json(
+        { success: false, message: 'A service with this label or ID already exists.' },
+        { status: 409 },
+      )
+    }
+
     console.error('Failed to create service:', error)
 
     return NextResponse.json(

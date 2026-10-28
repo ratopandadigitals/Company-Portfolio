@@ -19,10 +19,20 @@ import Image from 'next/image'
 const EventsPage = () => {
   const [events, setEvents] = useState<EventItem[]>([])
   const [search, setSearch] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setEvents(getEvents())
+    const controller = new AbortController()
+
+    getEvents()
+      .then(setEvents)
+      .catch(() => setError('Unable to load events. Please try again.'))
+      .finally(() => {
+        if (!controller.signal.aborted) setIsLoading(false)
+      })
+
+    return () => controller.abort()
   }, [])
 
   const filteredEvents = useMemo(() => {
@@ -44,15 +54,18 @@ const EventsPage = () => {
     )
   }, [events, search])
 
-  const handleDelete = (event: EventItem) => {
+  const handleDelete = async (event: EventItem) => {
     const confirmed = window.confirm(
       `Delete the event "${event.title}"?`,
     )
 
     if (!confirmed) return
 
-    if (deleteEvent(event.slug)) {
-      setEvents(getEvents())
+    try {
+      await deleteEvent(event.slug)
+      setEvents((current) => current.filter((item) => item.slug !== event.slug))
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Unable to delete event.')
     }
   }
 
@@ -176,6 +189,7 @@ const EventsPage = () => {
       </div>
 
       <div className="rounded-lg border border-border-subtle bg-surface-card p-inset-compact">
+        {error && <p role="alert" className="mb-4 text-size-small text-text-error">{error}</p>}
         <AdminSearchInput
   value={search}
   onChange={setSearch}
@@ -184,12 +198,8 @@ const EventsPage = () => {
 />
         <DataTable
           columns={columns}
-          rows={filteredEvents}
-          emptyMessage={
-            search
-              ? 'No events match your search.'
-              : 'No events have been added yet.'
-          }
+          rows={isLoading ? [] : filteredEvents}
+          emptyMessage={isLoading ? 'Loading events...' : search ? 'No events match your search.' : 'No events have been added yet.'}
         />
       </div>
     </div>
