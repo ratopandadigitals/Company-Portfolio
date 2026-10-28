@@ -67,7 +67,7 @@ const DataTable = <T,>({
                         ? 'min-w-0'
                         : columnIndex === columns.length - 1
                           ? 'flex min-w-0 justify-end'
-                          : 'min-w-0 break-words text-size-small text-text-heading'
+                          : 'min-w-0 wrap-break-word text-size-small text-text-heading'
                     }
                   >
                     {column.render(row)}

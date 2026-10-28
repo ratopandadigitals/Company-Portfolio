@@ -170,7 +170,7 @@ const GalleryModal = ({
             >
               <MediaItem item={selectedItem} className="w-full h-full" />
               {(selectedItem.title || selectedItem.desc) && (
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 via-black/40 to-transparent">
                   <h3 id="gallery-dialog-title" className="text-white text-lg font-semibold">
                     {selectedItem.title || 'Gallery preview'}
                   </h3>
@@ -242,11 +242,40 @@ export default function BentoGallery({
 }: {
   initialItems?: MediaItemType[]
 }) {
-  const [items, setItems] = useState<MediaItemType[]>(initialItems);
+  const [items, setItems] = useState<MediaItemType[]>(initialItems)
   const [selectedItem, setSelectedItem] = useState<MediaItemType | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  useEffect(() => {
+  let isMounted = true
 
-  return (
+  const fetchGallery = async () => {
+    try {
+      const response = await fetch('/api/gallery', {
+        cache: 'no-store',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch gallery items.')
+      }
+
+      const result = await response.json()
+
+      if (isMounted && result.success && Array.isArray(result.data)) {
+        setItems(result.data)
+      }
+    } catch (error) {
+      console.error('Failed to load public gallery:', error)
+    }
+  }
+
+  fetchGallery()
+
+  return () => {
+    isMounted = false
+  }
+}, [])
+
+    return (
     <Section>
       <Container>
         {/* Bento Grid */}
@@ -304,7 +333,7 @@ export default function BentoGallery({
 
               {/* Hover Text Banner */}
               {(item.title || item.desc) && (
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 pointer-events-none">
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 pointer-events-none">
                   {item.title && (
                     <h3 className="text-white text-sm font-semibold line-clamp-1">{item.title}</h3>
                   )}

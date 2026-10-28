@@ -69,12 +69,7 @@ const RecentActivity = ({ enquiries }: RecentActivityProps) => {
           <p className="max-w-sm text-size-small text-caption">
             You’re caught up. Read messages remain available in the full enquiries list.
           </p>
-          <Link
-            href="/admin/enquiries"
-            className="mt-1 text-size-small font-semibold text-primary hover:underline"
-          >
-            View enquiries
-          </Link>
+          {/*  */}
         </div>
       )}
     </section>
