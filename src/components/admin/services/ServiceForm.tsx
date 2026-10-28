@@ -217,8 +217,7 @@ const ServiceForm = ({
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="space-y-2">
           <span className={labelClass}>Price</span>
-          <span className="flex items-center overflow-hidden rounded-md border border-border-subtle bg-surface-card focus-within:border-border-primary focus-within:ring-2 focus-within:ring-[var(--primary-200)]">
-            <span className="border-r border-border-subtle px-4 py-3 text-size-body text-caption">
+<span className="flex items-center overflow-hidden rounded-md border border-border-subtle bg-surface-card focus-within:border-border-primary focus-within:ring-2 focus-within:ring-primary">            <span className="border-r border-border-subtle px-4 py-3 text-size-body text-caption">
               RS
             </span>
             <input
