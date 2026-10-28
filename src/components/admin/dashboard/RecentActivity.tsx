@@ -10,23 +10,23 @@ type RecentActivityProps = {
 const RecentActivity = ({ enquiries }: RecentActivityProps) => {
   return (
     <section className="rounded-xl border border-border-subtle bg-surface-card p-5 sm:p-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-size-h3 font-semibold text-heading">
-            Recent enquiries
+            New enquiries
           </h2>
 
           <p className="mt-2 text-size-small text-caption">
-            Review messages submitted through your website.
+            Latest unread messages from your website.
           </p>
         </div>
 
         <Link
           href="/admin/enquiries"
-          aria-label="View all enquiries"
-          className="shrink-0 rounded-lg p-2 text-caption transition-colors hover:bg-surface-section hover:text-primary"
+          className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-md px-2 text-size-small font-semibold text-success transition-colors hover:bg-surface-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-surface-page"
         >
-          <ArrowRight aria-hidden="true" className="size-5" />
+          View all enquiries
+          <ArrowRight aria-hidden="true" className="size-4" />
         </Link>
       </div>
 
@@ -51,7 +51,9 @@ const RecentActivity = ({ enquiries }: RecentActivityProps) => {
                     {new Date(enquiry.createdAt).toLocaleDateString()}
                   </span>
                   <span className="mt-1 block text-size-caption font-medium text-caption">
-                    {enquiry.status === 'new' ? 'New' : 'Read'}
+                    <span className="inline-flex rounded-full border border-border-primary bg-surface-primary px-2 py-0.5 text-[11px] font-semibold text-white">
+                      New
+                    </span>
                   </span>
                 </span>
               </Link>
@@ -63,9 +65,9 @@ const RecentActivity = ({ enquiries }: RecentActivityProps) => {
           <span className="flex size-11 items-center justify-center rounded-full bg-surface-page text-success">
             <Inbox aria-hidden="true" className="size-6 stroke-2.5" />
           </span>
-          <p className="text-size-body font-medium text-heading">No enquiries yet</p>
+          <p className="text-size-body font-medium text-heading">No new enquiries</p>
           <p className="max-w-sm text-size-small text-caption">
-            New website enquiries will appear here.
+            You’re caught up. Read messages remain available in the full enquiries list.
           </p>
           <Link
             href="/admin/enquiries"

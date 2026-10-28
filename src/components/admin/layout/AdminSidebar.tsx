@@ -1,7 +1,8 @@
+
 'use client'
 
 import Link from 'next/link'
-import Logo from '@/components/atoms/Logo'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -13,8 +14,11 @@ import {
   UserRound,
   ChevronRight,
   MessageSquareQuote,
-
+  X,
 } from 'lucide-react'
+
+import Logo from '@/components/atoms/Logo'
+import { authClient } from '@/lib/auth-client'
 
 const navigation = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -31,14 +35,48 @@ const navigation = [
   // { label: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
-const AdminSidebar = () => {
+type AdminSidebarProps = {
+  mobile?: boolean
+  onNavigate?: () => void
+  onClose?: () => void
+}
+
+const AdminSidebar = ({
+  mobile = false,
+  onNavigate,
+  onClose,
+}: AdminSidebarProps) => {
   const pathname = usePathname()
 
+  const { data: session } = authClient.useSession()
+  const user = session?.user
+  const profileImage = user?.image || undefined
+  const userName = user?.name || user?.email || 'Admin'
+
   return (
-    <aside className="flex h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-border-subtle bg-surface-card">
+    <aside
+      id={mobile ? 'admin-mobile-navigation' : undefined}
+      aria-label={mobile ? 'Mobile admin navigation' : undefined}
+      className={
+        mobile
+          ? 'relative flex h-full min-h-0 w-[min(18rem,calc(100vw-3rem))] shrink-0 flex-col overflow-hidden border-r border-border-subtle bg-surface-card shadow-xl'
+          : 'hidden h-full min-h-0 w-64 shrink-0 flex-col overflow-hidden border-r border-border-subtle bg-surface-card lg:flex'
+      }
+    >
       {/* Brand */}
-      <div className="flex h-[76px] shrink-0 items-center border-b border-border-divider px-5">
+      <div className="flex h-19 shrink-0 items-center justify-between border-b border-border-divider px-5">
         <Logo href="/admin" compact />
+
+        {mobile && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close admin navigation"
+            className="inline-flex size-10 items-center justify-center rounded-md text-icon-secondary transition-colors hover:bg-surface-section hover:text-heading focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+          >
+            <X size={20} aria-hidden="true" />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -63,6 +101,7 @@ const AdminSidebar = () => {
               <Link
                 key={href}
                 href={href}
+                onClick={onNavigate}
                 aria-current={isActive ? 'page' : undefined}
                 className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors ${
                   isActive
@@ -95,20 +134,33 @@ const AdminSidebar = () => {
       <div className="mb-2 shrink-0 border-t border-border-divider px-2 pt-2">
         <Link
           href="/admin/settings"
+          onClick={onNavigate}
           aria-label="Administrator account settings"
           aria-current={
             pathname === '/admin/settings' ? 'page' : undefined
           }
           className="mb-2 flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-surface-section"
         >
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border-divider bg-surface-section text-icon-primary">
-            <UserRound size={19} strokeWidth={1.8} />
+          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border-divider bg-surface-section text-icon-primary">
+            {profileImage ? (
+              <Image
+                src={profileImage}
+                alt={`${userName}'s profile`}
+                width={40}
+                height={40}
+                unoptimized
+                className="size-full object-cover"
+              />
+            ) : (
+              <UserRound size={19} strokeWidth={1.8} />
+            )}
           </div>
 
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-heading">
-              Administrator
+              {userName}
             </p>
+
             <p className="mt-0.5 truncate text-caption">
               Account settings
             </p>

@@ -11,6 +11,7 @@ import {
   CheckCheck,
   ChevronDown,
   LogOut,
+  Menu,
   UserRound,
 } from 'lucide-react'
 
@@ -36,7 +37,7 @@ const SINGULAR_NAMES: Record<string, string> = {
   testimonials: 'Testimonial',
 }
 
-const AdminHeader = () => {
+const AdminHeader = ({ onOpenNavigation }: { onOpenNavigation: () => void }) => {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -126,6 +127,15 @@ const AdminHeader = () => {
     <header className="relative z-20 flex h-19 shrink-0 items-center justify-between gap-3 border-b border-border-subtle bg-surface-page px-4 sm:px-6 lg:px-8">
       {/* Current page */}
       <div className="flex min-w-0 items-center gap-2 text-sm">
+        <button
+          type="button"
+          aria-label="Open admin navigation"
+          aria-controls="admin-mobile-navigation"
+          onClick={onOpenNavigation}
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-icon-secondary transition-colors hover:bg-surface-section hover:text-heading focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 lg:hidden"
+        >
+          <Menu className="size-5" aria-hidden="true" />
+        </button>
         <span className="shrink-0 text-caption">Admin</span>
 
         <span aria-hidden="true" className="text-caption">
