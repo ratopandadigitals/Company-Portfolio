@@ -1,3 +1,4 @@
+
 'use client'
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
@@ -7,7 +8,7 @@ import Container from '@/components/atoms/Container'
 import Section from '@/components/atoms/Section'
 import { Sparkles, ArrowUpRight } from 'lucide-react'
 import MorphSlider from '@/components/Animation/Morph'
-import { SERVICES_DATA, ServiceItem as ServiceItemType } from '@/components/sections/services/Service'
+import type { ServiceItem as ServiceItemType } from '@/components/sections/services/Service'
 
 type ServicesTeaserProps = {
   eyebrow?: string
@@ -20,31 +21,80 @@ type ServicesTeaserProps = {
 const ServicesTeaser = (props: ServicesTeaserProps) => {
   const eyebrow = props.eyebrow || '(Services)'
   const heading = props.heading || 'WHAT WE BUILD.'
-  const services = props.services || SERVICES_DATA
   const fullServicesHref = props.fullServicesHref || '/services'
 
-  const activeInitialId = props.defaultActiveId || services[0]?.id || 'brand-identity'
-  const [activeTab, setActiveTab] = useState(activeInitialId)
+  const [fetchedServices, setFetchedServices] = useState<ServiceItemType[]>([])
+  const [selectedTabId, setSelectedTabId] = useState(props.defaultActiveId || '')
 
-  const activeIndex = services.findIndex((s) => s.id === activeTab)
-  const activeService = services[activeIndex] || services[0]
-  const marqueeList = services.map((s) => s.label)
+  // Use provided services when available; otherwise fetch from the API.
+  const services = props.services ?? fetchedServices
+  const activeTab = services.some((service) => service.id === selectedTabId)
+    ? selectedTabId
+    : services.find((service) => service.id === props.defaultActiveId)?.id ?? services[0]?.id ?? ''
 
-  const marqueeItems = [...marqueeList, ...marqueeList, ...marqueeList, ...marqueeList]
+  const activeIndex = services.findIndex((service) => service.id === activeTab)
+  const activeService = activeIndex >= 0 ? services[activeIndex] : undefined
+  const marqueeList = services.map((service) => service.label)
 
-  // CHANGE A: respect the user's "reduce motion" setting
+  const marqueeItems = [
+    ...marqueeList,
+    ...marqueeList,
+    ...marqueeList,
+    ...marqueeList,
+  ]
+
+  // Respect the user's reduced-motion setting.
   const reduceMotion = useReducedMotion()
 
-  // CHANGE B: refs so the active pill can be scrolled into view inside its own strip
+  // Refs allow the active pill to scroll within its own strip.
   const tabsScrollerRef = useRef<HTMLDivElement>(null)
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({})
 
   useEffect(() => {
+    if (props.services !== undefined) return
+
+    let isActive = true
+
+    const loadServices = async () => {
+      try {
+        const response = await fetch('/api/services', {
+          cache: 'no-store',
+        })
+
+        const result = await response.json()
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Unable to load services.')
+        }
+
+        if (isActive) {
+          setFetchedServices(
+            Array.isArray(result.data)
+              ? (result.data as ServiceItemType[])
+              : [],
+          )
+        }
+      } catch (error) {
+        if (isActive) {
+          console.error('Failed to load public services:', error)
+        }
+      }
+    }
+
+    void loadServices()
+
+    return () => {
+      isActive = false
+    }
+  }, [props.services])
+
+  useEffect(() => {
     const scroller = tabsScrollerRef.current
     const tab = tabRefs.current[activeTab]
+
     if (!scroller || !tab) return
-    // Scroll only the strip. scrollIntoView could also scroll the whole page
-    // when autoplay changes the tab while the user is reading elsewhere.
+
+    // Scroll only the tab strip, not the entire page.
     scroller.scrollTo({
       left: tab.offsetLeft - (scroller.clientWidth - tab.clientWidth) / 2,
       behavior: reduceMotion ? 'auto' : 'smooth',
@@ -52,36 +102,47 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
   }, [activeTab, reduceMotion])
 
   const morphItems = useMemo(
-    () => services.map((s) => ({ image: s.image, caption: s.title })),
-    [services]
+    () =>
+      services.map((service) => ({
+        image: service.image,
+        caption: service.title,
+      })),
+    [services],
   )
 
   return (
-    <Section className='relative w-full bg-surface-page text-heading  overflow-hidden flex flex-col justify-between transition-colors duration-300'>
-
-            {/* CHANGE C: items-start on mobile so heading, button and tabs share one left edge */}
+    <Section className='relative w-full bg-surface-page text-heading overflow-hidden flex flex-col justify-between transition-colors duration-300'>
+      {/* Heading and services link */}
       <Container className='w-full z-10 flex flex-row flex-wrap items-end sm:items-center justify-between gap-x-4 gap-y-4'>
-                <div className=''>
+        <div>
           <span className='text-xs md:text-small tracking-tight text-caption block mb-2 font-mono'>
             {eyebrow}
           </span>
+
           <h2 className='text-size-h2 md:text-size-h1 font-extrabold tracking-wider text-caption font-primary'>
             {heading}
           </h2>
         </div>
 
-          <Link
-        href={fullServicesHref}
-        aria-label='Explore all services'
-        className='group relative inline-flex ml-auto items-center justify-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 min-h-11 rounded-full bg-primary text-white font-medium text-small overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5'
-      >      
-  <span className='relative All Sez-10 font-semibold text-size-caption tracking-wide whitespace-nowrap'>
-    <span className='sm:hidden'>All Services</span>
-    <span className='hidden sm:inline'>Explore All Services</span>
-  </span>
+        <Link
+          href={fullServicesHref}
+          aria-label='Explore all services'
+          className='group relative inline-flex ml-auto items-center justify-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 min-h-11 rounded-full bg-primary text-white font-medium text-small overflow-hidden transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5'
+        >
+          <span className='relative z-10 font-semibold text-size-caption tracking-wide whitespace-nowrap'>
+            <span className='sm:hidden'>All Services</span>
+            <span className='hidden sm:inline'>Explore All Services</span>
+          </span>
+
           <motion.div
-            animate={reduceMotion ? undefined : { x: [0, 3, 0], y: [0, -3, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+            animate={
+              reduceMotion ? undefined : { x: [0, 3, 0], y: [0, -3, 0] }
+            }
+            transition={{
+              repeat: Infinity,
+              duration: 2,
+              ease: 'easeInOut',
+            }}
             className='relative z-10 flex items-center justify-center'
           >
             <ArrowUpRight className='w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5' />
@@ -89,7 +150,7 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
         </Link>
       </Container>
 
-      {/* CHANGE D: mobile = one scrollable row; sm and up = your original wrapped layout */}
+      {/* Mobile: one scrollable row. Larger screens: wrapped tabs. */}
       <Container className='w-full z-10 pt-6 mt-6'>
         <div
           ref={tabsScrollerRef}
@@ -97,27 +158,32 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
         >
           {services.map((service) => {
             const isActive = service.id === activeTab
+
             return (
               <button
                 key={service.id}
-                ref={(el) => {
-                  tabRefs.current[service.id] = el
+                ref={(element) => {
+                  tabRefs.current[service.id] = element
                 }}
-                // CHANGE E: hover only for a real mouse; touch uses onClick
-                onPointerEnter={(e) => {
-                  if (e.pointerType === 'mouse') setActiveTab(service.id)
+                onPointerEnter={(event) => {
+                  if (event.pointerType === 'mouse') {
+                    setSelectedTabId(service.id)
+                  }
                 }}
-                onClick={() => setActiveTab(service.id)}
+                onClick={() => setSelectedTabId(service.id)}
                 aria-pressed={isActive}
-                // CHANGE F: min-h-11 (44px touch target), font-semibold replaces the invalid text-bold
                 className={`flex items-center gap-2 px-4 min-h-11 rounded-full whitespace-nowrap shrink-0 snap-center text-size-caption font-semibold transition-colors duration-200 cursor-pointer ${
-                  isActive ? 'bg-primary text-white' : ' border border-border-subtle/80 text-caption hover:bg-surface-section/90'
+                  isActive
+                    ? 'bg-primary text-white'
+                    : 'border border-border-subtle/80 text-caption hover:bg-surface-section/90'
                 }`}
               >
-                {/* CHANGE G: dot space is always reserved, so the pill width never changes */}
                 <span
-                  className={`w-2 h-2 rounded-full shrink-0 ${isActive ? 'bg-success' : 'bg-transparent'}`}
+                  className={`w-2 h-2 rounded-full shrink-0 ${
+                    isActive ? 'bg-success' : 'bg-transparent'
+                  }`}
                 />
+
                 <span>{service.label}</span>
               </button>
             )
@@ -125,17 +191,25 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
         </div>
       </Container>
 
+      {/* Animated service showcase */}
       <div className='relative w-full flex items-center justify-center min-h-105 my-4'>
         <div className='absolute inset-0 flex items-center overflow-hidden pointer-events-none z-0'>
           <motion.div
             animate={reduceMotion ? undefined : { x: ['0%', '-35%'] }}
-            transition={{ duration: 60, ease: 'linear', repeat: Infinity }}
+            transition={{
+              duration: 60,
+              ease: 'linear',
+              repeat: Infinity,
+            }}
             className='whitespace-nowrap flex items-center gap-8 md:gap-12 select-none'
           >
             {marqueeItems.map((title, index) => (
-              <div key={index} className='flex items-center gap-8 md:gap-12'>
+              <div
+                key={`${title}-${index}`}
+                className='flex items-center gap-8 md:gap-12'
+              >
                 <Sparkles className='w-6 h-6 sm:w-10 sm:h-10 shrink-0 text-primary' />
-                {/* CHANGE H: much fainter on mobile so it doesn't compete with the card */}
+
                 <span className='text-[3.5rem] sm:text-[6.5rem] lg:text-[7rem] font-bold text-heading/15 sm:text-heading/70 leading-none tracking-tight font-primary'>
                   {title}
                 </span>
@@ -146,35 +220,51 @@ const ServicesTeaser = (props: ServicesTeaserProps) => {
 
         <Link
           href={fullServicesHref}
+          aria-label={
+            activeService
+              ? `View ${activeService.title} services`
+              : 'Explore services'
+          }
           className='z-10 relative w-85 sm:w-120 h-70 sm:h-90 rounded-3xl overflow-hidden shadow-2xl border border-border-subtle group cursor-pointer block'
         >
-          <MorphSlider
-            items={morphItems}
-            activeIndex={activeIndex}
-            onIndexChange={(i: number) => setActiveTab(services[i]?.id)}
-            autoplay={!reduceMotion}
-            autoplayDelay={4}
-            transition='melt'
-            radius={24}
-            showCaptions={false}
-            showControls={false}
-            showIndicators={false}
-            className='w-full h-full'
-          />
+          {services.length > 0 && (
+            <>
+              <MorphSlider
+                items={morphItems}
+                activeIndex={Math.max(activeIndex, 0)}
+                onIndexChange={(index: number) => {
+                  const service = services[index]
 
-          <div className='absolute inset-0 bg-linear-to-t from-dark-500/80 via-transparent to-transparent flex items-end p-6 pointer-events-none z-20'>
-            {/* CHANGE I: gap-3 plus min-w-0 and line-clamp-2 so long titles wrap instead of colliding */}
-            <div className='flex items-center justify-between gap-3 w-full text-white'>
-              <span className='min-w-0 line-clamp-2 font-bold text-white text-size-body'>{activeService.title}</span>
-              <span className='text-size-caption font-secondary tracking-wider flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-white font-medium shadow-sm whitespace-nowrap shrink-0'>
-                <span className='hidden sm:inline'>View Details</span>
-                <ArrowUpRight className='w-3.5 h-3.5' />
-              </span>
-            </div>
-          </div>
+                  if (service) {
+                    setSelectedTabId(service.id)
+                  }
+                }}
+                autoplay={!reduceMotion && services.length > 1}
+                autoplayDelay={4}
+                transition='melt'
+                radius={24}
+                showCaptions={false}
+                showControls={false}
+                showIndicators={false}
+                className='w-full h-full'
+              />
+
+              <div className='absolute inset-0 bg-linear-to-t from-dark-500/80 via-transparent to-transparent flex items-end p-6 pointer-events-none z-20'>
+                <div className='flex items-center justify-between gap-3 w-full text-white'>
+                  <span className='min-w-0 line-clamp-2 font-bold text-white text-size-body'>
+                    {activeService?.title ?? ''}
+                  </span>
+
+                  <span className='text-size-caption font-secondary tracking-wider flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-white font-medium shadow-sm whitespace-nowrap shrink-0'>
+                    <span className='hidden sm:inline'>View Details</span>
+                    <ArrowUpRight className='w-3.5 h-3.5' />
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
         </Link>
       </div>
-
     </Section>
   )
 }

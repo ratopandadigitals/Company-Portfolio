@@ -3,13 +3,43 @@
 
 import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
-import type { WorkItem } from '@/data/work'
+import type { WorkItem } from '@/data/works'
 import Image from 'next/image'
 
 type WorkFormProps = {
   initialWork?: WorkItem
   submitLabel: string
-  onSubmit: (formData: FormData) => void
+  onSubmit: (formData: FormData) => void | Promise<void>
+}
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+
+const uploadImage = async (file: File): Promise<string> => {
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    throw new Error('Only JPEG, PNG, and WebP images are allowed.')
+  }
+
+  if (file.size === 0 || file.size > MAX_FILE_SIZE) {
+    throw new Error('Each image must be smaller than 5 MB.')
+  }
+
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('folder', 'works')
+
+  const response = await fetch('/api/admin/uploads', {
+    method: 'POST',
+    body: formData,
+  })
+  const result: { success?: boolean; url?: string; message?: string } =
+    await response.json()
+
+  if (!response.ok || !result.success || !result.url) {
+    throw new Error(result.message || 'Unable to upload the image.')
+  }
+
+  return result.url
 }
 
 const WorkForm = ({
@@ -26,83 +56,66 @@ const WorkForm = ({
   const [gallery, setGallery] = useState<string[]>(
     initialWork?.gallery ?? [],
   )
+  const [isUploading, setIsUploading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleImageChange = (
+  const handleImageChange = async (
     event: ChangeEvent<HTMLInputElement>,
     onChange: (image: string) => void,
   ) => {
-    const file = event.currentTarget.files?.[0]
+    const input = event.currentTarget
+    const file = input.files?.[0]
 
     if (!file) return
 
-    if (!file.type.startsWith('image/')) {
-      window.alert('Please select a valid image file.')
-      event.currentTarget.value = ''
-      return
+    input.value = ''
+    setError('')
+    setIsUploading(true)
+
+    try {
+      onChange(await uploadImage(file))
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof Error
+          ? uploadError.message
+          : 'Unable to upload the image. Please try again.',
+      )
+    } finally {
+      setIsUploading(false)
     }
-
-    const reader = new FileReader()
-
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        onChange(reader.result)
-      }
-    }
-
-    reader.onerror = () => {
-      window.alert('Unable to read this image. Please try again.')
-    }
-
-    reader.readAsDataURL(file)
-    event.currentTarget.value = ''
   }
 
-  const handleGalleryChange = (
+  const handleGalleryChange = async (
     event: ChangeEvent<HTMLInputElement>,
   ) => {
-    const files = Array.from(event.currentTarget.files ?? [])
+    const input = event.currentTarget
+    const files = Array.from(input.files ?? [])
+    input.value = ''
 
     if (!files.length) return
 
-    const imageFiles = files.filter((file) =>
-      file.type.startsWith('image/'),
-    )
+    setError('')
+    setIsUploading(true)
 
-    if (imageFiles.length !== files.length) {
-      window.alert('Some files were skipped because they are not images.')
+    try {
+      const images = await Promise.all(files.map(uploadImage))
+      setGallery((current) => [...current, ...images])
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof Error
+          ? uploadError.message
+          : 'Unable to upload gallery images. Please try again.',
+      )
+    } finally {
+      setIsUploading(false)
     }
-
-    Promise.all(
-      imageFiles.map(
-        (file) =>
-          new Promise<string>((resolve, reject) => {
-            const reader = new FileReader()
-
-            reader.onload = () => {
-              if (typeof reader.result === 'string') {
-                resolve(reader.result)
-              } else {
-                reject(new Error('Unable to read image'))
-              }
-            }
-
-            reader.onerror = () =>
-              reject(new Error('Unable to read image'))
-
-            reader.readAsDataURL(file)
-          }),
-      ),
-    )
-      .then((images) => setGallery((current) => [...current, ...images]))
-      .catch(() => {
-        window.alert('Unable to load the selected images. Please try again.')
-      })
-
-    event.currentTarget.value = ''
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    if (isUploading || isSubmitting) return
 
     const formData = new FormData(event.currentTarget)
 
@@ -110,7 +123,20 @@ const WorkForm = ({
     formData.set('bgImage', bgImage)
     formData.set('gallery', gallery.join('\n'))
 
-    onSubmit(formData)
+    setError('')
+    setIsSubmitting(true)
+
+    try {
+      await onSubmit(formData)
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : 'Unable to save the project. Please try again.',
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const labelClass =
@@ -125,8 +151,16 @@ const WorkForm = ({
   const uploadClass =
     'block w-full cursor-pointer rounded-md border border-border-subtle bg-surface-card px-3 py-2 text-size-small text-body file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-surface-section file:px-3 file:py-2 file:text-size-small file:font-medium file:text-heading'
 
+  const isBusy = isUploading || isSubmitting
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <p role="alert" className="text-size-small text-text-error">
+          {error}
+        </p>
+      )}
+
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="space-y-2">
           <span className={labelClass}>Project title</span>
@@ -255,11 +289,12 @@ const WorkForm = ({
           <span className={labelClass}>Preview image</span>
           <input
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp"
             required={!previewImage}
             onChange={(event) =>
               handleImageChange(event, setPreviewImage)
             }
+            disabled={isBusy}
             className={uploadClass}
           />
           {previewImage && (
@@ -290,11 +325,12 @@ const WorkForm = ({
           <span className={labelClass}>Background image</span>
           <input
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp"
             required={!bgImage}
             onChange={(event) =>
               handleImageChange(event, setBgImage)
             }
+            disabled={isBusy}
             className={uploadClass}
           />
           {bgImage && (
@@ -326,9 +362,10 @@ const WorkForm = ({
         <span className={labelClass}>Gallery images</span>
         <input
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
           multiple
           onChange={handleGalleryChange}
+          disabled={isBusy}
           className={uploadClass}
         />
 
@@ -377,8 +414,10 @@ const WorkForm = ({
       <div className="flex justify-end border-t border-border-subtle pt-5">
         <button
           type="submit"
-className="inline-flex min-h-11 items-center justify-center rounded-md bg-surface-primary px-5 py-3 text-size-small font-semibold text-text-primary-on-color transition-colors duration-150 hover:bg-surface-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-primary"        >
-          {submitLabel}
+          disabled={isBusy}
+          className="inline-flex min-h-11 items-center justify-center rounded-md bg-surface-primary px-5 py-3 text-size-small font-semibold text-text-primary-on-color transition-colors duration-150 hover:bg-surface-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-primary disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isUploading ? 'Uploading images...' : isSubmitting ? 'Saving project...' : submitLabel}
         </button>
       </div>
     </form>

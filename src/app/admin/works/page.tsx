@@ -10,7 +10,6 @@ import {
   Trash2,
 } from 'lucide-react'
 import type { WorkItem } from '@/data/works'
-import { deleteWork, getWorks } from '@/data/work'
 import DataTable from '@/components/admin/shared/DataTable'
 import AdminSearchInput from '@/components/admin/shared/AdminSearchInput'
 import Image from 'next/image'
@@ -18,10 +17,51 @@ import Image from 'next/image'
 const WorksPage = () => {
   const [works, setWorks] = useState<WorkItem[]>([])
   const [search, setSearch] = useState('')
+  const [legacyWorks, setLegacyWorks] = useState<WorkItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isImporting, setIsImporting] = useState(false)
+  const [deletingSlug, setDeletingSlug] = useState<string | null>(null)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setWorks(getWorks())
+    const controller = new AbortController()
+
+    const loadWorks = async () => {
+      try {
+        const storedWorks = localStorage.getItem('admin-works')
+
+        if (storedWorks) {
+          try {
+            const parsedWorks: unknown = JSON.parse(storedWorks)
+            if (Array.isArray(parsedWorks)) {
+              setLegacyWorks(parsedWorks as WorkItem[])
+            }
+          } catch {
+            setError('Browser-saved project data could not be read; MongoDB projects are still available.')
+          }
+        }
+
+        const response = await fetch('/api/works', {
+          cache: 'no-store',
+          signal: controller.signal,
+        })
+        const result = await response.json()
+
+        if (!response.ok || !result.success || !Array.isArray(result.data)) {
+          throw new Error(result.message || 'Unable to load projects.')
+        }
+
+        setWorks(result.data as WorkItem[])
+      } catch (loadError) {
+        if (loadError instanceof Error && loadError.name === 'AbortError') return
+        setError('Unable to load projects. Please try again.')
+      } finally {
+        if (!controller.signal.aborted) setIsLoading(false)
+      }
+    }
+
+    void loadWorks()
+    return () => controller.abort()
   }, [])
 
   const filteredWorks = useMemo(() => {
@@ -43,15 +83,108 @@ const WorksPage = () => {
     )
   }, [works, search])
 
-  const handleDelete = (work: WorkItem) => {
+  const handleDelete = async (work: WorkItem) => {
     const confirmed = window.confirm(
       `Delete the project "${work.title}"?`,
     )
 
     if (!confirmed) return
 
-    if (deleteWork(work.slug)) {
-      setWorks(getWorks())
+    setDeletingSlug(work.slug)
+    setError('')
+
+    try {
+      const response = await fetch(
+        `/api/works/${encodeURIComponent(work.slug)}`,
+        { method: 'DELETE' },
+      )
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Unable to delete project.')
+      }
+
+      setWorks((current) => current.filter((item) => item.slug !== work.slug))
+    } catch (deleteError) {
+      setError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : 'Unable to delete project. Please try again.',
+      )
+    } finally {
+      setDeletingSlug(null)
+    }
+  }
+
+  const handleImportLegacyWorks = async () => {
+    if (!legacyWorks.length || isImporting) return
+
+    const confirmed = window.confirm(
+      `Import ${legacyWorks.length} browser-saved projects into MongoDB? Projects with matching slugs will be replaced by the browser-saved versions.`,
+    )
+    if (!confirmed) return
+
+    setIsImporting(true)
+    setError('')
+
+    try {
+      const uploadedImages = new Map<string, string>()
+      const uploadLegacyImage = async (image: string) => {
+        if (!image.startsWith('data:')) return image
+        const existingUrl = uploadedImages.get(image)
+        if (existingUrl) return existingUrl
+
+        const blob = await fetch(image).then((response) => response.blob())
+        const extension = blob.type.split('/')[1] || 'jpg'
+        const formData = new FormData()
+        formData.append('file', new File([blob], `legacy-work.${extension}`, { type: blob.type }))
+        formData.append('folder', 'works')
+
+        const response = await fetch('/api/admin/uploads', {
+          method: 'POST',
+          body: formData,
+        })
+        const result = await response.json()
+
+        if (!response.ok || !result.success || !result.url) {
+          throw new Error(result.message || 'Unable to upload a saved project image.')
+        }
+
+        uploadedImages.set(image, result.url as string)
+        return result.url as string
+      }
+
+      const worksToImport = await Promise.all(
+        legacyWorks.map(async (work) => ({
+          ...work,
+          previewImage: await uploadLegacyImage(work.previewImage),
+          bgImage: await uploadLegacyImage(work.bgImage),
+          gallery: await Promise.all(work.gallery.map(uploadLegacyImage)),
+        })),
+      )
+
+      const response = await fetch('/api/works/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ works: worksToImport }),
+      })
+      const result = await response.json()
+
+      if (!response.ok || !result.success || !Array.isArray(result.data)) {
+        throw new Error(result.message || 'Unable to import saved projects.')
+      }
+
+      localStorage.removeItem('admin-works')
+      setWorks(result.data as WorkItem[])
+      setLegacyWorks([])
+    } catch (importError) {
+      setError(
+        importError instanceof Error
+          ? importError.message
+          : 'Unable to import saved projects. Please try again.',
+      )
+    } finally {
+      setIsImporting(false)
     }
   }
 
@@ -110,10 +243,11 @@ const WorksPage = () => {
 
           <button
             type="button"
-            onClick={() => handleDelete(work)}
+            onClick={() => void handleDelete(work)}
+            disabled={deletingSlug !== null}
             title="Delete project"
             aria-label={`Delete ${work.title}`}
-            className="rounded-md border border-border-error bg-surface-error p-2 text-white transition-colors hover:bg-surface-error-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-error"
+            className="rounded-md border border-border-error bg-surface-error p-2 text-white transition-colors hover:bg-surface-error-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border-error disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Trash2 size={16} />
           </button>
@@ -170,6 +304,28 @@ className="inline-flex items-center justify-center gap-2 self-start rounded-md b
         </div>
       </div>
 
+      {legacyWorks.length > 0 && (
+        <div className="flex flex-col gap-3 rounded-lg border border-border-subtle bg-surface-card p-inset-compact sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-size-small text-text-caption">
+            {legacyWorks.length} browser-saved project{legacyWorks.length === 1 ? '' : 's'} found. Import them into MongoDB before removing this browser data.
+          </p>
+          <button
+            type="button"
+            onClick={() => void handleImportLegacyWorks()}
+            disabled={isImporting}
+            className="inline-flex min-h-10 items-center justify-center rounded-md border border-border-primary px-4 py-2 text-size-small font-semibold text-text-primary disabled:cursor-wait disabled:opacity-60"
+          >
+            {isImporting ? 'Importing projects...' : 'Import browser-saved projects'}
+          </button>
+        </div>
+      )}
+
+      {error && (
+        <p role="alert" className="text-size-small text-text-error">
+          {error}
+        </p>
+      )}
+
       <div className="rounded-lg border border-border-subtle bg-surface-card p-inset-compact">
        <AdminSearchInput
         value={search}
@@ -180,9 +336,11 @@ className="inline-flex items-center justify-center gap-2 self-start rounded-md b
 
               <DataTable
           columns={columns}
-          rows={filteredWorks}
+          rows={isLoading ? [] : filteredWorks}
           emptyMessage={
-            search
+            isLoading
+              ? 'Loading projects...'
+              : search
               ? 'No projects match your search.'
               : 'No projects have been added yet.'
           }

@@ -21,20 +21,31 @@ const EditGalleryPage = () => {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setMedia(
-      Number.isInteger(mediaId) && mediaId > 0
-        ? getMediaItemById(mediaId)
-        : undefined,
-    )
-    setIsLoaded(true)
+    let active = true
+    Promise.resolve()
+      .then(() => {
+        if (!Number.isInteger(mediaId) || mediaId < 1) {
+          throw new Error('Invalid gallery item ID.')
+        }
+        return getMediaItemById(mediaId)
+      })
+      .then((item) => {
+        if (active) setMedia(item)
+      })
+      .catch(() => {
+        if (active) setMedia(undefined)
+      })
+      .finally(() => {
+        if (active) setIsLoaded(true)
+      })
+
+    return () => { active = false }
   }, [mediaId])
 
-  const handleSubmit = (formData: FormData) => {
+  const handleSubmit = async (formData: FormData) => {
     if (!media) return
 
-    const updatedMedia: MediaItem = {
-      id: media.id,
+    const updatedMedia: Omit<MediaItem, 'id'> = {
       title: String(formData.get('title') ?? '').trim(),
       url: String(formData.get('url') ?? '').trim(),
       type: String(formData.get('type') ?? 'image') as MediaItem['type'],
@@ -46,14 +57,12 @@ const EditGalleryPage = () => {
       return
     }
 
-    const savedMedia = updateMediaItem(media.id, updatedMedia)
-
-    if (!savedMedia) {
-      window.alert('Could not update this gallery item.')
-      return
+    try {
+      await updateMediaItem(media.id, updatedMedia)
+      router.push('/admin/gallery')
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Could not update this gallery item.')
     }
-
-    router.push('/admin/gallery')
   }
 
   if (!isLoaded) {

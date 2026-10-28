@@ -13,10 +13,19 @@ const labelClass = 'block text-size-small font-medium text-heading'
 const StatsForm = () => {
   const [stats, setStats] = useState<StatItem[]>([])
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setStats(getStats())
+    let active = true
+    getStats()
+      .then((loadedStats) => {
+        if (active) setStats(loadedStats)
+      })
+      .catch(() => {
+        if (active) setError('Unable to load statistics.')
+      })
+
+    return () => { active = false }
   }, [])
 
   const handleChange = (
@@ -32,10 +41,15 @@ const StatsForm = () => {
     setSaved(false)
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    updateStats(stats)
-    setSaved(true)
+    setError('')
+    try {
+      await updateStats(stats)
+      setSaved(true)
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Unable to save statistics.')
+    }
   }
 
   if (stats.length === 0) {
@@ -48,6 +62,7 @@ const StatsForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-stack-content">
+      {error && <p role="alert" className="text-size-small text-text-error">{error}</p>}
       <div className="space-y-stack-section">
         {stats.map((stat, index) => (
           <div

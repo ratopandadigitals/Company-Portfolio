@@ -11,7 +11,7 @@ import { createTestimonial} from '@/data/clientStorage'
 const NewTestimonialPage = () => {
   const router = useRouter()
 
-  const handleSubmit = (formData: FormData) => {
+  const handleSubmit = async (formData: FormData) => {
     const quote = String(formData.get('quote') ?? '').trim()
     const name = String(formData.get('name') ?? '').trim()
     const role = String(formData.get('role') ?? '').trim()
@@ -30,9 +30,12 @@ const NewTestimonialPage = () => {
     }
 
    
-    createTestimonial(testimonialData)
-
-    router.push('/admin/testimonials')
+    try {
+      await createTestimonial(testimonialData)
+      router.push('/admin/testimonials')
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Unable to create testimonial.')
+    }
   }
 
   return (

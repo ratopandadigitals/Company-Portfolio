@@ -1,83 +1,54 @@
 
 import type { EventItem } from '@/data/events'
-export type {EventItem}
-const STORAGE_KEY = 'admin-events'
+export type { EventItem }
 
-const getInitialEvents = (): EventItem[] => {
-  return []
+type ApiResponse<T> = {
+  success: boolean
+  message?: string
+  data: T
 }
 
-export const getEvents = (): EventItem[] => {
-  if (typeof window === 'undefined') {
-    return getInitialEvents()
+const request = async <T>(url: string, init?: RequestInit): Promise<T> => {
+  const response = await fetch(url, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...init?.headers,
+    },
+  })
+  const result = await response.json() as ApiResponse<T>
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Unable to save event data.')
   }
 
-  const storedEvents = localStorage.getItem(STORAGE_KEY)
-
-  if (!storedEvents) {
-    return getInitialEvents()
-  }
-
-  try {
-    return JSON.parse(storedEvents) as EventItem[]
-  } catch {
-    return getInitialEvents()
-  }
+  return result.data
 }
 
-const saveEvents = (events: EventItem[]): void => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(events))
-}
+export const getEvents = (): Promise<EventItem[]> =>
+  request<EventItem[]>('/api/events', { cache: 'no-store' })
+
+export const getEventBySlug = (slug: string): Promise<EventItem> =>
+  request<EventItem>(`/api/events/${encodeURIComponent(slug)}`, { cache: 'no-store' })
 
 export const createEvent = (
   event: Omit<EventItem, 'id'>,
-): EventItem => {
-  const events = getEvents()
-
-  const newEvent: EventItem = {
-    ...event,
-    id: crypto.randomUUID(),
-  }
-
-  saveEvents([...events, newEvent])
-
-  return newEvent
-}
-
-export const getEventBySlug = (
-  slug: string,
-): EventItem | undefined => {
-  return getEvents().find((event) => event.slug === slug)
-}
+): Promise<EventItem> =>
+  request<EventItem>('/api/events', {
+    method: 'POST',
+    body: JSON.stringify(event),
+  })
 
 export const updateEvent = (
   slug: string,
-  updatedEvent: EventItem,
-): EventItem | undefined => {
-  const events = getEvents()
-  const index = events.findIndex((event) => event.slug === slug)
+  updatedEvent: Omit<EventItem, 'id'>,
+): Promise<EventItem> =>
+  request<EventItem>(`/api/events/${encodeURIComponent(slug)}`, {
+    method: 'PATCH',
+    body: JSON.stringify(updatedEvent),
+  })
 
-  if (index === -1) {
-    return undefined
-  }
-
-  const updatedEvents = [...events]
-  updatedEvents[index] = updatedEvent
-
-  saveEvents(updatedEvents)
-
-  return updatedEvent
-}
-
-export const deleteEvent = (slug: string): boolean => {
-  const events = getEvents()
-  const updatedEvents = events.filter((event) => event.slug !== slug)
-
-  if (updatedEvents.length === events.length) {
-    return false
-  }
-
-  saveEvents(updatedEvents)
-
-  return true
-}
+export const deleteEvent = (slug: string): Promise<void> =>
+  request<void>(`/api/events/${encodeURIComponent(slug)}`, {
+    method: 'DELETE',
+  })

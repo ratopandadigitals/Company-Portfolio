@@ -23,16 +23,25 @@ const EditTestimonialPage = () => {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read localStorage after hydration to avoid an SSR mismatch.
-    setTestimonial(getTestimonialById(testimonialId))
-    setIsLoaded(true)
+    let active = true
+    getTestimonialById(testimonialId)
+      .then((loadedTestimonial) => {
+        if (active) setTestimonial(loadedTestimonial)
+      })
+      .catch(() => {
+        if (active) setTestimonial(undefined)
+      })
+      .finally(() => {
+        if (active) setIsLoaded(true)
+      })
+
+    return () => { active = false }
   }, [testimonialId])
 
-  const handleSubmit = (formData: FormData) => {
+  const handleSubmit = async (formData: FormData) => {
     if (!testimonial) return
 
-    const updatedTestimonial: TestimonialItem = {
-      id: testimonial.id,
+    const updatedTestimonial: Omit<TestimonialItem, 'id'> = {
       quote: String(formData.get('quote') ?? '').trim(),
       name: String(formData.get('name') ?? '').trim(),
       role: String(formData.get('role') ?? '').trim(),
@@ -48,17 +57,12 @@ const EditTestimonialPage = () => {
       return
     }
 
-    const savedTestimonial = updateTestimonial(
-      testimonial.id,
-      updatedTestimonial,
-    )
-
-    if (!savedTestimonial) {
-      window.alert('Could not update this testimonial.')
-      return
+    try {
+      await updateTestimonial(testimonial.id, updatedTestimonial)
+      router.push('/admin/testimonials')
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Could not update this testimonial.')
     }
-
-    router.push('/admin/testimonials')
   }
 
   if (!isLoaded) {

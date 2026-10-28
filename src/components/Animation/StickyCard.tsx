@@ -18,6 +18,7 @@ export default function StickyCard<T>({
 }: StickyCardProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<(HTMLDivElement | null)[]>([])
+  const itemsLength = items.length
 
   useGSAP(
     () => {
@@ -79,7 +80,11 @@ export default function StickyCard<T>({
       
       }
     },
-    { scope: containerRef }
+        {
+  scope: containerRef,
+  dependencies: [itemsLength],
+  revertOnUpdate: true,
+}
   )
 
   return (

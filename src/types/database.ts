@@ -5,7 +5,7 @@ import type { ServiceItem } from '@/components/sections/services/Service'
 import type { EventItem } from '@/data/events'
 import type { MediaItem } from '@/components/sections/gallery/MediaData'
 import type { StatItem, TestimonialItem } from '@/data/client'
-import type { EnquiryItem } from '@/data/enquiryStorage'
+import type { EnquiryItem } from '@/types/enquiry'
 
 /**
  * Shared MongoDB document types.

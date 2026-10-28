@@ -1,8 +1,13 @@
 
 import Link from 'next/link'
 import { ArrowRight, Inbox } from 'lucide-react'
+import type { EnquiryItem } from '@/types/enquiry'
 
-const RecentActivity = () => {
+type RecentActivityProps = {
+  enquiries: Pick<EnquiryItem, 'id' | 'name' | 'subject' | 'createdAt' | 'status'>[]
+}
+
+const RecentActivity = ({ enquiries }: RecentActivityProps) => {
   return (
     <section className="rounded-xl border border-border-subtle bg-surface-card p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
@@ -25,26 +30,51 @@ const RecentActivity = () => {
         </Link>
       </div>
 
-      <div className="mt-6 flex min-h-40 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border-subtle px-4 py-8 text-center">
-        <span className="flex size-11 items-center justify-center rounded-full bg-surface-page text-success">
-          <Inbox aria-hidden="true" className="size-6 stroke-2.5" />
-        </span>
-
-        <p className="text-size-body font-medium text-heading">
-          No enquiry data yet
-        </p>
-
-        <p className="max-w-sm text-size-small text-caption">
-          Recent website enquiries will appear here once we add the dummy data and enquiry management flow.
-        </p>
-
-        <Link
-          href="/admin/enquiries"
-          className="mt-1 text-size-small font-semibold text-primary hover:underline"
-        >
-          View enquiries
-        </Link>
-      </div>
+      {enquiries.length ? (
+        <ul className="mt-6 divide-y divide-border-subtle">
+          {enquiries.map((enquiry) => (
+            <li key={enquiry.id}>
+              <Link
+                href={`/admin/enquiries/${encodeURIComponent(enquiry.id)}`}
+                className="flex items-center justify-between gap-4 py-4 transition-colors hover:text-primary"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-size-body font-medium text-heading">
+                    {enquiry.name}
+                  </span>
+                  <span className="mt-1 block truncate text-size-small text-caption">
+                    {enquiry.subject}
+                  </span>
+                </span>
+                <span className="shrink-0 text-right">
+                  <span className="block text-size-caption text-caption">
+                    {new Date(enquiry.createdAt).toLocaleDateString()}
+                  </span>
+                  <span className="mt-1 block text-size-caption font-medium text-caption">
+                    {enquiry.status === 'new' ? 'New' : 'Read'}
+                  </span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="mt-6 flex min-h-40 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border-subtle px-4 py-8 text-center">
+          <span className="flex size-11 items-center justify-center rounded-full bg-surface-page text-success">
+            <Inbox aria-hidden="true" className="size-6 stroke-2.5" />
+          </span>
+          <p className="text-size-body font-medium text-heading">No enquiries yet</p>
+          <p className="max-w-sm text-size-small text-caption">
+            New website enquiries will appear here.
+          </p>
+          <Link
+            href="/admin/enquiries"
+            className="mt-1 text-size-small font-semibold text-primary hover:underline"
+          >
+            View enquiries
+          </Link>
+        </div>
+      )}
     </section>
   )
 }

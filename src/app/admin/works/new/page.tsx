@@ -1,30 +1,29 @@
 
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { WorkItem } from '@/data/works'
 import WorkForm from '@/components/admin/works/WorkForm'
-import { createWork, getWorks } from '@/data/work'
 import { ArrowLeft } from 'lucide-react'
 
 const NewWorkPage = () => {
   const router = useRouter()
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (formData: FormData) => {
-    const slug = String(formData.get('slug') ?? '').trim()
+  const handleSubmit = async (formData: FormData) => {
+    setError('')
+    setIsSubmitting(true)
 
-    if (getWorks().some((work) => work.slug === slug)) {
-      window.alert('A project with this slug already exists.')
-      return
-    }
-
-    const work: Omit<WorkItem, 'id'> = {
-      slug,
-      title: String(formData.get('title') ?? '').trim(),
-      description: String(formData.get('description') ?? '').trim(),
-      year: String(formData.get('year') ?? '').trim(),
-      role: String(formData.get('role') ?? '').trim(),
+    try {
+      const work: Omit<WorkItem, 'id'> = {
+        slug: String(formData.get('slug') ?? '').trim(),
+        title: String(formData.get('title') ?? '').trim(),
+        description: String(formData.get('description') ?? '').trim(),
+        year: String(formData.get('year') ?? '').trim(),
+        role: String(formData.get('role') ?? '').trim(),
       services: String(formData.get('services') ?? '')
         .split('\n')
         .map((item) => item.trim())
@@ -39,11 +38,30 @@ const NewWorkPage = () => {
         .split('\n')
         .map((item) => item.trim())
         .filter(Boolean),
+      }
+
+      const response = await fetch('/api/works', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(work),
+      })
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Unable to create project.')
+      }
+
+      router.push('/admin/works')
+      router.refresh()
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : 'Unable to create project. Please try again.',
+      )
+    } finally {
+      setIsSubmitting(false)
     }
-
-    createWork(work)
-
-    router.push('/admin/works')
   }
 
   return (
@@ -67,9 +85,14 @@ const NewWorkPage = () => {
       </div>
 
       <div className="rounded-lg border text-white border-border-subtle bg-surface-card p-inset-card shadow-sm">
+        {error && (
+          <p role="alert" className="mb-4 text-size-small text-text-error">
+            {error}
+          </p>
+        )}
         <WorkForm
           onSubmit={handleSubmit}
-          submitLabel="Create project"
+          submitLabel={isSubmitting ? 'Creating project...' : 'Create project'}
         />
       </div>
     </div>
